@@ -1,0 +1,59 @@
+# ===== Datos (NO versionar el dataset AI4Mars) =====
+# Se ignora el CONTENIDO de data/ pero se conserva la carpeta vía .gitkeep.
+# (Ignorar "data/" entero impediría re-incluir cualquier archivo dentro.)
+/data/*
+!/data/.gitkeep
+
+# Conservar metadatos pequeños si se desea versionarlos explícitamente:
+# !/data/metadata.csv
+
+# ===== Outputs grandes / generados =====
+outputs/figures/
+outputs/*.csv
+!outputs/.gitkeep
+# Conservar resultados finales versionables si se decide:
+# !outputs/results.csv
+
+# ===== Entorno conda exportado con builds locales =====
+environment.lock.yml
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# ===== Entornos virtuales =====
+.venv/
+venv/
+env/
+ENV/
+
+# ===== Jupyter =====
+.jupyter/
+*.ipynb_checkpoints
+
+# ===== Sistema operativo =====
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# ===== Editores / IDE =====
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ===== Credenciales / config local =====
+.env
+.env.local
+
+# ===== Claude Code (permisos locales por máquina) =====
+.claude/settings.local.json

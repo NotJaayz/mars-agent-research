@@ -1,0 +1,50 @@
+# Entorno conda para la tesis: Conteo de rocas en imágenes marcianas (AI4Mars)
+# Autor: Juan Pablo Delgado Castro — Universidad Externado de Colombia
+#
+# Recomendado: Miniforge en Apple Silicon (M4 Pro). Canal conda-forge.
+#
+# Crear el entorno:
+#     conda env create -f environment.yml
+# Activarlo:
+#     conda activate tesis-marte
+# Actualizarlo tras editar este archivo:
+#     conda env update -f environment.yml --prune
+# Registrar versiones exactas (reproducibilidad):
+#     conda env export --no-builds > environment.lock.yml
+
+name: tesis-marte
+
+channels:
+  - conda-forge
+
+dependencies:
+  # --- Núcleo ---
+  - python=3.11
+  - pip
+
+  # --- Procesamiento de imágenes y datos (pipeline principal en CPU) ---
+  - numpy
+  - pandas
+  - opencv            # cv2: lectura de imágenes, operaciones morfológicas
+  - scikit-image      # label, distance_transform_edt, watershed, regionprops
+  - scipy             # dependencia de scikit-image; transformadas de distancia
+  - matplotlib        # visualizaciones y figuras del pipeline
+  - tqdm              # barra de progreso al procesar miles de imágenes
+
+  # --- Entorno de trabajo ---
+  - jupyterlab
+  - ipykernel
+  - ipywidgets        # widgets/progreso dentro de notebooks
+
+  # --- Calidad de código (opcional pero recomendado) ---
+  - ruff              # linter/formatter rápido
+
+  # --- Utilidades de descarga del dataset ---
+  - requests
+  - pyyaml
+
+  # NOTA sobre PyTorch + MPS (Apple M4 Pro):
+  # El pipeline principal es CPU (NumPy/scikit-image) y NO requiere PyTorch.
+  # Si en algún momento se necesita aceleración MPS, instalar aparte con:
+  #     pip install torch torchvision
+  # (las ruedas oficiales de PyPI ya traen soporte MPS en Apple Silicon).
