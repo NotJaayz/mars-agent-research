@@ -19,9 +19,13 @@ from . import rock_count as rc
 DEFAULT_PARAMS: dict[str, Any] = dict(rc.DEFAULT_PARAMS)
 
 # Columnas del CSV de resultados (ver CLAUDE.md / §8.8 de la tesis).
+# rock_coverage_pct = roca/válidos (indicador principal E1).
+# coverage_total_pct = roca/total (cota inferior conservadora, complementaria).
+# frac_valid = fracción de la escena etiquetada (para interpretar la cobertura).
 RESULT_COLUMNS = [
     "image_id", "rover", "camera", "sol",
-    "rock_coverage_pct", "n_rocks", "n_raw_components", "quality_flag",
+    "rock_coverage_pct", "coverage_total_pct", "frac_valid", "n_bigrock",
+    "n_rocks", "n_raw_components", "quality_flag",
 ]
 
 
@@ -71,12 +75,18 @@ def process_image(
     big_rock = mu.big_rock_mask(mask)
     n_rocks, n_raw_components, _, _ = rc.count_rocks(big_rock, p)
 
+    def _r(x, nd=4):
+        return round(x, nd) if x == x else None  # None si es NaN
+
     return {
         "image_id": image_id,
         "rover": rover,
         "camera": camera,
         "sol": sol,
-        "rock_coverage_pct": round(coverage_pct, 4) if coverage_pct == coverage_pct else None,
+        "rock_coverage_pct": _r(coverage_pct),
+        "coverage_total_pct": _r(details["coverage_total_pct"]),
+        "frac_valid": _r(details["frac_valid"]),
+        "n_bigrock": details["n_bigrock"],
         "n_rocks": n_rocks,
         "n_raw_components": n_raw_components,
         "quality_flag": _quality_flag(details, details["n_bigrock"]),

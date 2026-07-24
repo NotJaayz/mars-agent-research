@@ -56,6 +56,7 @@ def rock_coverage(
     n_rock = int(cov.sum())
 
     coverage_pct = float("nan") if n_valid == 0 else 100.0 * n_rock / n_valid
+    coverage_total_pct = float("nan") if n_total == 0 else 100.0 * n_rock / n_total
 
     details = {
         "n_total": n_total,
@@ -63,6 +64,8 @@ def rock_coverage(
         "n_rock": n_rock,
         "n_bedrock": n_bedrock,
         "n_bigrock": n_bigrock,
+        "frac_valid": n_valid / n_total if n_total else float("nan"),
         "frac_null": 1.0 - n_valid / n_total if n_total else float("nan"),
+        "coverage_total_pct": coverage_total_pct,
     }
     return coverage_pct, details
