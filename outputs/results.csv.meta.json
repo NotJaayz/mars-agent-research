@@ -1,0 +1,30 @@
+{
+  "n_images": 16064,
+  "seconds": 825.3,
+  "params": {
+    "open_size": 3,
+    "close_size": 3,
+    "min_area_frac": 0.0005,
+    "max_aspect_ratio": 5.0,
+    "distance_sigma": 3.0,
+    "peak_min_distance": 15,
+    "connectivity": 2
+  },
+  "ai4mars_root": "/Users/juan.b.delgado/Desktop/tesis-marte/ai4mars-dataset-merged-0.6",
+  "labels_dir": "/Users/juan.b.delgado/Desktop/tesis-marte/ai4mars-dataset-merged-0.6/msl/ncam/labels/train",
+  "python": "3.13.13",
+  "quality_flag_counts": {
+    "no_bigrock": 8458,
+    "no_rock": 4950,
+    "ok": 2193,
+    "mostly_null": 300,
+    "empty": 163
+  },
+  "versions": {
+    "numpy": "2.5.1",
+    "pandas": "3.0.5",
+    "scikit-image": "0.26.0",
+    "scipy": "1.18.0",
+    "pillow": "12.3.0"
+  }
+}

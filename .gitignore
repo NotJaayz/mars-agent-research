@@ -4,6 +4,10 @@
 /data/*
 !/data/.gitkeep
 
+# Copia del dataset AI4Mars dentro del proyecto (~16 GB). NUNCA versionar.
+/ai4mars-dataset-merged-0.6/
+ai4mars-dataset-*/
+
 # Conservar metadatos pequeños si se desea versionarlos explícitamente:
 # !/data/metadata.csv
 
@@ -11,8 +15,8 @@
 outputs/figures/
 outputs/*.csv
 !outputs/.gitkeep
-# Conservar resultados finales versionables si se decide:
-# !outputs/results.csv
+# results.csv es el entregable principal (E4): se versiona (1 MB).
+!outputs/results.csv
 
 # ===== Entorno conda exportado con builds locales =====
 environment.lock.yml
