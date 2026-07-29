@@ -82,7 +82,7 @@ def compute_stages(
         "distance": np.zeros_like(clean, dtype=float),
         "coords": np.empty((0, 2), dtype=int),
         "labels_ws": np.zeros_like(clean, dtype=np.int32),
-        "kept_ids": [], "areas": [],
+        "kept_ids": [], "areas": [], "solidities": [],
     }
     if not clean.any():
         return stages
@@ -103,7 +103,7 @@ def compute_stages(
 
     labels_ws = watershed(-distance, markers, mask=clean)
 
-    kept_ids, areas = [], []
+    kept_ids, areas, solidities = [], [], []
     for region in regionprops(labels_ws):
         if region.area < min_area:
             continue
@@ -111,9 +111,10 @@ def compute_stages(
             continue
         kept_ids.append(region.label)
         areas.append(int(region.area))
+        solidities.append(float(region.solidity))
 
     stages.update(distance=distance, coords=coords, labels_ws=labels_ws,
-                  kept_ids=kept_ids, areas=areas)
+                  kept_ids=kept_ids, areas=areas, solidities=solidities)
     return stages
 
 

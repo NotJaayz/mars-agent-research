@@ -10,22 +10,30 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Iterable
 
+import re
+
 from . import config
 from . import coverage as cov
+from . import features as ft
 from . import mask_utils as mu
 from . import rock_count as rc
 
 # Parámetros por defecto del pipeline (reutiliza los del conteo de rocas).
 DEFAULT_PARAMS: dict[str, Any] = dict(rc.DEFAULT_PARAMS)
 
+_EYE_RE = re.compile(r"^N([LR])([AB])")  # NLA/NLB/NRA/NRB -> ojo L/R, cámara A/B
+
 # Columnas del CSV de resultados (ver CLAUDE.md / §8.8 de la tesis).
-# rock_coverage_pct = roca/válidos (indicador principal E1).
-# coverage_total_pct = roca/total (cota inferior conservadora, complementaria).
-# frac_valid = fracción de la escena etiquetada (para interpretar la cobertura).
+# Grupos: identificación · cobertura (E1) · composición del terreno ·
+#         conteo y geometría de rocas (E2) · calidad.
 RESULT_COLUMNS = [
-    "image_id", "rover", "camera", "sol",
-    "rock_coverage_pct", "coverage_total_pct", "frac_valid", "n_bigrock",
-    "n_rocks", "n_raw_components", "quality_flag",
+    "image_id", "rover", "camera", "eye", "sol",
+    "rock_coverage_pct", "coverage_total_pct", "frac_valid",
+    "pct_soil", "pct_bedrock", "pct_sand", "pct_bigrock",
+    "dominant_class", "scene_type",
+    "n_bigrock", "n_rocks", "n_raw_components",
+    "largest_rock_pct", "mean_rock_area_px", "n_small", "n_medium", "n_large",
+    "mean_solidity", "quality_flag",
 ]
 
 
@@ -71,9 +79,16 @@ def process_image(
 
     mask = mu.read_mask(mask_path)
     coverage_pct, details = cov.rock_coverage(mask)
+    comp = ft.class_composition(mask)
 
     big_rock = mu.big_rock_mask(mask)
-    n_rocks, n_raw_components, _, _ = rc.count_rocks(big_rock, p)
+    stages = rc.compute_stages(big_rock, p)
+    n_rocks = len(stages["kept_ids"])
+    geom = ft.rock_geometry(stages["areas"], stages["solidities"],
+                            mask.size, details["n_valid"])
+
+    m = _EYE_RE.match(image_id)
+    eye = m.group(1) if m else None  # L / R (par estéreo NavCam)
 
     def _r(x, nd=4):
         return round(x, nd) if x == x else None  # None si es NaN
@@ -82,13 +97,26 @@ def process_image(
         "image_id": image_id,
         "rover": rover,
         "camera": camera,
+        "eye": eye,
         "sol": sol,
         "rock_coverage_pct": _r(coverage_pct),
         "coverage_total_pct": _r(details["coverage_total_pct"]),
         "frac_valid": _r(details["frac_valid"]),
+        "pct_soil": comp["pct_soil"],
+        "pct_bedrock": comp["pct_bedrock"],
+        "pct_sand": comp["pct_sand"],
+        "pct_bigrock": comp["pct_bigrock"],
+        "dominant_class": comp["dominant_class"],
+        "scene_type": comp["scene_type"],
         "n_bigrock": details["n_bigrock"],
         "n_rocks": n_rocks,
-        "n_raw_components": n_raw_components,
+        "n_raw_components": stages["n_raw_components"],
+        "largest_rock_pct": geom["largest_rock_pct"],
+        "mean_rock_area_px": geom["mean_rock_area_px"],
+        "n_small": geom["n_small"],
+        "n_medium": geom["n_medium"],
+        "n_large": geom["n_large"],
+        "mean_solidity": geom["mean_solidity"],
         "quality_flag": _quality_flag(details, details["n_bigrock"]),
     }
 
