@@ -26,11 +26,13 @@ como validación comparativa y línea de trabajo futuro.
 | 2 | 8–14 ago | Consolidación del **conteo (E2)**: componentes conectadas + transformada de distancia + *watershed* + filtros. Verificación sobre imágenes con roca. | |
 | 3 | 15–21 ago | **Calibración** de parámetros del watershed con inspección visual en escenas variadas. Documentación de la sobresegmentación de bloques continuos. | |
 | 4 | 22–28 ago | Enriquecimiento de indicadores por imagen: composición del terreno y **distribución tamaño–frecuencia** de rocas. Ejecución del pipeline completo → `results.csv` (24 columnas). | |
-| 5 | 29 ago–4 sep | **Análisis descriptivo (E3)** y **validación** con las 322 máscaras de experto (comparación crowdsourced vs. experto). Figuras de resultados. | **Reunión 1** — resultados del pipeline, validación y hallazgos (sesgo de cobertura, rareza de *big rock*, tamaño–frecuencia); confirmación del plan del PoC de Rekognition. |
+| 5 | 29 ago–4 sep | **Análisis descriptivo (E3)** y **validación** con las 322 máscaras de experto (comparación crowdsourced vs. experto). Figuras de resultados. | **R1** |
 | 6 | 5–11 sep | **PoC Amazon Visual Rekognition (parte 1):** preparación de una submuestra (~40–60 imágenes con roca), generación automática de *bounding boxes* desde las máscaras, carga a S3 y entrenamiento de un modelo Custom Labels. | |
 | 7 | 12–18 sep | **PoC Amazon Visual Rekognition (parte 2):** inferencia y **comparación** del conteo/ detección de Rekognition frente al conteo clásico (watershed). Redacción de metodología y resultados. | |
-| 8 | 19–25 sep | **Validación cualitativa** (§8.9): conteo manual por bandas en una submuestra vs. algoritmo. Redacción de **discusión y limitaciones**. | **Reunión 2** — revisión del PoC de Rekognition y revisión casi final del documento. |
+| 8 | 19–25 sep | **Validación cualitativa** (§8.9): conteo manual por bandas en una submuestra vs. algoritmo. Redacción de **discusión y limitaciones**. | **R2** |
 | 9 | 26 sep–1 oct | **Cierre:** revisión completa, verificación de reproducibilidad (versiones, ejecución limpia, `results.csv`), armonización de estilo y versión final. **Entrega: 1 de octubre.** | |
+
+*R1 y R2 son las reuniones con la directora; el detalle de cada una está en la sección «Reuniones con la directora de tesis».*
 
 ## Prueba de concepto con Amazon Visual Rekognition (semanas 6–7)
 
