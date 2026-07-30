@@ -8,6 +8,9 @@
 /ai4mars-dataset-merged-0.6/
 ai4mars-dataset-*/
 
+# Imágenes de prueba de Rekognition (copiadas del dataset) y sus salidas.
+outputs/rekognition_test/
+
 # Conservar metadatos pequeños si se desea versionarlos explícitamente:
 # !/data/metadata.csv
 
