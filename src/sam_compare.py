@@ -12,9 +12,24 @@ Requiere ``ultralytics`` (``pip install ultralytics``) y sus pesos ``FastSAM-s.p
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 import numpy as np
+
+from . import config
+
+
+def region_from_classes(
+    mask: np.ndarray,
+    classes: Sequence[int] = (config.NAV_BIG_ROCK,),
+) -> np.ndarray:
+    """Construye una región de interés (ROI) booleana a partir de clases NAV.
+
+    Ejemplos:
+        region_from_classes(m)                      # solo big rock (clase 3)
+        region_from_classes(m, (1, 3))              # bedrock + big rock (roca expuesta)
+    """
+    return np.isin(mask, tuple(classes))
 
 
 def sam_instance_masks(
