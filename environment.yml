@@ -48,3 +48,8 @@ dependencies:
   # Si en algún momento se necesita aceleración MPS, instalar aparte con:
   #     pip install torch torchvision
   # (las ruedas oficiales de PyPI ya traen soporte MPS en Apple Silicon).
+  #
+  # NOTA sobre el notebook 06 (FastSAM local, alternativa a Rekognition):
+  # requiere ultralytics (trae torch). Instalar en el entorno con:
+  #     pip install ultralytics
+  # Corre en Apple Silicon con device="mps"; los pesos FastSAM-s.pt se descargan solos.

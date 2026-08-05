@@ -11,6 +11,10 @@ ai4mars-dataset-*/
 # Imágenes de prueba de Rekognition (copiadas del dataset) y sus salidas.
 outputs/rekognition_test/
 
+# Pesos de modelos (FastSAM/YOLO) y salidas de ultralytics — se descargan, no se versionan.
+*.pt
+runs/
+
 # Conservar metadatos pequeños si se desea versionarlos explícitamente:
 # !/data/metadata.csv
 
