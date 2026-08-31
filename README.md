@@ -1,150 +1,158 @@
-# Conteo de rocas en imágenes marcianas (AI4Mars)
+# Conteo de rocas visibles en imágenes marcianas (AI4Mars)
 
-**Autor:** Juan Pablo Delgado Castro
-**Universidad:** Externado de Colombia — Departamento de Matemáticas, Ciencia de Datos
+Investigación de tesis que cuantifica, **imagen por imagen**, cuánta roca hay en la
+superficie de Marte y cuántos bloques individuales se distinguen, a partir de las
+máscaras de segmentación del dataset **AI4Mars** (NASA/JPL) y del rover *Curiosity*.
 
-Cuantificación, **por imagen**, de dos indicadores derivados de las máscaras de
-segmentación del dataset **AI4Mars**, sin entrenar modelos de aprendizaje profundo:
-
-1. **Cobertura de roca visible** — porcentaje de píxeles etiquetados como
-   `bedrock` (lecho rocoso) o `big rock` (roca grande).
-2. **Conteo aproximado de rocas individuales** — número de bloques separados en
-   zonas de `big rock`, estimado con componentes conectadas + transformada de
-   distancia + *watershed*.
-
-El producto final es un CSV con un indicador por imagen más figuras ilustrativas
-del pipeline.
+> **Autor:** Juan Pablo Delgado Castro · Matemáticas — Ciencia de Datos,
+> Universidad Externado de Colombia
+> **Estado:** pipeline completo y ejecutado sobre 16 064 imágenes · redacción en curso
 
 ---
 
-## Objetivos
+## Qué hace este proyecto
 
-- **E1.** Estimar la cobertura de roca visible por imagen.
-- **E2.** Estimar el número aproximado de rocas individuales separando bloques
-  pegados (componentes conectadas, transformada de distancia, *watershed*).
-- **E3.** Explorar de forma descriptiva cómo varían los indicadores entre
-  subconjuntos (cámara, misión, rango de soles).
-- **E4.** Entregar un pipeline reproducible (código, parámetros, versiones, CSV).
-- **E5.** Analizar e interpretar resultados, casos atípicos y limitaciones.
+En lugar de entrenar un modelo para segmentar terreno (el uso habitual de AI4Mars),
+este trabajo **lee las máscaras existentes como mapas cuantitativos** y deriva dos
+indicadores por imagen:
+
+1. **Cobertura de roca visible** — porcentaje de píxeles etiquetados como lecho rocoso
+   (*bedrock*) o roca grande (*big rock*).
+2. **Conteo aproximado de rocas individuales** — bloques separados dentro de las zonas
+   de roca grande, mediante componentes conectadas → transformada de distancia →
+   *watershed* → filtros de tamaño y forma.
+
+El resultado es una tabla con **24 indicadores por imagen**, figuras del procedimiento
+y un análisis descriptivo del recorrido del rover.
+
+---
+
+## Resultados principales
+
+Sobre **16 064 imágenes** de MSL NavCam (Curiosity) con máscara disponible:
+
+| Indicador | Resultado |
+|---|---|
+| Imágenes con roca visible | **10 817 (67 %)** |
+| Imágenes con roca grande (aptas para conteo) | 2 193 (14 %) |
+| Rocas individuales contadas | **5 375** (mediana 2 por imagen, máx. 23) |
+| Cobertura mediana (sobre píxeles etiquetados) | 96,8 % |
+| Cobertura mediana (sobre la imagen completa) | 42,0 % |
+
+**Tipología de escena** — rocoso 47 % · suelo 36 % · arenoso 11 % · mixto 5 %
+
+**Distribución tamaño–frecuencia de rocas** — pequeñas 49 % · medianas 32 % · grandes 20 %
+(distribución decreciente, coherente con la literatura de abundancia de rocas).
+
+---
+
+## Hallazgos metodológicos
+
+**1. La codificación de clases suele documentarse mal.** Verificada contra
+`label_keys.json`, la documentación oficial del dataset y una comprobación píxel a
+píxel, la escala **NAV** real es:
+
+| Valor | Clase |
+|:---:|---|
+| `0` | soil (suelo) |
+| `1` | bedrock (lecho rocoso) |
+| `2` | sand (arena) |
+| `3` | **big rock** (roca grande) |
+| `255` | **NULL** (sin etiqueta) |
+
+Es decir: el "sin etiqueta" es **255** (no 0) y la roca grande es **3** (no 4). Esto
+corrige el supuesto inicial de la propuesta de tesis.
+
+**2. `big rock` es una clase poco frecuente.** Solo el 13,9 % de las máscaras contienen
+algún píxel de roca grande (y apenas el 8,9 % supera el 1 % de su área). La cobertura
+dispone de datos abundantes; el conteo se aplica necesariamente a un subconjunto.
+
+**3. Las etiquetas colaborativas están sesgadas hacia la roca.** Ejecutando el mismo
+procedimiento sobre las 322 máscaras de experto del dataset (acuerdo del 100 %):
+
+| Indicador | Colaborativas | Experto |
+|---|:---:|:---:|
+| Cobertura mediana | 96,8 % | **46,1 %** |
+| Imágenes con cobertura del 100 % | 42 % | **8 %** |
+| Píxeles de suelo + arena | 50 % | **69 %** |
+
+Las personas voluntarias etiquetaron preferentemente la roca —visualmente más
+saliente—, dejando suelo y arena sin etiquetar. El método de cálculo es correcto; el
+sesgo proviene de la anotación de entrada.
+
+**4. Limitación documentada.** En afloramientos continuos y extensos, el *watershed*
+tiende a subdividir una región que geológicamente es un solo bloque. Se reporta con
+ejemplos y con una medida de forma (solidez) que señala los casos sospechosos.
+
+---
+
+## Exploración complementaria: aprendizaje automático
+
+El método principal es clásico e interpretable. Como **línea futura**, se exploró si un
+modelo podría predecir los indicadores a partir de la imagen:
+
+- **Segment Anything / FastSAM (sin entrenar).** Coincide con el conteo clásico en la
+  misma banda solo el **44 %** de las veces (correlación de rangos 0,57): segmenta por
+  apariencia y fragmenta una roca según su textura interna. Un modelo general sin ajuste
+  al dominio no reproduce el conteo.
+- **DeepLabV3 (aprendizaje por transferencia, entrenado con las propias máscaras).**
+  En una prueba preliminar reducida: **IoU medio 0,79** y **correlación 0,84** entre la
+  cobertura estimada por el modelo y la derivada de las máscaras humanas.
 
 ---
 
 ## Estructura del repositorio
 
 ```
-.
-├── CLAUDE.md              # Guía del proyecto para Claude Code
-├── environment.yml        # Dependencias conda
-├── README.md              # Este archivo
-├── notebooks/
-│   ├── 01_exploracion.ipynb
-│   ├── 02_cobertura.ipynb
-│   ├── 03_conteo.ipynb
-│   └── 04_analisis.ipynb
-├── src/
-│   ├── mask_utils.py      # Lectura y construcción de máscaras binarias
-│   ├── coverage.py        # Cálculo de cobertura por imagen
-│   ├── rock_count.py      # Componentes conectadas + watershed + filtros
-│   └── pipeline.py        # process_image(...) que orquesta todo
-├── data/                  # NO se versiona (ver .gitignore)
-│   ├── images/            # imágenes originales .jpg/.png
-│   ├── masks/             # máscaras AI4Mars .png
-│   └── metadata.csv       # id, rover, cámara, sol
-└── outputs/
-    ├── results.csv        # indicadores por imagen
-    └── figures/           # figuras del pipeline
+src/                       # módulos del pipeline (funciones puras, parámetros explícitos)
+  config.py                #   rutas del dataset y codificación NAV
+  mask_utils.py            #   lectura de máscaras, máscaras binarias, morfología
+  coverage.py              #   cobertura de roca visible (E1)
+  rock_count.py            #   componentes + distancia + watershed + filtros (E2)
+  features.py              #   composición del terreno y geometría de rocas
+  pipeline.py              #   process_image / process_subset -> DataFrame
+  viz.py                   #   figuras paso a paso del procedimiento
+  sam_compare.py           #   comparación watershed vs. FastSAM
+  segmentation.py          #   DeepLabV3 (línea futura)
+scripts/                   # ejecución reproducible (pipeline, figuras, análisis)
+notebooks/                 # exploraciones de aprendizaje automático
+outputs/results.csv        # 24 indicadores por imagen (16 064 filas)
+docs/                      # informe de avance y cronograma
 ```
 
 ---
 
-## Dataset: AI4Mars
+## Reproducir
 
-- **Fuente:** https://data.nasa.gov/d/cykx-2qix
-- **Versión Zenodo:** https://doi.org/10.5281/zenodo.15995036
-- **Rovers:** Spirit, Opportunity, Curiosity · **Cámaras:** Navcam, Hazcam
-- **Máscara:** PNG con un entero por píxel:
-
-  | valor | clase        |
-  |:-----:|--------------|
-  | 0     | sin etiqueta |
-  | 1     | soil (suelo) |
-  | 2     | bedrock      |
-  | 3     | sand (arena) |
-  | 4     | big rock     |
-
-> Los códigos exactos se confirman contra la versión descargada del dataset.
-
-Estructura esperada en disco:
-
-```
-data/
-  images/        # mismo nombre base que la máscara
-  masks/
-  metadata.csv
-```
-
----
-
-## Instalación
-
-Requiere [Miniforge](https://github.com/conda-forge/miniforge) (recomendado en
-Apple Silicon).
+El dataset (~16 GB) **no se incluye** en el repositorio. Descárgalo de
+[NASA](https://data.nasa.gov/d/cykx-2qix) o
+[Zenodo](https://doi.org/10.5281/zenodo.15995036) y apunta a él con la variable de
+entorno `AI4MARS_ROOT`.
 
 ```bash
-# 1. Crear y activar el entorno
 conda env create -f environment.yml
 conda activate tesis-marte
 
-# 2. (Reproducibilidad) registrar versiones exactas
-conda env export --no-builds > environment.lock.yml
-
-# 3. Registrar el kernel para Jupyter
-python -m ipykernel install --user --name tesis-marte
+export AI4MARS_ROOT=/ruta/a/ai4mars-dataset-merged-0.6
+python scripts/run_pipeline.py          # genera outputs/results.csv
+python scripts/make_figures.py          # figuras descriptivas
+python scripts/make_pipeline_figures.py # figuras paso a paso del pipeline
 ```
 
----
-
-## Pipeline (resumen)
-
-Para cada par (imagen, máscara):
-
-1. Leer máscara → array 2D de enteros.
-2. Máscara de cobertura → píxeles ∈ {2, 4}.
-3. Máscara de roca grande → píxeles == 4.
-4. Limpieza morfológica (apertura 3×3, cierre 3×3).
-5. Cobertura = `píxeles_roca / píxeles_válidos × 100`.
-6. Componentes conectadas sobre roca grande + filtros (área, relación de aspecto).
-7. Transformada de distancia por componente.
-8. *Watershed* guiado por máximos locales → separar rocas pegadas.
-9. Filtrar subcomponentes (área, forma).
-10. Contar rocas válidas.
-11. Guardar fila en CSV.
-
-Procesar una sola imagen de prueba:
-
-```python
-from src.pipeline import process_image, DEFAULT_PARAMS
-
-fila = process_image("data/images/EJEMPLO.jpg",
-                     "data/masks/EJEMPLO.png",
-                     params=DEFAULT_PARAMS)
-```
-
----
-
-## Outputs
-
-`outputs/results.csv` con columnas:
-
-`image_id`, `rover`, `camera`, `sol`, `rock_coverage_pct`, `n_rocks`,
-`n_raw_components`, `quality_flag`.
-
-Más histogramas de cobertura/conteo por rover-cámara y figuras *step-by-step*
-del pipeline.
+Los parámetros del procedimiento son explícitos y están documentados en
+`src/rock_count.py` (`DEFAULT_PARAMS`); cada ejecución registra las versiones de las
+bibliotecas y los parámetros usados junto al CSV de resultados.
 
 ---
 
 ## Alcance
 
-Este proyecto **no** entrena redes neuronales, **no** genera máscaras nuevas
-(usa las de AI4Mars), **no** modela evolución temporal ni hace análisis 3D.
+Subconjunto de estudio: **MSL NavCam (Curiosity)**, etiquetas de entrenamiento.
+El proyecto no genera máscaras nuevas, no modela evolución temporal del terreno ni
+utiliza datos de elevación.
+
+## Créditos
+
+Dataset **AI4Mars** — Swan, R. M., Atha, D., Leopold, H. A., Gildner, M., Oij, S.,
+Chiu, C., y Ono, M. (2021). *AI4Mars: A Dataset for Terrain-Aware Autonomous Driving on
+Mars.* IEEE/CVF CVPR Workshops. Imágenes: NASA/JPL-Caltech.
