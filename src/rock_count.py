@@ -12,7 +12,7 @@ Flujo (sobre la máscara binaria de *big rock*, clase 3):
 
 Todos los umbrales se pasan por ``params`` (dict) con defaults documentados en
 ``DEFAULT_PARAMS``; nada queda hardcodeado dentro de la lógica. Para reducir la
-sobresegmentación, subir ``peak_min_distance`` o ``distance_sigma`` (ver CLAUDE.md).
+sobresegmentación, subir ``peak_min_distance`` o ``distance_sigma``.
 """
 from __future__ import annotations
 

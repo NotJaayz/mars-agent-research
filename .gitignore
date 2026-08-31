@@ -72,5 +72,5 @@ Thumbs.db
 .env
 .env.local
 
-# ===== Claude Code (permisos locales por máquina) =====
-.claude/settings.local.json
+# ===== Guía local del proyecto (no se publica) =====
+CLAUDE.md

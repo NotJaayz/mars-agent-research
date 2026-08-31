@@ -23,7 +23,7 @@ DEFAULT_PARAMS: dict[str, Any] = dict(rc.DEFAULT_PARAMS)
 
 _EYE_RE = re.compile(r"^N([LR])([AB])")  # NLA/NLB/NRA/NRB -> ojo L/R, cámara A/B
 
-# Columnas del CSV de resultados (ver CLAUDE.md / §8.8 de la tesis).
+# Columnas del CSV de resultados (§8.8 de la tesis).
 # Grupos: identificación · cobertura (E1) · composición del terreno ·
 #         conteo y geometría de rocas (E2) · calidad.
 RESULT_COLUMNS = [
@@ -68,7 +68,7 @@ def process_image(
     """Procesa un par (imagen, máscara) y devuelve una fila de resultados como dict.
 
     ``image_path`` no se lee (el análisis usa solo la máscara), pero se recibe para
-    fijar el ``image_id`` y mantener la firma documentada en CLAUDE.md.
+    fijar el ``image_id`` y mantener una firma estable.
 
     Returns
     -------
