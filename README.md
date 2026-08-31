@@ -1,5 +1,7 @@
 # Conteo de rocas visibles en imágenes marcianas (AI4Mars)
 
+**🌐 Idioma:** **Español** · [English](README.en.md)
+
 Investigación de tesis que cuantifica, **imagen por imagen**, cuánta roca hay en la
 superficie de Marte y cuántos bloques individuales se distinguen, a partir de las
 máscaras de segmentación del dataset **AI4Mars** (NASA/JPL) y del rover *Curiosity*.
