@@ -152,6 +152,8 @@ bibliotecas y los parámetros usados junto al CSV de resultados.
 - **[Resultados, discusión y limitaciones](docs/resultados_discusion.md)** — borrador de
   los capítulos, con los resultados sobre las 16 064 imágenes, la interpretación de los
   hallazgos y las limitaciones del estudio.
+- [Correcciones a la propuesta](docs/correcciones_propuesta.md) — lista de cambios
+  concretos a aplicar al documento de tesis (en español).
 - [Informe de avance](docs/informe_avance.md) · [Cronograma](docs/cronograma.md)
 
 ## Alcance
