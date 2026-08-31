@@ -31,6 +31,8 @@ documentar al menos cinco imágenes representativas.
 
 ## Pies de figura
 
+![Figura_11_procedimiento_paso_a_paso](../outputs/figures/tesis/Figura_11_procedimiento_paso_a_paso.png)
+
 **Figura 11.** *Procedimiento paso a paso aplicado a una escena con varias rocas.*
 
 > Nota. De izquierda a derecha: imagen original de la cámara de navegación; máscara de
@@ -45,6 +47,8 @@ documentar al menos cinco imágenes representativas.
 > `NLB_436473759EDR_F0211572NCAM00464M1`. Fuente: elaboración propia a partir de AI4Mars
 > (NASA/JPL-Caltech).
 
+![Figura_12_banderas_calidad](../outputs/figures/tesis/Figura_12_banderas_calidad.png)
+
 **Figura 12.** *Composición del conjunto analizado según la bandera de calidad.*
 
 > Nota. Distribución de las 16 064 imágenes de MSL NavCam con máscara disponible. Solo el
@@ -52,6 +56,8 @@ documentar al menos cinco imágenes representativas.
 > adicional contiene roca sin bloques individuales que contar. El 2,9 % restante se descarta
 > por tener más del 95 % de la escena sin etiqueta o por carecer por completo de etiquetas.
 > Fuente: elaboración propia.
+
+![Figura_13_distribucion_cobertura](../outputs/figures/tesis/Figura_13_distribucion_cobertura.png)
 
 **Figura 13.** *Distribución de la cobertura de roca visible en sus dos versiones.*
 
@@ -63,6 +69,8 @@ documentar al menos cinco imágenes representativas.
 > extremo superior correspondiente a 4 471 imágenes cuya área etiquetada es íntegramente
 > roca. Fuente: elaboración propia.
 
+![Figura_14_cobertura_vs_fraccion_etiquetada](../outputs/figures/tesis/Figura_14_cobertura_vs_fraccion_etiquetada.png)
+
 **Figura 14.** *Cobertura de roca frente a la fracción de escena etiquetada.*
 
 > Nota. Diagrama de densidad hexagonal, en escala logarítmica de color, para las imágenes
@@ -71,12 +79,16 @@ documentar al menos cinco imágenes representativas.
 > descartar que los valores altos sean un artefacto de imágenes escasamente anotadas.
 > Fuente: elaboración propia.
 
+![Figura_15_conteo_por_bandas](../outputs/figures/tesis/Figura_15_conteo_por_bandas.png)
+
 **Figura 15.** *Distribución del número de rocas contadas por imagen.*
 
 > Nota. Sobre las 2 193 imágenes que contienen roca grande. La primera barra corresponde a
 > las 421 imágenes en las que existen píxeles de la clase pero ninguna región supera los
 > filtros de área mínima y forma. La mediana es de dos rocas por imagen y el máximo
 > observado es de 23. Fuente: elaboración propia.
+
+![Figura_16_tamano_frecuencia](../outputs/figures/tesis/Figura_16_tamano_frecuencia.png)
 
 **Figura 16.** *Distribución tamaño–frecuencia de las rocas contadas.*
 
@@ -86,12 +98,16 @@ documentar al menos cinco imágenes representativas.
 > estudios de abundancia de rocas en sitios de aterrizaje, si bien aquí los tamaños son
 > relativos al campo de visión y no magnitudes métricas. Fuente: elaboración propia.
 
+![Figura_17_tipologia_escenas](../outputs/figures/tesis/Figura_17_tipologia_escenas.png)
+
 **Figura 17.** *Tipología de escenas según la composición del terreno.*
 
 > Nota. Clasificación de las 16 064 imágenes a partir de la proporción de cada clase sobre
 > sus píxeles válidos: rocoso cuando la roca alcanza al menos el 66 %, arenoso o de suelo
 > cuando la clase correspondiente supera el 50 %, y mixto cuando ninguna predomina. Casi la
 > mitad de las escenas resultan rocosas. Fuente: elaboración propia.
+
+![Figura_18_variacion_recorrido](../outputs/figures/tesis/Figura_18_variacion_recorrido.png)
 
 **Figura 18.** *Cobertura de roca y presencia de roca grande a lo largo del recorrido.*
 
@@ -104,6 +120,8 @@ documentar al menos cinco imágenes representativas.
 > recorrida, de modo que debe leerse como una ordenación relativa. Fuente: elaboración
 > propia.
 
+![Figura_19_validacion_experto](../outputs/figures/tesis/Figura_19_validacion_experto.png)
+
 **Figura 19.** *Comparación de la cobertura entre etiquetas colaborativas y de experto.*
 
 > Nota. A la izquierda, distribuciones normalizadas de la cobertura para las máscaras
@@ -112,6 +130,8 @@ documentar al menos cinco imágenes representativas.
 > la totalidad del área etiquetada es roca. La discrepancia es sistemática: la mediana pasa
 > de 96,8 % a 46,1 % y la proporción de coberturas totales cae del 42 % al 8 %, lo que
 > evidencia un sesgo hacia la roca en la anotación colaborativa. Fuente: elaboración propia.
+
+![Figura_20_matriz_acuerdo](../outputs/figures/tesis/Figura_20_matriz_acuerdo.png)
 
 **Figura 20.** *Matriz de acuerdo entre el procedimiento clásico y un modelo general de segmentación.*
 
@@ -130,6 +150,8 @@ documentar al menos cinco imágenes representativas.
 > DeepLabV3 a partir únicamente de la imagen. La línea discontinua marca la igualdad
 > perfecta. Fuente: elaboración propia.
 
+![Figura_22_subdivision_afloramiento](../outputs/figures/tesis/Figura_22_subdivision_afloramiento.png)
+
 **Figura 22.** *Subdivisión de una región continua etiquetada como roca grande.*
 
 > Nota. Escena con regiones alargadas y de contorno cóncavo. Aunque la anotación delimita
@@ -144,11 +166,15 @@ documentar al menos cinco imágenes representativas.
 
 ## Anexo
 
+![Figura_A1_procedimiento_anexo_1](../outputs/figures/tesis/Figura_A1_procedimiento_anexo_1.png)
+
 **Figura A1.** *Procedimiento paso a paso: escena con una única roca aislada.*
 
 > Nota. Caso más sencillo del procedimiento: la máscara delimita un solo bloque, la
 > transformada de distancia presenta un único máximo y la división de aguas no introduce
 > ninguna partición. Imagen `NLB_448901529EDR_F0300740NCAM00256M1`.
+
+![Figura_A2_procedimiento_anexo_2](../outputs/figures/tesis/Figura_A2_procedimiento_anexo_2.png)
 
 **Figura A2.** *Procedimiento paso a paso: cúmulo de rocas contiguas.*
 
@@ -157,11 +183,15 @@ documentar al menos cinco imágenes representativas.
 > precisamente la situación que justifica el uso de la división de aguas. Imagen
 > `NLB_547801039EDR_F0630346NCAM07753M1`.
 
+![Figura_A3_procedimiento_anexo_3](../outputs/figures/tesis/Figura_A3_procedimiento_anexo_3.png)
+
 **Figura A3.** *Procedimiento paso a paso: escena densa en rocas.*
 
 > Nota. Escena con el mayor número de rocas del conjunto analizado. Ilustra el
 > comportamiento del procedimiento en el extremo superior del rango de conteo. Imagen
 > `NLB_550010635EDR_F0632582NCAM00282M1`.
+
+![Figura_A4_procedimiento_anexo_4](../outputs/figures/tesis/Figura_A4_procedimiento_anexo_4.png)
 
 **Figura A4.** *Procedimiento paso a paso: escena de alta cobertura dominada por lecho rocoso.*
 

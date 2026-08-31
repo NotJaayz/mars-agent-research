@@ -31,6 +31,8 @@ representative images.
 
 ## Captions
 
+![Figura_11_procedimiento_paso_a_paso](../outputs/figures/tesis/Figura_11_procedimiento_paso_a_paso.png)
+
 **Figure 11.** *Step-by-step procedure applied to a scene with several rocks.*
 
 > Note. From left to right: original navigation-camera image; AI4Mars mask with the four
@@ -44,12 +46,16 @@ representative images.
 > `NLB_436473759EDR_F0211572NCAM00464M1`. Source: own elaboration from AI4Mars
 > (NASA/JPL-Caltech).
 
+![Figura_12_banderas_calidad](../outputs/figures/tesis/Figura_12_banderas_calidad.png)
+
 **Figure 12.** *Composition of the analysed set by quality flag.*
 
 > Note. Distribution of the 16,064 MSL NavCam images with an available mask. Only 13.7%
 > contain big rock and are therefore eligible for counting, while a further 52.7% contain
 > rock without individual blocks to count. The remaining 2.9% are discarded for having more
 > than 95% of the scene unlabelled or for lacking labels entirely. Source: own elaboration.
+
+![Figura_13_distribucion_cobertura](../outputs/figures/tesis/Figura_13_distribucion_cobertura.png)
 
 **Figure 13.** *Distribution of visible rock coverage in its two versions.*
 
@@ -60,6 +66,8 @@ representative images.
 > accumulation at the upper end corresponding to 4,471 images whose labelled area is entirely
 > rock. Source: own elaboration.
 
+![Figura_14_cobertura_vs_fraccion_etiquetada](../outputs/figures/tesis/Figura_14_cobertura_vs_fraccion_etiquetada.png)
+
 **Figure 14.** *Rock coverage against the labelled fraction of the scene.*
 
 > Note. Hexagonal density plot, with a logarithmic colour scale, for the labelled images. The
@@ -67,12 +75,16 @@ representative images.
 > on the proportion of the scene that received labels, which rules out high values being an
 > artefact of sparsely annotated images. Source: own elaboration.
 
+![Figura_15_conteo_por_bandas](../outputs/figures/tesis/Figura_15_conteo_por_bandas.png)
+
 **Figure 15.** *Distribution of the number of rocks counted per image.*
 
 > Note. Over the 2,193 images containing big rock. The first bar corresponds to the 421
 > images in which pixels of the class exist but no region passes the minimum-area and shape
 > filters. The median is two rocks per image and the observed maximum is 23. Source: own
 > elaboration.
+
+![Figura_16_tamano_frecuencia](../outputs/figures/tesis/Figura_16_tamano_frecuencia.png)
 
 **Figure 16.** *Size–frequency distribution of the counted rocks.*
 
@@ -82,12 +94,16 @@ representative images.
 > studies, although sizes here are relative to the field of view rather than metric
 > magnitudes. Source: own elaboration.
 
+![Figura_17_tipologia_escenas](../outputs/figures/tesis/Figura_17_tipologia_escenas.png)
+
 **Figure 17.** *Scene typology according to terrain composition.*
 
 > Note. Classification of the 16,064 images from the proportion of each class over their
 > valid pixels: rocky when rock reaches at least 66%, sandy or soil when the corresponding
 > class exceeds 50%, and mixed when none predominates. Almost half of the scenes are rocky.
 > Source: own elaboration.
+
+![Figura_18_variacion_recorrido](../outputs/figures/tesis/Figura_18_variacion_recorrido.png)
 
 **Figure 18.** *Rock coverage and presence of big rock along the traverse.*
 
@@ -99,6 +115,8 @@ representative images.
 > horizontal axis reflects acquisition order and not sol or distance travelled, so it should
 > be read as a relative ordering. Source: own elaboration.
 
+![Figura_19_validacion_experto](../outputs/figures/tesis/Figura_19_validacion_experto.png)
+
 **Figure 19.** *Coverage comparison between crowdsourced and expert labels.*
 
 > Note. Left: normalised coverage distributions for the crowdsourced masks used in the
@@ -107,6 +125,8 @@ representative images.
 > systematic: the median falls from 96.8% to 46.1% and the share of total coverages drops
 > from 42% to 8%, evidencing a bias towards rock in the crowdsourced annotation. Source: own
 > elaboration.
+
+![Figura_20_matriz_acuerdo](../outputs/figures/tesis/Figura_20_matriz_acuerdo.png)
 
 **Figure 20.** *Agreement matrix between the classical procedure and a general segmentation model.*
 
@@ -123,6 +143,8 @@ representative images.
 > the mask predicted by the DeepLabV3 segmenter from the image alone. The dashed line marks
 > perfect equality. Source: own elaboration.
 
+![Figura_22_subdivision_afloramiento](../outputs/figures/tesis/Figura_22_subdivision_afloramiento.png)
+
 **Figure 22.** *Subdivision of a continuous region labelled as big rock.*
 
 > Note. Scene with elongated, concave-contoured regions. Although the annotation delimits a
@@ -136,11 +158,15 @@ representative images.
 
 ## Annex
 
+![Figura_A1_procedimiento_anexo_1](../outputs/figures/tesis/Figura_A1_procedimiento_anexo_1.png)
+
 **Figure A1.** *Step-by-step procedure: scene with a single isolated rock.*
 
 > Note. Simplest case of the procedure: the mask delimits a single block, the distance
 > transform shows a single maximum and the watershed introduces no partition. Image
 > `NLB_448901529EDR_F0300740NCAM00256M1`.
+
+![Figura_A2_procedimiento_anexo_2](../outputs/figures/tesis/Figura_A2_procedimiento_anexo_2.png)
 
 **Figure A2.** *Step-by-step procedure: cluster of adjacent rocks.*
 
@@ -149,11 +175,15 @@ representative images.
 > situation that justifies using the watershed. Image
 > `NLB_547801039EDR_F0630346NCAM07753M1`.
 
+![Figura_A3_procedimiento_anexo_3](../outputs/figures/tesis/Figura_A3_procedimiento_anexo_3.png)
+
 **Figure A3.** *Step-by-step procedure: rock-dense scene.*
 
 > Note. Scene with the highest rock count in the analysed set. It illustrates the behaviour
 > of the procedure at the upper end of the counting range. Image
 > `NLB_550010635EDR_F0632582NCAM00282M1`.
+
+![Figura_A4_procedimiento_anexo_4](../outputs/figures/tesis/Figura_A4_procedimiento_anexo_4.png)
 
 **Figure A4.** *Step-by-step procedure: high-coverage scene dominated by bedrock.*
 

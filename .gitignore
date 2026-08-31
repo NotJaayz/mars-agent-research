@@ -19,7 +19,11 @@ runs/
 # !/data/metadata.csv
 
 # ===== Outputs grandes / generados =====
-outputs/figures/
+# Se ignora el contenido de figures/ salvo las figuras en formato tesis, que se citan
+# en docs/ y por tanto deben estar en el repositorio. (Ignorar el directorio entero
+# impediría re-incluir cualquier archivo de su interior.)
+outputs/figures/*
+!outputs/figures/tesis/
 outputs/*.csv
 !outputs/.gitkeep
 # results.csv es el entregable principal (E4): se versiona (1 MB).

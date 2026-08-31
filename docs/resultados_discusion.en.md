@@ -18,7 +18,9 @@ the complete procedure on a representative scene: original image, AI4Mars mask, 
 binary mask, distance transform with the detected seeds, and the final counting result.
 
 > **Figure 11.** Step-by-step procedure on a scene with several rocks.
-> `outputs/figures/pipeline/02_NLB_436473759EDR_F0211572NCAM00464M1.png`
+>
+
+![Figura_11_procedimiento_paso_a_paso](../outputs/figures/tesis/Figura_11_procedimiento_paso_a_paso.png)
 
 Each image received a quality flag summarising its suitability for each indicator
 (Table 2, Figure 12):
@@ -32,7 +34,10 @@ Each image received a quality flag summarising its suitability for each indicato
 | `empty` | No labelled pixel at all | 163 | 1.0 |
 
 > **Table 2.** Composition of the set by quality flag.
-> **Figure 12.** `outputs/figures/analisis/04_quality_flags.png`
+
+![Figura_12_banderas_calidad](../outputs/figures/tesis/Figura_12_banderas_calidad.png)
+
+> **Figure 12.** Composition of the analysed set by quality flag.
 
 The fraction of the scene effectively labelled has a median of **0.58**: slightly more
 than half of each image received a label, while the remainder corresponds to the rover
@@ -53,7 +58,9 @@ The distribution (Figure 13) is markedly **bimodal**: it accumulates at the extr
 coverage. In total, 8,339 images exceed 50% coverage.
 
 > **Figure 13.** Distribution of coverage, in its two versions.
-> `outputs/figures/analisis/01_cobertura_hist.png`
+>
+
+![Figura_13_distribucion_cobertura](../outputs/figures/tesis/Figura_13_distribucion_cobertura.png)
 
 The difference between the two measures comes from unlabelled pixels. Both are reported
 because they serve different purposes: the first answers *what fraction of the classified
@@ -67,7 +74,9 @@ was labelled, so high values correspond to scenes genuinely dominated by bedrock
 than to a bias of the formula.
 
 > **Figure 14.** Coverage against the labelled fraction of the scene.
-> `outputs/figures/analisis/03_cobertura_vs_fracvalid.png`
+>
+
+![Figura_14_cobertura_vs_fraccion_etiquetada](../outputs/figures/tesis/Figura_14_cobertura_vs_fraccion_etiquetada.png)
 
 ## 3. Approximate count of individual rocks (E2)
 
@@ -84,7 +93,9 @@ distribution by bands (Figure 15) is as follows:
 | 10 or more | 46 | 2 |
 
 > **Figure 15.** Distribution of the rock count per image.
-> `outputs/figures/analisis/02_conteo_bandas.png`
+>
+
+![Figura_15_conteo_por_bandas](../outputs/figures/tesis/Figura_15_conteo_por_bandas.png)
 
 The first row deserves attention: in **421 images (19% of the eligible ones)** there are
 big-rock pixels but no region passes the minimum-area and shape filters. These are very
@@ -106,7 +117,9 @@ Classifying the 5,297 measured rocks by their size relative to the image area (F
 | Large (≥ 2%) | 1,037 | 20 |
 
 > **Figure 16.** Size–frequency distribution of the counted rocks.
-> `outputs/figures/analisis/08_tamano_frecuencia.png`
+>
+
+![Figura_16_tamano_frecuencia](../outputs/figures/tesis/Figura_16_tamano_frecuencia.png)
 
 The result is a **decreasing distribution**: small rocks predominate and frequency falls as
 size increases. This shape agrees qualitatively with the size–frequency distributions
@@ -134,7 +147,9 @@ From that composition a scene typology was defined (Figure 17):
 | Mixed | no class predominates | 835 | 5.2 |
 
 > **Figure 17.** Scene typology according to terrain composition.
-> `outputs/figures/analisis/07_tipos_escena.png`
+>
+
+![Figura_17_tipologia_escenas](../outputs/figures/tesis/Figura_17_tipologia_escenas.png)
 
 A result relevant to their joint interpretation is that coverage and count are
 **practically independent indicators**: among eligible images their correlation is
@@ -151,7 +166,9 @@ markedly rocky segments and soil or sand segments** is observed (Figure 18), wit
 concentrations of big rock reaching up to 40% of the images in a segment.
 
 > **Figure 18.** Coverage and presence of big rock along the traverse.
-> `outputs/figures/analisis/06_temporal_recorrido.png`
+>
+
+![Figura_18_variacion_recorrido](../outputs/figures/tesis/Figura_18_variacion_recorrido.png)
 
 This reading answers directly the question raised in the introduction about which
 stretches of the traverse concentrate visible rock. It should be interpreted as a relative
@@ -177,7 +194,9 @@ masks used in the main analysis (Figure 19):
 | Images with big rock | 13.7% | 16.5% |
 
 > **Figure 19.** Coverage comparison between crowdsourced and expert labels.
-> `outputs/figures/analisis/05_validacion_experto.png`
+>
+
+![Figura_19_validacion_experto](../outputs/figures/tesis/Figura_19_validacion_experto.png)
 
 The discrepancy is systematic and large for coverage, whereas the presence of big rock and
 the count are comparable (median of 2 rocks versus 1). The discussion section analyses this
@@ -196,7 +215,9 @@ measured by bands, is **44%**, with a rank correlation of 0.57 and a mean absolu
 texture and, in other scenes, to miss low-contrast blocks.
 
 > **Figure 20.** Agreement matrix between the classical count and the general model.
-> `outputs/figures/analisis/11_matriz_acuerdo.png`
+>
+
+![Figura_20_matriz_acuerdo](../outputs/figures/tesis/Figura_20_matriz_acuerdo.png)
 
 **Model trained on the masks themselves.** A DeepLabV3 segmenter was trained by transfer
 learning to distinguish rock from non-rock, using the AI4Mars masks as labels and reserving
@@ -204,7 +225,7 @@ validation and test sets. From the predicted mask, coverage was recomputed and c
 with the one derived from the human mask (Figure 21). Results are reported in Table 3.
 
 > **Figure 21.** Coverage estimated by the model versus that derived from human annotation.
-> `outputs/figures/analisis/12_cobertura_modelo_vs_humano.png`
+> *(figura pendiente: se genera al terminar el entrenamiento)*
 
 > **Table 3.** *(To be completed with the run in the extended configuration; the reduced
 > preliminary test yielded a mean IoU of 0.79, an IoU of 0.73 for the rock class, and a
@@ -262,7 +283,9 @@ transform shows several ridges and the watershed subdivides it, even though geol
 corresponds to a single unit (Figure 22).
 
 > **Figure 22.** Case of subdivision in a scene with elongated, concave regions.
-> `outputs/figures/pipeline/06_NLB_614913932EDR_F0761384NCAM00294M1.png`
+>
+
+![Figura_22_subdivision_afloramiento](../outputs/figures/tesis/Figura_22_subdivision_afloramiento.png)
 
 Parameter calibration made it possible to bound the effect without eliminating it. The
 adopted setting (minimum separation between maxima of 15 pixels and distance-transform

@@ -20,7 +20,9 @@ original, máscara de AI4Mars, máscara binaria depurada, transformada de distan
 semillas detectadas y resultado final del conteo.
 
 > **Figura 11.** Procedimiento paso a paso sobre una escena con varias rocas.
-> `outputs/figures/pipeline/02_NLB_436473759EDR_F0211572NCAM00464M1.png`
+>
+
+![Figura_11_procedimiento_paso_a_paso](../outputs/figures/tesis/Figura_11_procedimiento_paso_a_paso.png)
 
 Cada imagen recibió una bandera de calidad que resume su aptitud para cada indicador
 (Cuadro 2, Figura 12):
@@ -34,7 +36,10 @@ Cada imagen recibió una bandera de calidad que resume su aptitud para cada indi
 | `empty` | Sin ningún píxel etiquetado | 163 | 1,0 |
 
 > **Cuadro 2.** Composición del conjunto según la bandera de calidad.
-> **Figura 12.** `outputs/figures/analisis/04_quality_flags.png`
+
+![Figura_12_banderas_calidad](../outputs/figures/tesis/Figura_12_banderas_calidad.png)
+
+> **Figura 12.** Composición del conjunto analizado según la bandera de calidad.
 
 La fracción de escena efectivamente etiquetada tiene una mediana de **0,58**: algo más de
 la mitad de cada imagen recibió etiqueta, mientras el resto corresponde al cuerpo del
@@ -55,7 +60,9 @@ La distribución (Figura 13) es marcadamente **bimodal**: se acumula en los extr
 cobertura nula. En total, 8 339 imágenes superan el 50 % de cobertura.
 
 > **Figura 13.** Distribución de la cobertura, en sus dos versiones.
-> `outputs/figures/analisis/01_cobertura_hist.png`
+>
+
+![Figura_13_distribucion_cobertura](../outputs/figures/tesis/Figura_13_distribucion_cobertura.png)
 
 La diferencia entre ambas medidas proviene de los píxeles sin etiqueta. Se reportan las
 dos porque cumplen funciones distintas: la primera responde *qué fracción del terreno
@@ -69,7 +76,9 @@ de cuánto se etiquetó, de modo que los valores altos corresponden a escenas
 genuinamente dominadas por lecho rocoso y no a un sesgo de la fórmula.
 
 > **Figura 14.** Cobertura frente a fracción de escena etiquetada.
-> `outputs/figures/analisis/03_cobertura_vs_fracvalid.png`
+>
+
+![Figura_14_cobertura_vs_fraccion_etiquetada](../outputs/figures/tesis/Figura_14_cobertura_vs_fraccion_etiquetada.png)
 
 ## 3. Conteo aproximado de rocas individuales (E2)
 
@@ -86,7 +95,9 @@ distribución por bandas (Figura 15) es la siguiente:
 | 10 o más | 46 | 2 |
 
 > **Figura 15.** Distribución del conteo de rocas por imagen.
-> `outputs/figures/analisis/02_conteo_bandas.png`
+>
+
+![Figura_15_conteo_por_bandas](../outputs/figures/tesis/Figura_15_conteo_por_bandas.png)
 
 Conviene notar el primer renglón: en **421 imágenes (19 % de las aptas)** existen píxeles
 de roca grande pero ninguna región supera los filtros de área mínima y forma. Se trata de
@@ -109,7 +120,9 @@ Clasificando las 5 297 rocas medidas según su tamaño relativo al área de la i
 | Grande (≥ 2 %) | 1 037 | 20 |
 
 > **Figura 16.** Distribución tamaño–frecuencia de las rocas contadas.
-> `outputs/figures/analisis/08_tamano_frecuencia.png`
+>
+
+![Figura_16_tamano_frecuencia](../outputs/figures/tesis/Figura_16_tamano_frecuencia.png)
 
 El resultado es una **distribución decreciente**: predominan las rocas pequeñas y la
 frecuencia disminuye al aumentar el tamaño. Esta forma coincide cualitativamente con las
@@ -139,7 +152,9 @@ A partir de esa composición se definió una tipología de escenas (Figura 17):
 | Mixto | ninguna clase predomina | 835 | 5,2 |
 
 > **Figura 17.** Tipología de escenas según la composición del terreno.
-> `outputs/figures/analisis/07_tipos_escena.png`
+>
+
+![Figura_17_tipologia_escenas](../outputs/figures/tesis/Figura_17_tipologia_escenas.png)
 
 Un resultado relevante para la interpretación conjunta es que la cobertura y el conteo son
 **indicadores prácticamente independientes**: entre las imágenes aptas, su correlación es
@@ -157,7 +172,9 @@ entre tramos francamente rocosos y tramos de suelo o arena**, con concentracione
 puntuales de roca grande que alcanzan hasta el 40 % de las imágenes de un tramo.
 
 > **Figura 18.** Cobertura y presencia de roca grande a lo largo del recorrido.
-> `outputs/figures/analisis/06_temporal_recorrido.png`
+>
+
+![Figura_18_variacion_recorrido](../outputs/figures/tesis/Figura_18_variacion_recorrido.png)
 
 Esta lectura responde de forma directa a la pregunta planteada en la introducción sobre en
 qué tramos del trayecto se concentra la roca visible. Debe interpretarse como una
@@ -183,7 +200,9 @@ máscaras colaborativas empleadas en el análisis principal (Figura 19):
 | Imágenes con roca grande | 13,7 % | 16,5 % |
 
 > **Figura 19.** Comparación de la cobertura entre etiquetas colaborativas y de experto.
-> `outputs/figures/analisis/05_validacion_experto.png`
+>
+
+![Figura_19_validacion_experto](../outputs/figures/tesis/Figura_19_validacion_experto.png)
 
 La discrepancia es sistemática y de gran magnitud en la cobertura, mientras que la
 presencia de roca grande y el conteo resultan comparables (mediana de 2 rocas frente a 1).
@@ -202,7 +221,9 @@ absoluto medio de 2,7 rocas (Figura 20). El modelo tiende a subdividir una misma
 según su textura interna y, en otras escenas, a no detectar bloques de bajo contraste.
 
 > **Figura 20.** Matriz de acuerdo entre el conteo clásico y el modelo general.
-> `outputs/figures/analisis/11_matriz_acuerdo.png`
+>
+
+![Figura_20_matriz_acuerdo](../outputs/figures/tesis/Figura_20_matriz_acuerdo.png)
 
 **Modelo entrenado con las propias máscaras.** Se entrenó un segmentador DeepLabV3 por
 aprendizaje por transferencia para distinguir roca de no-roca, usando las máscaras de
@@ -211,7 +232,7 @@ máscara predicha se recalculó la cobertura y se comparó con la derivada de la
 humana (Figura 21). Los resultados se reportan en el Cuadro 3.
 
 > **Figura 21.** Cobertura estimada por el modelo frente a la derivada de la anotación humana.
-> `outputs/figures/analisis/12_cobertura_modelo_vs_humano.png`
+> *(figura pendiente: se genera al terminar el entrenamiento)*
 
 > **Cuadro 3.** *(Pendiente de completar con la ejecución en configuración ampliada; la
 > prueba preliminar reducida arrojó IoU medio de 0,79, IoU de la clase roca de 0,73 y una
@@ -271,7 +292,9 @@ transformada de distancia presenta varias crestas y la división de aguas la sub
 aunque geológicamente corresponda a una sola unidad (Figura 22).
 
 > **Figura 22.** Caso de subdivisión en una escena con regiones alargadas y cóncavas.
-> `outputs/figures/pipeline/06_NLB_614913932EDR_F0761384NCAM00294M1.png`
+>
+
+![Figura_22_subdivision_afloramiento](../outputs/figures/tesis/Figura_22_subdivision_afloramiento.png)
 
 La calibración de los parámetros permitió acotar el efecto sin eliminarlo. El ajuste
 adoptado (separación mínima entre máximos de 15 píxeles y suavizado de la transformada de
