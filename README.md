@@ -122,7 +122,9 @@ src/                       # módulos del pipeline (funciones puras, parámetros
 scripts/                   # ejecución reproducible (pipeline, figuras, análisis)
 notebooks/                 # exploraciones de aprendizaje automático
 outputs/results.csv        # 24 indicadores por imagen (16 064 filas)
-docs/                      # informe de avance y cronograma
+outputs/figures/tesis/     # figuras numeradas en formato tesis
+docs/                      # capítulos de resultados y discusión, correcciones a la
+                           #   propuesta, pies de figura, informe de avance y cronograma
 ```
 
 ---

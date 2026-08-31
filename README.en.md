@@ -120,7 +120,9 @@ src/                       # pipeline modules (pure functions, explicit paramete
 scripts/                   # reproducible execution (pipeline, figures, analysis)
 notebooks/                 # machine-learning explorations
 outputs/results.csv        # 24 indicators per image (16,064 rows)
-docs/                      # progress report and schedule (in Spanish)
+outputs/figures/tesis/     # numbered thesis-format figures
+docs/                      # results and discussion chapters, corrections to the
+                           #   proposal, figure captions, progress report and schedule
 ```
 
 ---
