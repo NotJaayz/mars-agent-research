@@ -231,13 +231,34 @@ AI4Mars como etiquetas y reservando conjuntos de validación y prueba. A partir 
 máscara predicha se recalculó la cobertura y se comparó con la derivada de la máscara
 humana (Figura 21). Los resultados se reportan en el Cuadro 3.
 
-> **Figura 21.** Cobertura estimada por el modelo frente a la derivada de la anotación humana.
-> *(figura pendiente: se genera al terminar el entrenamiento)*
+El entrenamiento empleó 2 000 imágenes, con 400 de validación y 400 de prueba, muestreadas
+de forma equilibrada entre escenas con y sin roca. Se ejecutó durante seis épocas a una
+resolución de 512 píxeles en un computador portátil con aceleración por GPU integrada, con
+un coste aproximado de trece minutos por época. Los píxeles sin etiqueta se excluyeron
+tanto de la función de pérdida como del cálculo de la métrica.
 
-> **Cuadro 3.** *(Pendiente de completar con la ejecución en configuración ampliada; la
-> prueba preliminar reducida arrojó IoU medio de 0,79, IoU de la clase roca de 0,73 y una
-> correlación de 0,84 entre la cobertura predicha y la humana, con error absoluto medio de
-> 9,9 puntos porcentuales.)*
+> **Cuadro 3.** Desempeño del segmentador DeepLabV3 en el conjunto de prueba y acuerdo del
+> indicador de cobertura derivado de sus predicciones.
+
+| Medida | Valor |
+|---|---:|
+| IoU de la clase no-roca | 0,955 |
+| IoU de la clase roca | 0,925 |
+| IoU medio | **0,940** |
+| Correlación de la cobertura predicha con la humana (n = 200) | **0,950** |
+| Error absoluto medio de la cobertura | 4,3 puntos porcentuales |
+
+El modelo alcanza un IoU medio de 0,940 sobre imágenes no vistas durante el entrenamiento,
+y la cobertura calculada a partir de sus predicciones se correlaciona en 0,950 con la
+obtenida de la anotación humana, con un error absoluto medio de apenas 4,3 puntos
+porcentuales. La Figura 21 muestra que los puntos se agrupan estrechamente en torno a la
+recta de igualdad; las discrepancias mayores se concentran en escenas de cobertura total,
+donde el modelo tiende a quedarse por debajo.
+
+![Figura_21_cobertura_modelo_vs_humano](../outputs/figures/tesis/Figura_21_cobertura_modelo_vs_humano.png)
+
+> **Figura 21.** Cobertura estimada por el modelo entrenado frente a la derivada de la
+> anotación humana, sobre las 200 imágenes del conjunto de prueba.
 
 ---
 

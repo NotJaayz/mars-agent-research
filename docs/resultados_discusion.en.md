@@ -224,13 +224,33 @@ learning to distinguish rock from non-rock, using the AI4Mars masks as labels an
 validation and test sets. From the predicted mask, coverage was recomputed and compared
 with the one derived from the human mask (Figure 21). Results are reported in Table 3.
 
-> **Figure 21.** Coverage estimated by the model versus that derived from human annotation.
-> *(figura pendiente: se genera al terminar el entrenamiento)*
+Training used 2,000 images, with 400 for validation and 400 for testing, sampled in a
+balanced way between scenes with and without rock. It ran for six epochs at a resolution of
+512 pixels on a laptop with integrated GPU acceleration, at a cost of approximately thirteen
+minutes per epoch. Unlabelled pixels were excluded both from the loss function and from the
+metric computation.
 
-> **Table 3.** *(To be completed with the run in the extended configuration; the reduced
-> preliminary test yielded a mean IoU of 0.79, an IoU of 0.73 for the rock class, and a
-> correlation of 0.84 between predicted and human coverage, with a mean absolute error of
-> 9.9 percentage points.)*
+> **Table 3.** Performance of the DeepLabV3 segmenter on the test set and agreement of the
+> coverage indicator derived from its predictions.
+
+| Measure | Value |
+|---|---:|
+| IoU of the non-rock class | 0.955 |
+| IoU of the rock class | 0.925 |
+| Mean IoU | **0.940** |
+| Correlation of predicted with human coverage (n = 200) | **0.950** |
+| Mean absolute error of coverage | 4.3 percentage points |
+
+The model reaches a mean IoU of 0.940 on images unseen during training, and the coverage
+computed from its predictions correlates at 0.950 with the one obtained from human
+annotation, with a mean absolute error of just 4.3 percentage points. Figure 21 shows that
+the points cluster tightly around the identity line; the largest discrepancies concentrate
+in scenes of total coverage, where the model tends to fall short.
+
+![Figura_21_cobertura_modelo_vs_humano](../outputs/figures/tesis/Figura_21_cobertura_modelo_vs_humano.png)
+
+> **Figure 21.** Coverage estimated by the trained model versus that derived from human
+> annotation, over the 200 test-set images.
 
 ---
 

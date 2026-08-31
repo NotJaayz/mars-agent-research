@@ -136,6 +136,8 @@ representative images.
 > the matching cases, which account for 44% of the total. Cells above the diagonal correspond
 > to overcounting by the model and those below to undercounting. Source: own elaboration.
 
+![Figura_21_cobertura_modelo_vs_humano](../outputs/figures/tesis/Figura_21_cobertura_modelo_vs_humano.png)
+
 **Figure 21.** *Coverage estimated by the trained model versus that derived from human annotation.*
 
 > Note. Each point is a test-set image, not used during training. The horizontal axis gives

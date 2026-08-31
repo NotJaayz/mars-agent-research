@@ -28,6 +28,8 @@ outputs/*.csv
 !outputs/.gitkeep
 # results.csv es el entregable principal (E4): se versiona (1 MB).
 !outputs/results.csv
+# Resultados pequeños que respaldan figuras del documento.
+!outputs/cobertura_modelo_vs_humano.csv
 
 # ===== Entorno conda exportado con builds locales =====
 environment.lock.yml

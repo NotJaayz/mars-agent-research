@@ -142,6 +142,8 @@ documentar al menos cinco imágenes representativas.
 > diagonal corresponden a sobreconteo del modelo y las situadas por debajo a subconteo.
 > Fuente: elaboración propia.
 
+![Figura_21_cobertura_modelo_vs_humano](../outputs/figures/tesis/Figura_21_cobertura_modelo_vs_humano.png)
+
 **Figura 21.** *Cobertura estimada por el modelo entrenado frente a la derivada de la anotación humana.*
 
 > Nota. Cada punto es una imagen del conjunto de prueba, no empleada durante el

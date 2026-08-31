@@ -95,9 +95,12 @@ explored whether a model could predict the indicators directly from the image:
   same band only **44%** of the time (rank correlation 0.57): it segments by appearance
   and fragments a single rock according to its internal texture. A general model without
   domain-specific tuning does not reproduce the count.
-- **DeepLabV3 (transfer learning, trained on the masks themselves).** In a reduced
-  preliminary run: **mean IoU 0.79** and a **correlation of 0.84** between the coverage
-  estimated by the model and the one derived from human masks.
+- **DeepLabV3 (transfer learning, trained on the masks themselves).** Trained on 2,000
+  images for six epochs on local hardware: **mean IoU 0.940** on the test set (rock-class
+  IoU 0.925) and a **correlation of 0.950** between the coverage estimated by the model and
+  the one derived from human masks, with a mean absolute error of 4.3 percentage points. A
+  model that only sees the image therefore reproduces the coverage indicator with notable
+  fidelity.
 
 ---
 

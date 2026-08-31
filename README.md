@@ -98,8 +98,11 @@ modelo podría predecir los indicadores a partir de la imagen:
   apariencia y fragmenta una roca según su textura interna. Un modelo general sin ajuste
   al dominio no reproduce el conteo.
 - **DeepLabV3 (aprendizaje por transferencia, entrenado con las propias máscaras).**
-  En una prueba preliminar reducida: **IoU medio 0,79** y **correlación 0,84** entre la
-  cobertura estimada por el modelo y la derivada de las máscaras humanas.
+  Entrenado con 2 000 imágenes durante seis épocas en equipo local: **IoU medio 0,940** en
+  el conjunto de prueba (IoU de la clase roca 0,925) y **correlación 0,950** entre la
+  cobertura estimada por el modelo y la derivada de las máscaras humanas, con un error
+  absoluto medio de 4,3 puntos porcentuales. Un modelo que solo ve la imagen reproduce, por
+  tanto, el indicador de cobertura con notable fidelidad.
 
 ---
 

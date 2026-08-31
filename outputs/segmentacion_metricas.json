@@ -1,0 +1,74 @@
+{
+  "config": {
+    "n_train": 2000,
+    "n_val": 400,
+    "n_test": 400,
+    "epochs": 6,
+    "img_size": 512,
+    "batch": 4,
+    "lr": 0.0001,
+    "seed": 0,
+    "n_coverage": 200,
+    "device": "mps"
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "loss": 0.3945,
+      "iou_no_roca": 0.9274,
+      "iou_roca": 0.8991,
+      "miou": 0.9132,
+      "seconds": 727
+    },
+    {
+      "epoch": 2,
+      "loss": 0.244,
+      "iou_no_roca": 0.9581,
+      "iou_roca": 0.941,
+      "miou": 0.9496,
+      "seconds": 741
+    },
+    {
+      "epoch": 3,
+      "loss": 0.1885,
+      "iou_no_roca": 0.9097,
+      "iou_roca": 0.8739,
+      "miou": 0.8918,
+      "seconds": 783
+    },
+    {
+      "epoch": 4,
+      "loss": 0.1705,
+      "iou_no_roca": 0.9528,
+      "iou_roca": 0.934,
+      "miou": 0.9434,
+      "seconds": 780
+    },
+    {
+      "epoch": 5,
+      "loss": 0.1286,
+      "iou_no_roca": 0.9384,
+      "iou_roca": 0.9091,
+      "miou": 0.9238,
+      "seconds": 844
+    },
+    {
+      "epoch": 6,
+      "loss": 0.1219,
+      "iou_no_roca": 0.9489,
+      "iou_roca": 0.9263,
+      "miou": 0.9376,
+      "seconds": 1948
+    }
+  ],
+  "test": {
+    "iou_no_roca": 0.9549,
+    "iou_roca": 0.925,
+    "miou": 0.9399
+  },
+  "coverage": {
+    "n": 200,
+    "pearson_r": 0.9504,
+    "mae_pp": 4.3
+  }
+}
