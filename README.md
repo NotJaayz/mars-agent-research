@@ -147,6 +147,13 @@ bibliotecas y los parámetros usados junto al CSV de resultados.
 
 ---
 
+## Documentos
+
+- **[Resultados, discusión y limitaciones](docs/resultados_discusion.md)** — borrador de
+  los capítulos, con los resultados sobre las 16 064 imágenes, la interpretación de los
+  hallazgos y las limitaciones del estudio.
+- [Informe de avance](docs/informe_avance.md) · [Cronograma](docs/cronograma.md)
+
 ## Alcance
 
 Subconjunto de estudio: **MSL NavCam (Curiosity)**, etiquetas de entrenamiento.

@@ -145,6 +145,14 @@ alongside the results CSV.
 
 ---
 
+## Documents
+
+- **[Results, discussion and limitations](docs/resultados_discusion.en.md)** — draft of the
+  chapters, with the results over the 16,064 images, the interpretation of the findings and
+  the limitations of the study.
+- Progress report and schedule (in Spanish): [informe de avance](docs/informe_avance.md) ·
+  [cronograma](docs/cronograma.md)
+
 ## Scope
 
 Study subset: **MSL NavCam (Curiosity)**, training labels. The project does not generate
