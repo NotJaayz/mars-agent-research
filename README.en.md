@@ -104,6 +104,27 @@ explored whether a model could predict the indicators directly from the image:
 
 ---
 
+## Application
+
+The final deliverable is a desktop application bringing together the indicators, the risk
+alerts and a scene explorer. It requires no additional dependencies:
+
+```bash
+python app.py
+```
+
+Four sections: **Summary** (indicators and distributions), **Alerts** (levels and the rule
+catalogue with its justification), **Scene explorer** (original image, terrain annotation
+and detected rocks for each flagged scene) and **Geology** (features of scientific interest
+in the Perseverance set, including mineral veins).
+
+An equivalent single-file HTML panel is also available for sharing with people who do not
+run code: generate it with `python scripts/make_dashboard.py` and open it by double-click,
+with no server or connection required.
+
+Institutional logos are loaded from `assets/` when present; see
+[assets/README.md](assets/README.md).
+
 ## Repository structure
 
 ```

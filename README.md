@@ -106,6 +106,27 @@ modelo podría predecir los indicadores a partir de la imagen:
 
 ---
 
+## Aplicación
+
+El producto final es una aplicación de escritorio que reúne los indicadores, las alertas de
+riesgo y un explorador de escenas. No requiere instalar dependencias adicionales:
+
+```bash
+python app.py
+```
+
+Cuatro secciones: **Resumen** (indicadores y distribuciones), **Alertas** (niveles y
+catálogo de reglas con su justificación), **Explorador de escenas** (imagen original,
+anotación del terreno y rocas detectadas para cada escena señalada) y **Geología**
+(rasgos de interés científico en el conjunto de Perseverance, entre ellos las vetas).
+
+Existe además un panel equivalente en un único archivo HTML, pensado para compartir con
+quien no ejecute código: se genera con `python scripts/make_dashboard.py` y se abre con
+doble clic, sin servidor ni conexión.
+
+Los logotipos institucionales se cargan desde `assets/` si están presentes; véase
+[assets/README.md](assets/README.md).
+
 ## Estructura del repositorio
 
 ```
