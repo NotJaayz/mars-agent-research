@@ -87,3 +87,6 @@ outputs/validacion_manual/imagenes/
 !outputs/alertas_catalogo.csv
 !outputs/alertas_resumen.json
 !outputs/geologia_m2020_resumen.json
+
+# Figuras de vetas: se regeneran con scripts/make_vein_figures.py
+outputs/figures/vetas/

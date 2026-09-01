@@ -2,7 +2,8 @@
   "n_mascaras": 8497,
   "con_veta": 294,
   "pct_con_veta": 3.46,
-  "veta_destacada": 112,
+  "veta_probable": 150,
+  "veta_dudosa": 69,
   "pct_area_veta_media": 0.2132,
   "con_float_rock": 5197,
   "con_guijarros": 6361

@@ -417,7 +417,8 @@ class Panel(ctk.CTk):
         fila = ctk.CTkFrame(v, fg_color=FONDO); fila.pack(fill="x", pady=(0, 14))
         for val, et in [(_miles(len(g)), "escenas analizadas"),
                         (_miles(con_veta), f"con vetas ({100*con_veta/len(g):.1f} %)"),
-                        (str(int((g.alerta_veta == "veta_destacada").sum())), "con veta destacada"),
+                        (str(int((g.alerta_veta == "veta_probable").sum())), "veta probable (fina y alargada)"),
+                        (str(int((g.alerta_veta == "veta_dudosa").sum())), "anotación dudosa"),
                         (_miles(int((g.pct_float_rock > 0).sum())), "con bloques sueltos")]:
             self._kpi(fila, val, et).pack(side="left", expand=True, fill="both", padx=4)
 
@@ -427,9 +428,13 @@ class Panel(ctk.CTk):
         ctk.CTkLabel(nota, text_color=TEXTO, justify="left", wraplength=900,
                      font=ctk.CTkFont(size=11),
                      text=("Las vetas son depósitos minerales precipitados por circulación de "
-                           "agua, de modo que su presencia señala interés científico. Aparecen "
-                           "en una fracción reducida de las escenas, lo que es esperable y no "
-                           "una deficiencia: una alerta útil es, por definición, poco frecuente. "
+                           "agua, de modo que su presencia señala interés científico.\n\n"
+                           "El aviso se gradúa por verosimilitud y no por extensión: una veta "
+                           "real es delgada y alargada, de modo que una anotación que cubre gran "
+                           "parte de la escena indica error de anotación. La verificación visual "
+                           "confirmó ese criterio —las anotaciones extensas incluyen cielo y "
+                           "cuerpo del róver, con elongación en torno a 3 frente a 8 en las "
+                           "plausibles—, y 25 de las 294 escenas quedan marcadas como dudosas.\n\n"
                            "Este conjunto queda fuera del subconjunto declarado en la "
                            "metodología y se reporta como demostración de extensibilidad.")
                      ).pack(anchor="w", padx=16, pady=12)

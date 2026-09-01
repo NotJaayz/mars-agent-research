@@ -107,7 +107,7 @@
     <h2>Rasgos geológicos (Perseverance)</h2>
     <p class="hint">Extensión al conjunto Mars 2020, cuya taxonomía distingue rasgos que la escala de navegación no recoge, entre ellos las vetas minerales.</p>
     <div class="grid kpis" id="k_geologia"></div>
-    <div class="nota"><strong>Sobre las vetas:</strong> son depósitos minerales precipitados por circulación de agua, de modo que su presencia señala interés científico. Aparecen en una fracción reducida de las escenas, lo que es esperable y no una deficiencia del análisis: una alerta útil es, por definición, poco frecuente. Este conjunto queda fuera del subconjunto declarado en la metodología y se reporta como demostración de extensibilidad.</div>
+    <div class="nota"><strong>Sobre las vetas:</strong> son depósitos minerales precipitados por circulación de agua, de modo que su presencia señala interés científico. El aviso se gradúa por <em>verosimilitud</em> y no por extensión: una veta real es delgada y alargada, de modo que una anotación que cubre gran parte de la escena indica error de anotación. La verificación visual lo confirmó —las anotaciones extensas incluyen cielo y cuerpo del róver, con elongación en torno a 3 frente a 8 en las plausibles—, y 25 de las 294 escenas quedan marcadas como dudosas. Este conjunto queda fuera del subconjunto declarado en la metodología y se reporta como demostración de extensibilidad.</div>
   </section>
 
   <footer>
@@ -251,7 +251,8 @@ if (D.geologia){
   $('#k_geologia').innerHTML = [
     [fmt(g.n_mascaras), 'escenas analizadas'],
     [fmt(g.con_veta), `con vetas (${g.pct_con_veta} %)`],
-    [fmt(g.veta_destacada), 'con veta destacada'],
+    [fmt(g.veta_probable), 'veta probable (fina y alargada)'],
+    [fmt(g.veta_dudosa), 'anotación dudosa'],
     [fmt(g.con_float_rock), 'con bloques sueltos'],
   ].map(([n,l]) => `<div class="card kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
 }
