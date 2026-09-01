@@ -37,7 +37,7 @@ Sobre **16 064 imágenes** de MSL NavCam (Curiosity) con máscara disponible:
 |---|---|
 | Imágenes con roca visible | **10 817 (67 %)** |
 | Imágenes con roca grande (aptas para conteo) | 2 193 (14 %) |
-| Rocas individuales contadas | **5 375** (mediana 2 por imagen, máx. 23) |
+| Rocas individuales contadas | **4 204** (mediana 1 por imagen, máx. 20) |
 | Cobertura mediana (sobre píxeles etiquetados) | 96,8 % |
 | Cobertura mediana (sobre la imagen completa) | 42,0 % |
 
@@ -94,7 +94,7 @@ El método principal es clásico e interpretable. Como **línea futura**, se exp
 modelo podría predecir los indicadores a partir de la imagen:
 
 - **Segment Anything / FastSAM (sin entrenar).** Coincide con el conteo clásico en la
-  misma banda solo el **44 %** de las veces (correlación de rangos 0,57): segmenta por
+  misma banda solo el **52 %** de las veces (correlación de rangos 0,45): segmenta por
   apariencia y fragmenta una roca según su textura interna. Un modelo general sin ajuste
   al dominio no reproduce el conteo.
 - **DeepLabV3 (aprendizaje por transferencia, entrenado con las propias máscaras).**
@@ -157,8 +157,12 @@ bibliotecas y los parámetros usados junto al CSV de resultados.
 - **[Resultados, discusión y limitaciones](docs/resultados_discusion.md)** — borrador de
   los capítulos, con los resultados sobre las 16 064 imágenes, la interpretación de los
   hallazgos y las limitaciones del estudio.
+- **[Resumen y conclusiones](docs/conclusiones.md)** — resumen del trabajo y capítulo de
+  conclusiones.
 - [Figuras y pies de figura](docs/figuras_tesis.md) — figuras numeradas en formato tesis
   con sus pies de figura.
+- [Validación manual por bandas](docs/validacion_manual.md) — protocolo de la validación
+  con conteo humano.
 - [Correcciones a la propuesta](docs/correcciones_propuesta.md) — lista de cambios
   concretos a aplicar al documento de tesis (en español).
 - [Informe de avance](docs/informe_avance.md) · [Cronograma](docs/cronograma.md)

@@ -74,3 +74,8 @@ Thumbs.db
 
 # ===== Guía local del proyecto (no se publica) =====
 CLAUDE.md
+
+# ===== Kit de validación manual =====
+# Las imágenes se regeneran con scripts/make_validation_kit.py; los CSV sí se versionan
+# porque plantilla.csv contiene las respuestas humanas de la validación.
+outputs/validacion_manual/imagenes/

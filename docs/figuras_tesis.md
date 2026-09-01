@@ -92,7 +92,7 @@ documentar al menos cinco imágenes representativas.
 
 **Figura 16.** *Distribución tamaño–frecuencia de las rocas contadas.*
 
-> Nota. Clasificación de las 5 297 rocas medidas según su área relativa al tamaño de la
+> Nota. Clasificación de las 4 141 rocas medidas según su área relativa al tamaño de la
 > imagen. La forma decreciente —predominio de rocas pequeñas y disminución de la frecuencia
 > al aumentar el tamaño— coincide cualitativamente con las distribuciones descritas en los
 > estudios de abundancia de rocas en sitios de aterrizaje, si bien aquí los tamaños son
@@ -138,7 +138,7 @@ documentar al menos cinco imágenes representativas.
 > Nota. Cada celda indica el número de imágenes, de una muestra de cincuenta con roca
 > grande, cuyo conteo cae en la banda de la fila según el procedimiento clásico y en la de
 > la columna según el modelo general sin entrenamiento específico. La diagonal reúne los
-> casos de coincidencia, que representan el 44 % del total. Las celdas por encima de la
+> casos de coincidencia, que representan el 52 % del total. Las celdas por encima de la
 > diagonal corresponden a sobreconteo del modelo y las situadas por debajo a subconteo.
 > Fuente: elaboración propia.
 

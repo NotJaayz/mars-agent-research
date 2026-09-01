@@ -36,7 +36,7 @@ Over **16,064 images** from MSL NavCam (Curiosity) with an available mask:
 |---|---|
 | Images containing visible rock | **10,817 (67%)** |
 | Images with big rock (eligible for counting) | 2,193 (14%) |
-| Individual rocks counted | **5,375** (median 2 per image, max 23) |
+| Individual rocks counted | **4,204** (median 1 per image, max 20) |
 | Median coverage (over labelled pixels) | 96.8% |
 | Median coverage (over the whole image) | 42.0% |
 
@@ -92,7 +92,7 @@ The main method is classical and interpretable. As a **future line of work**, we
 explored whether a model could predict the indicators directly from the image:
 
 - **Segment Anything / FastSAM (zero-shot).** Agrees with the classical count in the
-  same band only **44%** of the time (rank correlation 0.57): it segments by appearance
+  same band only **52%** of the time (rank correlation 0.45): it segments by appearance
   and fragments a single rock according to its internal texture. A general model without
   domain-specific tuning does not reproduce the count.
 - **DeepLabV3 (transfer learning, trained on the masks themselves).** Trained on 2,000
@@ -155,8 +155,12 @@ alongside the results CSV.
 - **[Results, discussion and limitations](docs/resultados_discusion.en.md)** — draft of the
   chapters, with the results over the 16,064 images, the interpretation of the findings and
   the limitations of the study.
+- **[Abstract and conclusions](docs/conclusiones.en.md)** — summary of the work and the
+  conclusions chapter.
 - [Figures and captions](docs/figuras_tesis.en.md) — numbered thesis-format figures with
   their captions.
+- Manual band-based validation protocol (in Spanish):
+  [validación manual](docs/validacion_manual.md)
 - Corrections to the proposal (in Spanish):
   [correcciones a la propuesta](docs/correcciones_propuesta.md)
 - Progress report and schedule (in Spanish): [informe de avance](docs/informe_avance.md) ·

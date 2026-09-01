@@ -88,7 +88,7 @@ representative images.
 
 **Figure 16.** *Size–frequency distribution of the counted rocks.*
 
-> Note. Classification of the 5,297 measured rocks by their area relative to the image size.
+> Note. Classification of the 4,141 measured rocks by their area relative to the image size.
 > The decreasing shape — predominance of small rocks and falling frequency as size increases
 > — agrees qualitatively with the distributions described in landing-site rock-abundance
 > studies, although sizes here are relative to the field of view rather than metric
@@ -133,7 +133,7 @@ representative images.
 > Note. Each cell gives the number of images, from a sample of fifty containing big rock,
 > whose count falls in the row band according to the classical procedure and in the column
 > band according to the general model without domain-specific training. The diagonal collects
-> the matching cases, which account for 44% of the total. Cells above the diagonal correspond
+> the matching cases, which account for 52% of the total. Cells above the diagonal correspond
 > to overcounting by the model and those below to undercounting. Source: own elaboration.
 
 ![Figura_21_cobertura_modelo_vs_humano](../outputs/figures/tesis/Figura_21_cobertura_modelo_vs_humano.png)

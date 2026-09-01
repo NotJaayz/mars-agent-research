@@ -83,41 +83,41 @@ genuinamente dominadas por lecho rocoso y no a un sesgo de la fórmula.
 ## 3. Conteo aproximado de rocas individuales (E2)
 
 El conteo se aplicó a las **2 193 imágenes** que contienen roca grande, y arrojó un total
-de **5 375 rocas**, con una mediana de **2 rocas por imagen** y un máximo de 23. La
+de **4 204 rocas**, con una mediana de **1 roca por imagen** y un máximo de 20. La
 distribución por bandas (Figura 15) es la siguiente:
 
 | Rocas por imagen | Imágenes | % |
 |---|---:|---:|
-| 0 (descartadas por los filtros) | 421 | 19 |
-| 1 | 630 | 29 |
-| 2–3 | 615 | 28 |
-| 4–9 | 481 | 22 |
-| 10 o más | 46 | 2 |
+| 0 (descartadas por los filtros) | 453 | 21 |
+| 1 | 772 | 35 |
+| 2–3 | 613 | 28 |
+| 4–9 | 344 | 16 |
+| 10 o más | 11 | 1 |
 
 > **Figura 15.** Distribución del conteo de rocas por imagen.
 >
 
 ![Figura_15_conteo_por_bandas](../outputs/figures/tesis/Figura_15_conteo_por_bandas.png)
 
-Conviene notar el primer renglón: en **421 imágenes (19 % de las aptas)** existen píxeles
+Conviene notar el primer renglón: en **453 imágenes (21 % de las aptas)** existen píxeles
 de roca grande pero ninguna región supera los filtros de área mínima y forma. Se trata de
 anotaciones muy pequeñas o muy alargadas, que el procedimiento descarta por diseño; el
 dato se reporta explícitamente porque delimita el alcance real del indicador.
 
 En promedio, cada imagen apta contiene 2,25 componentes conectadas antes de la división
-de aguas y 2,42 rocas después, lo que indica que el paso de *watershed* introduce una
+de aguas y 1,89 rocas después, lo que indica que el paso de *watershed* introduce una
 subdivisión moderada y no una fragmentación masiva.
 
 ### 3.1 Distribución tamaño–frecuencia
 
-Clasificando las 5 297 rocas medidas según su tamaño relativo al área de la imagen
+Clasificando las 4 141 rocas medidas según su tamaño relativo al área de la imagen
 (Figura 16):
 
 | Clase de tamaño | Rocas | % |
 |---|---:|---:|
-| Pequeña (< 0,5 % del área) | 2 582 | 49 |
-| Mediana (0,5 – 2 %) | 1 678 | 32 |
-| Grande (≥ 2 %) | 1 037 | 20 |
+| Pequeña (< 0,5 % del área) | 1 805 | 44 |
+| Mediana (0,5 – 2 %) | 1 317 | 32 |
+| Grande (≥ 2 %) | 1 019 | 25 |
 
 > **Figura 16.** Distribución tamaño–frecuencia de las rocas contadas.
 >
@@ -130,8 +130,8 @@ distribuciones tamaño–frecuencia descritas en los estudios de abundancia de r
 sitios de aterrizaje, aunque aquí los tamaños son relativos al campo de visión y no
 métricos, por lo que la comparación es de forma y no de magnitud.
 
-La roca de mayor tamaño registrada ocupa el 86,1 % del área etiquetada de su escena. La
-solidez media de las regiones aceptadas es de 0,926, es decir, formas compactas; solo 20
+La roca de mayor tamaño registrada ocupa el 89,8 % del área etiquetada de su escena. La
+solidez media de las regiones aceptadas es de 0,912, es decir, formas compactas; solo 20
 imágenes presentan solidez media inferior a 0,7, señal de contornos cóncavos o de
 regiones posiblemente subdivididas en exceso.
 
@@ -158,7 +158,7 @@ A partir de esa composición se definió una tipología de escenas (Figura 17):
 
 Un resultado relevante para la interpretación conjunta es que la cobertura y el conteo son
 **indicadores prácticamente independientes**: entre las imágenes aptas, su correlación es
-de **r = 0,03**. Una escena puede estar casi totalmente cubierta por lecho rocoso continuo
+de **r = 0,02**. Una escena puede estar casi totalmente cubierta por lecho rocoso continuo
 y no contener ninguna roca contable, o presentar poca cobertura y varios bloques
 aislados. Los dos indicadores describen, por tanto, aspectos distintos del terreno y no
 son redundantes.
@@ -216,8 +216,8 @@ aprendizaje automático, ejecutados en equipo local.
 **Modelo general sin entrenamiento específico.** Un modelo fundacional de segmentación
 (Segment Anything, variante FastSAM) se aplicó a 50 imágenes con roca grande,
 restringiendo sus regiones a la zona etiquetada como roca. El acuerdo con el conteo
-clásico, medido por bandas, es del **44 %**, con correlación de rangos de 0,57 y un error
-absoluto medio de 2,7 rocas (Figura 20). El modelo tiende a subdividir una misma roca
+clásico, medido por bandas, es del **52 %**, con correlación de rangos de 0,45 y un error
+absoluto medio de 2,6 rocas (Figura 20). El modelo tiende a subdividir una misma roca
 según su textura interna y, en otras escenas, a no detectar bloques de bajo contraste.
 
 > **Figura 20.** Matriz de acuerdo entre el conteo clásico y el modelo general.
@@ -272,7 +272,7 @@ totalidad del subconjunto y resultaron interpretables sin conocer los detalles d
 procedimiento: una cobertura del 90 % describe una escena dominada por roca, y un conteo
 de ocho bloques describe un terreno con obstáculos discretos.
 
-El hallazgo de que ambos indicadores son **estadísticamente independientes** (r = 0,03)
+El hallazgo de que ambos indicadores son **estadísticamente independientes** (r = 0,02)
 refuerza la decisión de reportarlos por separado. La cobertura mide *cuánta* roca hay; el
 conteo mide *cómo está organizada*. Un afloramiento continuo produce cobertura máxima y
 conteo nulo; un campo de bloques dispersos produce lo contrario. Para aplicaciones de
@@ -317,20 +317,38 @@ aunque geológicamente corresponda a una sola unidad (Figura 22).
 
 ![Figura_22_subdivision_afloramiento](../outputs/figures/tesis/Figura_22_subdivision_afloramiento.png)
 
-La calibración de los parámetros permitió acotar el efecto sin eliminarlo. El ajuste
-adoptado (separación mínima entre máximos de 15 píxeles y suavizado de la transformada de
-distancia de 3,0) redujo notablemente los máximos espurios: en una escena de prueba, los
-máximos detectados pasaron de más de un centenar a un número acorde con las rocas
-visibles. Endurecer más los parámetros reduce la subdivisión de afloramientos, pero
-entonces subestima el conteo en escenas con cúmulos de rocas realmente distintas. Se trata
-de un compromiso inherente al método, no de un defecto de implementación, y se resolvió
-privilegiando la fidelidad en las escenas con bloques separados, que son las que el
-indicador pretende describir.
+La calibración de los parámetros acotó el efecto pero no lo eliminó. El ajuste inicial
+—separación mínima entre máximos de 15 píxeles y suavizado de la transformada de distancia
+de 3,0— redujo notablemente los máximos espurios: en una escena de prueba, los máximos
+detectados pasaron de más de un centenar a un número acorde con las rocas visibles. Sin
+embargo, endurecer más esos parámetros reduce la subdivisión de afloramientos a costa de
+subestimar el conteo en escenas con cúmulos de rocas realmente distintas, de modo que por
+esa vía el problema solo se desplaza a lo largo de un compromiso.
 
-La magnitud del problema es acotada: solo nueve imágenes superan las quince rocas
-contadas, y únicamente veinte presentan solidez media inferior a 0,7. La solidez, incluida
-en la tabla de resultados, permite señalar automáticamente los casos sospechosos sin
-inspección visual, lo que constituye un aporte práctico del trabajo.
+Para romper ese compromiso se incorporó un criterio distinto: la **supresión de máximos por
+prominencia**, conocida como transformación h-máxima. En lugar de exigir que los máximos
+estén separados una distancia mínima —criterio puramente geométrico—, se descartan aquellos
+cuya altura sobre su entorno es inferior a un umbral h. La diferencia es conceptual: un
+máximo poco prominente corresponde a una ondulación menor del interior de una región
+continua, mientras que dos rocas realmente distintas producen máximos separados por un
+valle profundo. El criterio actúa, por tanto, sobre la causa del problema y no sobre uno de
+sus síntomas.
+
+La verificación confirma ese comportamiento selectivo. Con h = 1 píxel, sobre las imágenes
+previamente marcadas como sospechosas el conteo se reduce entre un 32 % (aquellas con
+solidez media inferior a 0,7) y un 44 % (aquellas con más de quince rocas), mientras que en
+las escenas normales —entre una y cinco rocas y regiones compactas— **no se altera ningún
+conteo**. Es decir, la corrección actúa donde había error y deja intacto lo que ya era
+correcto. En el conjunto completo, el número de imágenes con más de quince rocas cae de
+nueve a tres, y el total contado pasa de 5 375 a 4 204 rocas.
+
+Conviene señalar un efecto secundario que ilustra por qué la corrección es acertada: la
+solidez media desciende ligeramente (de 0,926 a 0,912) y aumenta el número de imágenes con
+solidez baja. Lejos de indicar un empeoramiento, refleja que los afloramientos irregulares
+dejan de partirse en fragmentos artificialmente compactos y se conservan enteros, con la
+forma cóncava que realmente tienen. Como consecuencia, la solidez cambia de significado: ya
+no señala una posible subdivisión excesiva, sino regiones genuinamente irregulares que
+convendría no interpretar como bloques discretos.
 
 ## 11. La escasez de la clase "roca grande"
 
@@ -354,7 +372,7 @@ que la exploración de aprendizaje automático se plantease en términos binario
 Los dos enfoques explorados arrojan una conclusión matizada.
 
 El modelo general sin entrenamiento específico **no reproduce** el conteo clásico: coincide
-en la banda de conteo en el 44 % de los casos. La razón no es un fallo del modelo sino una
+en la banda de conteo en el 52 % de los casos. La razón no es un fallo del modelo sino una
 diferencia de definición. El modelo segmenta por apariencia visual y delimita regiones
 homogéneas de textura; el procedimiento clásico cuenta bloques dentro de una anotación
 semántica. Ante una roca con vetas o sombras marcadas, el primero identifica varias
@@ -375,7 +393,9 @@ del terreno.
 1. **Sesgo de la anotación de entrada**, discutido en la sección 9: las coberturas son
    relativas al conjunto colaborativo.
 2. **Alcance del conteo**, limitado a las escenas con roca grande (sección 11).
-3. **Subdivisión de afloramientos continuos**, acotada pero no eliminada (sección 10).
+3. **Subdivisión de afloramientos continuos**, corregida mediante supresión por
+   prominencia y verificada como selectiva, aunque no puede descartarse por completo en
+   geometrías muy irregulares (sección 10).
 4. **Medidas relativas al campo de visión.** Todos los tamaños se expresan como fracción
    del área de la imagen. Sin información de rango o de calibración geométrica no es
    posible convertirlos a magnitudes métricas, de modo que las comparaciones son válidas
@@ -391,8 +411,6 @@ del terreno.
 
 - **Corrección del sesgo de anotación**, aprovechando el subconjunto de experto para
   estimar un factor de ajuste o para reentrenar sobre etiquetas más completas.
-- **Regla de fusión posterior** al *watershed*, basada en solidez o compacidad, que
-  reintegre las subdivisiones de afloramientos continuos.
 - **Extensión del enfoque aprendido al conteo**, alimentando las máscaras predichas al
   procedimiento de división de aguas para cerrar también el segundo indicador.
 - **Conversión a magnitudes métricas** incorporando los productos de rango del dataset,

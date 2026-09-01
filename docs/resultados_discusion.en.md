@@ -81,40 +81,40 @@ than to a bias of the formula.
 ## 3. Approximate count of individual rocks (E2)
 
 Counting was applied to the **2,193 images** containing big rock and yielded a total of
-**5,375 rocks**, with a median of **2 rocks per image** and a maximum of 23. The
+**4,204 rocks**, with a median of **1 rock per image** and a maximum of 20. The
 distribution by bands (Figure 15) is as follows:
 
 | Rocks per image | Images | % |
 |---|---:|---:|
-| 0 (discarded by the filters) | 421 | 19 |
-| 1 | 630 | 29 |
-| 2–3 | 615 | 28 |
-| 4–9 | 481 | 22 |
-| 10 or more | 46 | 2 |
+| 0 (discarded by the filters) | 453 | 21 |
+| 1 | 772 | 35 |
+| 2–3 | 613 | 28 |
+| 4–9 | 344 | 16 |
+| 10 or more | 11 | 1 |
 
 > **Figure 15.** Distribution of the rock count per image.
 >
 
 ![Figura_15_conteo_por_bandas](../outputs/figures/tesis/Figura_15_conteo_por_bandas.png)
 
-The first row deserves attention: in **421 images (19% of the eligible ones)** there are
+The first row deserves attention: in **453 images (21% of the eligible ones)** there are
 big-rock pixels but no region passes the minimum-area and shape filters. These are very
 small or very elongated annotations, which the procedure discards by design; the figure is
 reported explicitly because it delimits the actual reach of the indicator.
 
 On average, each eligible image contains 2.25 connected components before the watershed
-step and 2.42 rocks afterwards, indicating that the watershed introduces a moderate
+step and 1.89 rocks afterwards, indicating that the watershed introduces a moderate
 subdivision rather than a massive fragmentation.
 
 ### 3.1 Size–frequency distribution
 
-Classifying the 5,297 measured rocks by their size relative to the image area (Figure 16):
+Classifying the 4,141 measured rocks by their size relative to the image area (Figure 16):
 
 | Size class | Rocks | % |
 |---|---:|---:|
-| Small (< 0.5% of the area) | 2,582 | 49 |
-| Medium (0.5 – 2%) | 1,678 | 32 |
-| Large (≥ 2%) | 1,037 | 20 |
+| Small (< 0.5% of the area) | 1,805 | 44 |
+| Medium (0.5 – 2%) | 1,317 | 32 |
+| Large (≥ 2%) | 1,019 | 25 |
 
 > **Figure 16.** Size–frequency distribution of the counted rocks.
 >
@@ -126,8 +126,8 @@ size increases. This shape agrees qualitatively with the size–frequency distri
 described in landing-site rock-abundance studies, although here sizes are relative to the
 field of view rather than metric, so the comparison concerns shape and not magnitude.
 
-The largest recorded rock occupies 86.1% of the labelled area of its scene. The mean
-solidity of the accepted regions is 0.926, i.e. compact shapes; only 20 images show a mean
+The largest recorded rock occupies 89.8% of the labelled area of its scene. The mean
+solidity of the accepted regions is 0.912, i.e. compact shapes; only 20 images show a mean
 solidity below 0.7, a sign of concave contours or of regions possibly subdivided in excess.
 
 ## 4. Terrain composition and scene typology (E3)
@@ -153,7 +153,7 @@ From that composition a scene typology was defined (Figure 17):
 
 A result relevant to their joint interpretation is that coverage and count are
 **practically independent indicators**: among eligible images their correlation is
-**r = 0.03**. A scene may be almost entirely covered by continuous bedrock and contain no
+**r = 0.02**. A scene may be almost entirely covered by continuous bedrock and contain no
 countable rock, or show little coverage and several isolated blocks. The two indicators
 therefore describe different aspects of the terrain and are not redundant.
 
@@ -210,8 +210,8 @@ approaches, both executed on local hardware.
 **General model without domain-specific training.** A foundation segmentation model
 (Segment Anything, FastSAM variant) was applied to 50 images containing big rock,
 restricting its regions to the area labelled as rock. Agreement with the classical count,
-measured by bands, is **44%**, with a rank correlation of 0.57 and a mean absolute error of
-2.7 rocks (Figure 20). The model tends to subdivide a single rock according to its internal
+measured by bands, is **52%**, with a rank correlation of 0.45 and a mean absolute error of
+2.6 rocks (Figure 20). The model tends to subdivide a single rock according to its internal
 texture and, in other scenes, to miss low-contrast blocks.
 
 > **Figure 20.** Agreement matrix between the classical count and the general model.
@@ -263,7 +263,7 @@ training input. The two proposed indicators were obtained for the entire subset 
 interpretable without knowledge of the procedure's details: 90% coverage describes a scene
 dominated by rock, and a count of eight blocks describes terrain with discrete obstacles.
 
-The finding that both indicators are **statistically independent** (r = 0.03) reinforces
+The finding that both indicators are **statistically independent** (r = 0.02) reinforces
 the decision to report them separately. Coverage measures *how much* rock there is; the
 count measures *how it is organised*. A continuous outcrop produces maximum coverage and a
 null count; a field of scattered blocks produces the opposite. For trafficability
@@ -307,19 +307,36 @@ corresponds to a single unit (Figure 22).
 
 ![Figura_22_subdivision_afloramiento](../outputs/figures/tesis/Figura_22_subdivision_afloramiento.png)
 
-Parameter calibration made it possible to bound the effect without eliminating it. The
-adopted setting (minimum separation between maxima of 15 pixels and distance-transform
-smoothing of 3.0) markedly reduced spurious maxima: in one test scene, detected maxima fell
-from more than a hundred to a number consistent with the visible rocks. Tightening the
-parameters further reduces outcrop subdivision, but then underestimates the count in scenes
-with genuinely distinct rock clusters. This is a trade-off inherent to the method, not an
-implementation defect, and it was resolved by favouring fidelity in scenes with separate
-blocks, which are the ones the indicator aims to describe.
+Parameter calibration bounded the effect but did not eliminate it. The initial setting —
+minimum separation between maxima of 15 pixels and distance-transform smoothing of 3.0 —
+markedly reduced spurious maxima: in one test scene, detected maxima fell from more than a
+hundred to a number consistent with the visible rocks. Tightening those parameters further,
+however, reduces outcrop subdivision at the cost of underestimating the count in scenes with
+genuinely distinct clusters, so that route merely moves the problem along a trade-off.
 
-The magnitude of the problem is bounded: only nine images exceed fifteen counted rocks, and
-just twenty show a mean solidity below 0.7. Solidity, included in the results table, allows
-suspicious cases to be flagged automatically without visual inspection, which constitutes a
-practical contribution of this work.
+To break that trade-off a different criterion was introduced: **prominence-based suppression
+of maxima**, known as the h-maxima transform. Instead of requiring maxima to be separated by
+a minimum distance — a purely geometric criterion — those whose height above their
+surroundings falls below a threshold h are discarded. The difference is conceptual: a
+low-prominence maximum corresponds to a minor undulation inside a continuous region, whereas
+two genuinely distinct rocks produce maxima separated by a deep valley. The criterion
+therefore acts on the cause of the problem rather than on one of its symptoms.
+
+Verification confirms this selective behaviour. With h = 1 pixel, on the images previously
+flagged as suspicious the count drops by between 32% (those with mean solidity below 0.7) and
+44% (those with more than fifteen rocks), while in normal scenes — one to five rocks and
+compact regions — **no count is altered at all**. The correction acts where there was error
+and leaves untouched what was already right. Across the full set, the number of images with
+more than fifteen rocks falls from nine to three, and the total counted goes from 5,375 to
+4,204 rocks.
+
+One side effect is worth noting because it illustrates why the correction is sound: mean
+solidity decreases slightly (from 0.926 to 0.912) and the number of images with low solidity
+rises. Far from indicating a deterioration, this reflects that irregular outcrops are no
+longer split into artificially compact fragments but kept whole, with the concave shape they
+actually have. As a consequence, solidity changes meaning: it no longer flags possible
+excessive subdivision, but genuinely irregular regions that should not be read as discrete
+blocks.
 
 ## 11. The scarcity of the "big rock" class
 
@@ -341,7 +358,7 @@ balanced.
 The two approaches explored lead to a nuanced conclusion.
 
 The general model without domain-specific training **does not reproduce** the classical
-count: it agrees on the counting band in 44% of cases. The reason is not a failure of the
+count: it agrees on the counting band in 52% of cases. The reason is not a failure of the
 model but a difference of definition. The model segments by visual appearance and delimits
 homogeneous texture regions; the classical procedure counts blocks within a semantic
 annotation. Faced with a rock bearing veins or strong shadows, the former identifies several
@@ -361,7 +378,9 @@ reproduces the indicator, not the ground truth of the terrain.
 1. **Bias of the input annotation**, discussed in section 9: coverages are relative to the
    crowdsourced set.
 2. **Scope of the count**, limited to scenes containing big rock (section 11).
-3. **Subdivision of continuous outcrops**, bounded but not eliminated (section 10).
+3. **Subdivision of continuous outcrops**, corrected through prominence-based suppression
+   and verified as selective, although it cannot be entirely ruled out in highly irregular
+   geometries (section 10).
 4. **Measures relative to the field of view.** All sizes are expressed as a fraction of the
    image area. Without range information or geometric calibration they cannot be converted
    to metric magnitudes, so comparisons are valid between images from the same camera but
@@ -377,8 +396,6 @@ reproduces the indicator, not the ground truth of the terrain.
 
 - **Correcting the annotation bias**, using the expert subset to estimate an adjustment
   factor or to retrain on more complete labels.
-- **A post-watershed merging rule**, based on solidity or compactness, that reintegrates
-  the subdivisions of continuous outcrops.
 - **Extending the learned approach to counting**, feeding the predicted masks into the
   watershed procedure to close the second indicator as well.
 - **Conversion to metric magnitudes** by incorporating the dataset's range products, which

@@ -1,6 +1,6 @@
 {
   "n_images": 16064,
-  "seconds": 749.5,
+  "seconds": 1074.5,
   "params": {
     "open_size": 3,
     "close_size": 3,
@@ -8,7 +8,8 @@
     "max_aspect_ratio": 5.0,
     "distance_sigma": 3.0,
     "peak_min_distance": 15,
-    "connectivity": 2
+    "connectivity": 2,
+    "peak_h": 1.0
   },
   "ai4mars_root": "/Users/juan.b.delgado/Desktop/tesis-marte/ai4mars-dataset-merged-0.6",
   "labels_dir": "/Users/juan.b.delgado/Desktop/tesis-marte/ai4mars-dataset-merged-0.6/msl/ncam/labels/train",
