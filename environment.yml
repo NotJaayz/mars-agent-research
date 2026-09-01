@@ -39,6 +39,10 @@ dependencies:
   # --- Calidad de código (opcional pero recomendado) ---
   - ruff              # linter/formatter rápido
 
+  # --- Interfaz de la aplicación (app.py) ---
+  - pip:
+      - customtkinter        # widgets modernos sobre Tkinter
+
   # --- Utilidades de descarga del dataset ---
   - requests
   - pyyaml

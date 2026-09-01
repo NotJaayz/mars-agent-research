@@ -107,9 +107,10 @@ explored whether a model could predict the indicators directly from the image:
 ## Application
 
 The final deliverable is a desktop application bringing together the indicators, the risk
-alerts and a scene explorer. It requires no additional dependencies:
+alerts and a scene explorer, using NASA's institutional palette on a dark theme:
 
 ```bash
+pip install customtkinter   # the only additional dependency
 python app.py
 ```
 

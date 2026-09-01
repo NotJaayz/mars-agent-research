@@ -109,9 +109,11 @@ modelo podría predecir los indicadores a partir de la imagen:
 ## Aplicación
 
 El producto final es una aplicación de escritorio que reúne los indicadores, las alertas de
-riesgo y un explorador de escenas. No requiere instalar dependencias adicionales:
+riesgo y un explorador de escenas, con la paleta institucional de la NASA sobre tema
+oscuro:
 
 ```bash
+pip install customtkinter   # única dependencia adicional
 python app.py
 ```
 
