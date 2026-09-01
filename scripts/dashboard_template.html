@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de análisis de terreno marciano — AI4Mars</title>
+<style>
+  :root{
+    --rust:#c0392b; --rust-d:#7b241c; --sand:#c7b299; --ink:#1a1a1a;
+    --muted:#6b6b6b; --line:#e3ddd8; --bg:#faf8f6; --card:#ffffff;
+    --alto:#c0392b; --medio:#e08214; --bajo:#c9a227; --ok:#4f8a5b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+       line-height:1.5}
+  header{background:linear-gradient(135deg,#7b241c,#c0392b);color:#fff;padding:22px 30px}
+  .hwrap{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .logos{display:flex;align-items:center;gap:16px}
+  .logos img{height:52px;background:#fff;border-radius:6px;padding:5px}
+  .logo-txt{font-size:11px;line-height:1.3;opacity:.92;border-left:2px solid rgba(255,255,255,.5);padding-left:12px}
+  h1{margin:0;font-size:22px;font-weight:600}
+  .sub{opacity:.9;font-size:13px;margin-top:3px}
+  main{max-width:1180px;margin:0 auto;padding:26px 30px 60px}
+  section{margin-bottom:34px}
+  h2{font-size:17px;color:var(--rust-d);margin:0 0 4px;font-weight:600}
+  .hint{color:var(--muted);font-size:13px;margin:0 0 14px}
+  .grid{display:grid;gap:16px}
+  .kpis{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .kpi .n{font-size:27px;font-weight:700;color:var(--rust-d);line-height:1.15}
+  .kpi .l{font-size:12px;color:var(--muted);margin-top:3px}
+  .two{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+  .chart-title{font-size:13px;font-weight:600;margin-bottom:10px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{background:#f2ece8;text-align:left;padding:8px 10px;font-weight:600;
+     border-bottom:1px solid var(--line);position:sticky;top:0}
+  td{padding:7px 10px;border-bottom:1px solid #f0ebe7;vertical-align:top}
+  .scroll{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .pill{display:inline-block;padding:2px 9px;border-radius:11px;font-size:11px;
+        font-weight:600;color:#fff;white-space:nowrap}
+  .alto{background:var(--alto)} .medio{background:var(--medio)}
+  .bajo{background:var(--bajo)} .sin_alerta{background:var(--ok)}
+  .tag{display:inline-block;background:#f2ece8;border:1px solid var(--line);
+       border-radius:5px;padding:1px 7px;margin:1px 3px 1px 0;font-size:11px}
+  .filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  button{font:inherit;font-size:12.5px;padding:6px 13px;border:1px solid var(--line);
+         background:#fff;border-radius:18px;cursor:pointer;color:var(--ink)}
+  button.on{background:var(--rust);color:#fff;border-color:var(--rust)}
+  .sev{font-size:11px;color:var(--muted)}
+  footer{border-top:1px solid var(--line);margin-top:20px;padding-top:16px;
+         color:var(--muted);font-size:12px}
+  .nota{background:#fff8f0;border-left:3px solid var(--medio);padding:10px 14px;
+        border-radius:0 8px 8px 0;font-size:13px;margin-top:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="logos" id="logos"></div>
+    <div>
+      <h1>Panel de análisis de terreno marciano</h1>
+      <div class="sub">Cobertura de roca, conteo de bloques y alertas de riesgo · Dataset AI4Mars</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section>
+    <h2>Resumen</h2>
+    <p class="hint">Indicadores derivados de las anotaciones por píxel de la cámara de navegación del rover Curiosity.</p>
+    <div class="grid kpis" id="kpis"></div>
+  </section>
+
+  <section>
+    <h2>Alertas de riesgo</h2>
+    <p class="hint">Avisos operativos derivados de los indicadores. Cada regla declara su criterio y su justificación.</p>
+    <div class="grid two">
+      <div class="card"><div class="chart-title">Escenas por nivel de riesgo</div><div id="c_niveles"></div></div>
+      <div class="card"><div class="chart-title">Alertas emitidas por tipo</div><div id="c_alertas"></div></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="chart-title">Catálogo de reglas</div>
+      <div class="scroll"><table id="t_catalogo"></table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Escenas con alerta</h2>
+    <p class="hint">Filtra por nivel para revisar las escenas señaladas. Se muestran las 300 de mayor severidad.</p>
+    <div class="filtros" id="filtros"></div>
+    <div class="scroll"><table id="t_alertas"></table></div>
+  </section>
+
+  <section>
+    <h2>Distribución de los indicadores</h2>
+    <div class="grid two">
+      <div class="card"><div class="chart-title">Cobertura de roca visible (% de píxeles etiquetados)</div><div id="c_cobertura"></div></div>
+      <div class="card"><div class="chart-title">Tipología de escenas</div><div id="c_escenas"></div></div>
+      <div class="card"><div class="chart-title">Distribución tamaño–frecuencia de rocas</div><div id="c_tamanos"></div></div>
+      <div class="card"><div class="chart-title">Cobertura y alertas a lo largo del recorrido</div><div id="c_recorrido"></div></div>
+    </div>
+  </section>
+
+  <section id="s_geologia" style="display:none">
+    <h2>Rasgos geológicos (Perseverance)</h2>
+    <p class="hint">Extensión al conjunto Mars 2020, cuya taxonomía distingue rasgos que la escala de navegación no recoge, entre ellos las vetas minerales.</p>
+    <div class="grid kpis" id="k_geologia"></div>
+    <div class="nota"><strong>Sobre las vetas:</strong> son depósitos minerales precipitados por circulación de agua, de modo que su presencia señala interés científico. Aparecen en una fracción reducida de las escenas, lo que es esperable y no una deficiencia del análisis: una alerta útil es, por definición, poco frecuente. Este conjunto queda fuera del subconjunto declarado en la metodología y se reporta como demostración de extensibilidad.</div>
+  </section>
+
+  <footer>
+    <strong>Datos:</strong> AI4Mars — Swan et al. (2021), NASA/JPL-Caltech · Imágenes: NASA/JPL-Caltech.<br>
+    Trabajo de tesis, Universidad Externado de Colombia. Este panel es material académico y no constituye un producto oficial de la NASA ni implica su respaldo.
+  </footer>
+</main>
+
+<script>
+const D = __DATOS__;
+const LOGO_EXT = "__LOGO_EXTERNADO__", LOGO_NASA = "__LOGO_NASA__";
+const $ = s => document.querySelector(s);
+const fmt = n => n.toLocaleString('es-ES');
+const NIV = {alto:'Alto', medio:'Medio', bajo:'Bajo', sin_alerta:'Sin alerta'};
+const TIT = Object.fromEntries(D.catalogo.map(r => [r.clave, r.titulo]));
+const ETIQ = k => NIV[k] || TIT[k] || k;
+
+/* --- logotipos (o texto si no se han añadido) --- */
+(function(){
+  const c = $('#logos');
+  if (LOGO_EXT) c.insertAdjacentHTML('beforeend', `<img src="${LOGO_EXT}" alt="Universidad Externado de Colombia">`);
+  if (LOGO_NASA) c.insertAdjacentHTML('beforeend', `<img src="${LOGO_NASA}" alt="NASA">`);
+  if (!LOGO_EXT && !LOGO_NASA)
+    c.insertAdjacentHTML('beforeend',
+      `<div class="logo-txt"><strong>Universidad Externado de Colombia</strong><br>Matemáticas — Ciencia de Datos<br>Datos: AI4Mars · NASA/JPL-Caltech</div>`);
+})();
+
+/* --- indicadores --- */
+$('#kpis').innerHTML = [
+  [fmt(D.kpi.imagenes), 'imágenes analizadas'],
+  [fmt(D.kpi.con_roca), 'con roca visible'],
+  [fmt(D.kpi.rocas), 'rocas individuales contadas'],
+  [fmt(D.kpi.con_alerta), 'escenas con alguna alerta'],
+  [fmt(D.kpi.alertas_altas), 'en nivel de riesgo alto'],
+].map(([n,l]) => `<div class="card kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+
+/* --- gráficas SVG --- */
+function barras(sel, datos, color, horizontal){
+  const e = Object.entries(datos).filter(([,v]) => v > 0);
+  if (!e.length) { $(sel).innerHTML = '<p class="hint">Sin datos.</p>'; return; }
+  const max = Math.max(...e.map(d => d[1]));
+  if (horizontal){
+    const h = e.length * 30 + 10, W = 470, LX = 196;
+    $(sel).innerHTML = `<svg viewBox="0 0 ${W} ${h}" width="100%">` + e.map(([k,v],i) => {
+      const y = i*30+4, w = Math.max(2, (v/max)*(W-LX-46));
+      const c = typeof color === 'function' ? color(k) : color;
+      return `<text x="0" y="${y+15}" font-size="10.5" fill="#444">${ETIQ(k)}</text>
+              <rect x="${LX}" y="${y+3}" width="${w}" height="16" fill="${c}" rx="3"/>
+              <text x="${LX+6+w}" y="${y+16}" font-size="10.5" fill="#666">${fmt(v)}</text>`;
+    }).join('') + '</svg>';
+  } else {
+    const W = 420, H = 190, n = e.length, bw = (W-40)/n;
+    $(sel).innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%">` + e.map(([k,v],i) => {
+      const bh = (v/max)*(H-52), x = 30+i*bw, y = H-32-bh;
+      return `<rect x="${x+bw*0.15}" y="${y}" width="${bw*0.7}" height="${bh}" fill="${color}" rx="3"/>
+              <text x="${x+bw/2}" y="${y-4}" font-size="10.5" fill="#666" text-anchor="middle">${fmt(v)}</text>
+              <text x="${x+bw/2}" y="${H-14}" font-size="11" fill="#444" text-anchor="middle">${k}</text>`;
+    }).join('') + '</svg>';
+  }
+}
+
+function histograma(sel, bins, vals, color){
+  const W=420,H=190,max=Math.max(...vals),bw=(W-40)/vals.length;
+  $(sel).innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%">` + vals.map((v,i)=>{
+    const bh=(v/max)*(H-46), x=30+i*bw;
+    return `<rect x="${x}" y="${H-30-bh}" width="${bw-1}" height="${bh}" fill="${color}"/>`;
+  }).join('') + `<line x1="30" y1="${H-30}" x2="${W-10}" y2="${H-30}" stroke="#ccc"/>
+   <text x="30" y="${H-12}" font-size="10.5" fill="#666">0 %</text>
+   <text x="${W-40}" y="${H-12}" font-size="10.5" fill="#666">100 %</text></svg>`;
+}
+
+function lineas(sel, series){
+  const W=420,H=200,pad=34;
+  const n = series[0].datos.length, max=100;
+  const px = i => pad + i*(W-pad-12)/(n-1);
+  const py = v => H-28-(v/max)*(H-52);
+  const paths = series.map(s =>
+    `<path d="${s.datos.map((v,i)=>(i?'L':'M')+px(i)+' '+py(v)).join(' ')}"
+      fill="none" stroke="${s.color}" stroke-width="1.8"/>`).join('');
+  const leyenda = series.map((s,i) =>
+    `<rect x="${pad+i*130}" y="4" width="9" height="9" fill="${s.color}" rx="2"/>
+     <text x="${pad+14+i*130}" y="13" font-size="10.5" fill="#555">${s.nombre}</text>`).join('');
+  $(sel).innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%">${leyenda}${paths}
+    <line x1="${pad}" y1="${H-28}" x2="${W-12}" y2="${H-28}" stroke="#ccc"/>
+    <text x="${pad}" y="${H-10}" font-size="10.5" fill="#666">inicio</text>
+    <text x="${W-42}" y="${H-10}" font-size="10.5" fill="#666">final</text>
+    <text x="2" y="${py(100)+4}" font-size="10" fill="#999">100</text>
+    <text x="6" y="${py(0)+4}" font-size="10" fill="#999">0</text></svg>`;
+}
+
+const colorNivel = k => ({alto:'#c0392b',medio:'#e08214',bajo:'#c9a227',sin_alerta:'#4f8a5b'}[k] || '#999');
+barras('#c_niveles', D.niveles, colorNivel, true);
+barras('#c_alertas', D.conteo_alertas, '#c0392b', true);
+barras('#c_escenas', D.escenas, '#8c5a2b', false);
+barras('#c_tamanos', D.tamanos, '#c0392b', false);
+histograma('#c_cobertura', D.cobertura_hist.bins, D.cobertura_hist.vals, '#c0392b');
+lineas('#c_recorrido', [
+  {nombre:'Cobertura mediana (%)', datos:D.recorrido.cobertura, color:'#c0392b'},
+  {nombre:'Escenas con alerta (%)', datos:D.recorrido.alertas, color:'#2c6fbb'},
+]);
+
+/* --- catálogo de reglas --- */
+$('#t_catalogo').innerHTML =
+  '<thead><tr><th>Alerta</th><th>Criterio</th><th>Justificación</th></tr></thead><tbody>' +
+  D.catalogo.map(r => `<tr>
+     <td><strong>${r.titulo}</strong><br><span class="sev">severidad ${r.severidad}/3</span></td>
+     <td>${r.criterio}</td><td>${r.motivo}</td></tr>`).join('') + '</tbody>';
+
+/* --- tabla de escenas con alerta --- */
+let filtro = 'todos';
+function pintarTabla(){
+  const filas = D.tabla.filter(r => filtro === 'todos' || r.nivel_riesgo === filtro);
+  $('#t_alertas').innerHTML =
+    '<thead><tr><th>Imagen</th><th>Nivel</th><th>Alertas</th><th>Cobertura</th>' +
+    '<th>Rocas</th><th>Roca mayor</th><th>Escena</th></tr></thead><tbody>' +
+    (filas.length ? filas.map(r => `<tr>
+       <td style="font-family:ui-monospace,monospace;font-size:11px">${r.image_id}</td>
+       <td><span class="pill ${r.nivel_riesgo}">${NIV[r.nivel_riesgo]}</span></td>
+       <td>${String(r.alertas).split('|').filter(Boolean).map(a=>`<span class="tag">${TIT[a]||a}</span>`).join('')}</td>
+       <td>${Number(r.rock_coverage_pct).toFixed(0)} %</td>
+       <td>${r.n_rocks}</td>
+       <td>${Number(r.largest_rock_pct).toFixed(1)} %</td>
+       <td>${r.scene_type}</td></tr>`).join('')
+     : '<tr><td colspan="7" style="color:#888;padding:16px">Sin escenas en este nivel.</td></tr>') +
+    '</tbody>';
+}
+$('#filtros').innerHTML = ['todos','alto','medio','bajo']
+  .map(n => `<button data-n="${n}" class="${n==='todos'?'on':''}">${n==='todos'?'Todos':NIV[n]}</button>`).join('');
+$('#filtros').addEventListener('click', ev => {
+  const b = ev.target.closest('button'); if(!b) return;
+  filtro = b.dataset.n;
+  [...$('#filtros').children].forEach(x => x.classList.toggle('on', x === b));
+  pintarTabla();
+});
+pintarTabla();
+
+/* --- geología --- */
+if (D.geologia){
+  $('#s_geologia').style.display = 'block';
+  const g = D.geologia;
+  $('#k_geologia').innerHTML = [
+    [fmt(g.n_mascaras), 'escenas analizadas'],
+    [fmt(g.con_veta), `con vetas (${g.pct_con_veta} %)`],
+    [fmt(g.veta_destacada), 'con veta destacada'],
+    [fmt(g.con_float_rock), 'con bloques sueltos'],
+  ].map(([n,l]) => `<div class="card kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+}
+</script>
+</body>
+</html>

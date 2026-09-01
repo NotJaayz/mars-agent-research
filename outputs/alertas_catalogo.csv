@@ -1,0 +1,7 @@
+clave,titulo,severidad,criterio,motivo
+dano_ruedas,Riesgo de daño en ruedas,3,roca grande > 5 % del área etiquetada y solidez media < 0.85,"Combina abundancia de roca grande con contornos irregulares. La solidez baja indica formas angulosas y salientes, que es la condición asociada al desgaste prematuro observado en las ruedas del rover Curiosity."
+obstaculo_mayor,Obstáculo de gran tamaño,3,la roca mayor ocupa > 15 % del área etiquetada,Un bloque que domina la escena puede superar la altura franqueable del vehículo y obligar a rodearlo.
+campo_bloques,Campo denso de bloques,2,5 o más rocas individuales detectadas,Muchos bloques discretos reducen las trayectorias viables aunque ninguno sea individualmente infranqueable.
+atrapamiento_arena,Riesgo de atrapamiento en arena,3,arena > 70 % del área etiquetada,Las superficies dominadas por arena suelta comprometen la tracción. Es el modo de fallo que dejó inmovilizado al rover Spirit.
+terreno_rocoso,Terreno mayoritariamente rocoso,1,cobertura de roca > 80 % de los píxeles etiquetados,"Predominio de roca expuesta. Informativa: suele implicar buena tracción, pero también superficie irregular."
+escena_no_evaluable,Escena poco evaluable,1,más del 95 % de la escena sin etiquetar,La anotación disponible no basta para sostener una valoración; se señala para que no se interprete la ausencia de alertas como ausencia de riesgo.

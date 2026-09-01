@@ -79,3 +79,11 @@ CLAUDE.md
 # Las imágenes se regeneran con scripts/make_validation_kit.py; los CSV sí se versionan
 # porque plantilla.csv contiene las respuestas humanas de la validación.
 outputs/validacion_manual/imagenes/
+
+# ===== Salidas del sistema de alertas =====
+# El panel HTML y los resúmenes se versionan (son el entregable consultable);
+# las tablas completas se regeneran con los scripts.
+!outputs/panel_ai4mars.html
+!outputs/alertas_catalogo.csv
+!outputs/alertas_resumen.json
+!outputs/geologia_m2020_resumen.json

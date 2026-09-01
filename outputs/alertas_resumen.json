@@ -1,0 +1,25 @@
+{
+  "n_imagenes": 16064,
+  "por_nivel": {
+    "sin_alerta": 14477,
+    "medio": 1359,
+    "bajo": 124,
+    "alto": 104
+  },
+  "por_alerta": {
+    "escena_no_evaluable": 463,
+    "terreno_rocoso": 6855,
+    "campo_bloques": 196,
+    "atrapamiento_arena": 1174,
+    "dano_ruedas": 73,
+    "obstaculo_mayor": 256
+  },
+  "umbrales": {
+    "bigrock_pct": 5.0,
+    "solidez": 0.85,
+    "roca_mayor_pct": 15.0,
+    "n_rocas": 5,
+    "arena_pct": 70.0,
+    "cobertura_alta": 80.0
+  }
+}
