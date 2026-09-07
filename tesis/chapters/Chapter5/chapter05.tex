@@ -1,0 +1,593 @@
+\chapter{Resultados y evaluación}
+\label{cap:resultados}
+
+\section{Resultados, análisis e interpretación}
+
+\subsection{Conjunto analizado}
+
+El procedimiento se ejecutó sobre las \num{16064} imágenes de la cámara de navegación de
+\textit{Curiosity} que disponen de máscara de entrenamiento. La
+Figura~\ref{fig:paso-a-paso} ilustra el flujo completo sobre una escena representativa:
+imagen original, máscara de AI4Mars, binaria depurada, transformada de distancia con las
+semillas detectadas y resultado del conteo.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_11_procedimiento_paso_a_paso.png}
+  \caption[Procedimiento paso a paso]{Procedimiento paso a paso sobre una escena con
+    varias rocas: imagen original, máscara de AI4Mars, binaria depurada, transformada de
+    distancia con las semillas y resultado del conteo.}
+  \label{fig:paso-a-paso}
+\end{figure}
+
+Cada imagen recibió una bandera de calidad que resume su aptitud para cada indicador
+(Tabla~\ref{tab:banderas}, Figura~\ref{fig:banderas}).
+
+\begin{table}[H]
+  \centering
+  \caption{Composición del conjunto según la bandera de calidad.}
+  \label{tab:banderas}
+  \begin{tabular}{llrr}
+    \toprule
+    \textbf{Bandera} & \textbf{Significado} & \textbf{Imágenes} & \textbf{\%} \\
+    \midrule
+    \texttt{ok}          & Contiene roca grande; apta para ambos indicadores & \num{2193} & 13,7 \\
+    \texttt{no\_bigrock} & Contiene roca, pero sin roca grande que contar    & \num{8458} & 52,7 \\
+    \texttt{no\_rock}    & Etiquetada, sin roca                             & \num{4950} & 30,8 \\
+    \texttt{mostly\_null}& Más del \SI{95}{\percent} sin etiqueta           & \num{300}  &  1,9 \\
+    \texttt{empty}       & Sin ningún píxel etiquetado                      & \num{163}  &  1,0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.82\textwidth]{Figura_12_banderas_calidad.png}
+  \caption{Composición del conjunto analizado según la bandera de calidad.}
+  \label{fig:banderas}
+\end{figure}
+
+La fracción de escena efectivamente etiquetada tiene una mediana de $0{,}58$: algo más de
+la mitad de cada imagen recibió etiqueta, y el resto corresponde al cuerpo del rover, al
+cielo y a las distancias que el propio conjunto excluye por diseño.
+
+\subsection{Cobertura de roca visible (E1)}
+
+De las \num{16064} imágenes, \num{10817} —el \SI{67.3}{\percent}— contienen algún píxel de
+roca visible. Sobre ese conjunto, la cobertura calculada según la
+ecuación~\eqref{eq:cobertura} presenta una mediana del \SI{96.8}{\percent} y una media del
+\SI{75.1}{\percent}; medida sobre la imagen completa, la mediana es del
+\SI{42.0}{\percent} y la media del \SI{41.9}{\percent}.
+
+La distribución (Figura~\ref{fig:dist-cobertura}) es marcadamente \textbf{bimodal}: se
+acumula en los extremos, con \num{4551} imágenes en las que la totalidad del área
+etiquetada es roca y un segundo grupo de cobertura nula. En total, \num{8339} imágenes
+superan el \SI{50}{\percent} de cobertura.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_13_distribucion_cobertura.png}
+  \caption[Distribución de la cobertura]{Distribución de la cobertura de roca visible en
+    sus dos versiones: sobre píxeles etiquetados y sobre la imagen completa.}
+  \label{fig:dist-cobertura}
+\end{figure}
+
+Ante la posibilidad de que las coberturas altas fueran un artefacto de imágenes
+escasamente etiquetadas, se contrastó la cobertura con la fracción de escena etiquetada
+(Figura~\ref{fig:cob-vs-frac}). La correlación es \textbf{prácticamente nula}
+($r = -0{,}02$): la cobertura no depende de cuánto se etiquetó, de modo que los valores
+altos corresponden a escenas genuinamente dominadas por lecho rocoso y no a un sesgo de la
+fórmula. Este control descarta el artefacto del denominador, pero no el sesgo de la
+anotación, que se aborda más adelante y resulta ser de naturaleza distinta.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{Figura_14_cobertura_vs_fraccion_etiquetada.png}
+  \caption{Cobertura frente a fracción de escena etiquetada.}
+  \label{fig:cob-vs-frac}
+\end{figure}
+
+\subsection{Conteo aproximado de rocas individuales (E2)}
+
+El conteo se aplicó a las \num{2193} imágenes que contienen roca grande y arrojó un total
+de \num{4204} rocas, con una mediana de una roca por imagen y un máximo de veinte. El
+Tabla~\ref{tab:bandas-conteo} y la Figura~\ref{fig:bandas-conteo} recogen la
+distribución.
+
+\begin{table}[H]
+  \centering
+  \caption{Distribución del conteo de rocas sobre las imágenes aptas.}
+  \label{tab:bandas-conteo}
+  \begin{tabular}{lrr}
+    \toprule
+    \textbf{Rocas por imagen} & \textbf{Imágenes} & \textbf{\%} \\
+    \midrule
+    0 (descartadas por los filtros) & \num{453} & 20,7 \\
+    1                               & \num{772} & 35,2 \\
+    2--3                            & \num{613} & 28,0 \\
+    4--9                            & \num{344} & 15,7 \\
+    10 o más                        & \num{11}  &  0,5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.82\textwidth]{Figura_15_conteo_por_bandas.png}
+  \caption{Distribución del conteo de rocas por imagen.}
+  \label{fig:bandas-conteo}
+\end{figure}
+
+Conviene detenerse en el primer renglón: en \num{453} imágenes —el \SI{20.7}{\percent} de
+las aptas— existen píxeles de roca grande pero ninguna región supera los filtros de área
+mínima y forma. La subsección~\ref{sec:diagnostico} examina caso por caso esas imágenes y
+concluye que los filtros aciertan; el dato se reporta explícitamente porque delimita el
+alcance real del indicador.
+
+En promedio, cada imagen apta contiene $2{,}25$ componentes conectadas antes de la
+división de aguas y $1{,}89$ rocas después. La cifra es reveladora: el paso de división de
+aguas \textbf{no aumenta} el conteo promedio, lo que confirma que la calibración por
+prominencia evitó la fragmentación masiva que producía la detección de máximos por
+separación mínima.
+
+\subsubsection{Distribución tamaño--frecuencia}
+
+Clasificando las \num{4204} rocas según su tamaño relativo al área de la imagen
+(Tabla~\ref{tab:tamanos}, Figura~\ref{fig:tamano-frecuencia}) se obtiene una
+\textbf{distribución decreciente}: predominan las rocas pequeñas y la frecuencia disminuye
+al aumentar el tamaño.
+
+\begin{table}[H]
+  \centering
+  \caption{Distribución tamaño--frecuencia de las rocas contadas.}
+  \label{tab:tamanos}
+  \begin{tabular}{lrr}
+    \toprule
+    \textbf{Clase de tamaño} & \textbf{Rocas} & \textbf{\%} \\
+    \midrule
+    Pequeña (\textless\ \SI{0.5}{\percent} del área) & \num{1841} & 43,8 \\
+    Mediana (\SI{0.5}{\percent} -- \SI{2}{\percent})  & \num{1340} & 31,9 \\
+    Grande ($\geq$ \SI{2}{\percent})                  & \num{1023} & 24,3 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.82\textwidth]{Figura_16_tamano_frecuencia.png}
+  \caption{Distribución tamaño--frecuencia de las rocas contadas.}
+  \label{fig:tamano-frecuencia}
+\end{figure}
+
+Esta forma coincide cualitativamente con las distribuciones tamaño--frecuencia descritas
+en los estudios de abundancia de rocas en sitios de aterrizaje
+\citep{golombek2003mer, golombek2021insight, lorenz2023analytic}. La coincidencia debe
+leerse con cautela: aquí los tamaños son \textbf{relativos al campo de visión} y no
+métricos, porque el procedimiento no dispone de la escala de la escena. La comparación es
+de forma, no de magnitud.
+
+La solidez media de las regiones aceptadas es de $0{,}912$, es decir, formas compactas;
+solo \num{46} imágenes presentan solidez media inferior a $0{,}7$, señal de contornos
+cóncavos o de regiones posiblemente subdivididas en exceso.
+
+\subsection{Composición del terreno y tipología de escenas (E3)}
+
+Además de los dos indicadores previstos, cada imagen se caracterizó por la proporción de
+cada clase sobre sus píxeles etiquetados. La composición media es de
+\SI{49.8}{\percent} de lecho rocoso, \SI{36.4}{\percent} de suelo, \SI{12.5}{\percent} de
+arena y \SI{1.3}{\percent} de roca grande. La clase dominante es el lecho rocoso en
+\num{8234} imágenes, el suelo en \num{5767}, la arena en \num{1792} y la roca grande en
+apenas \num{108}.
+
+A partir de esa composición se definió la tipología de la Tabla~\ref{tab:tipologia}, que la
+Figura~\ref{fig:tipologia} representa.
+
+\begin{table}[H]
+  \centering
+  \caption{Tipología de escenas según la composición del terreno.}
+  \label{tab:tipologia}
+  \begin{tabular}{llrr}
+    \toprule
+    \textbf{Tipo} & \textbf{Criterio} & \textbf{Imágenes} & \textbf{\%} \\
+    \midrule
+    Rocoso  & roca $\geq$ \SI{66}{\percent}   & \num{7601} & 47,3 \\
+    Suelo   & suelo $\geq$ \SI{50}{\percent}  & \num{5723} & 35,6 \\
+    Arenoso & arena $\geq$ \SI{50}{\percent}  & \num{1742} & 10,8 \\
+    Mixto   & ninguna clase predomina         & \num{835}  &  5,2 \\
+    Sin etiqueta & sin píxeles clasificados    & \num{163}  &  1,0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.82\textwidth]{Figura_17_tipologia_escenas.png}
+  \caption{Tipología de escenas según la composición del terreno.}
+  \label{fig:tipologia}
+\end{figure}
+
+Un resultado central para la interpretación conjunta es que la cobertura y el conteo son
+\textbf{indicadores prácticamente independientes}: entre las imágenes aptas su correlación
+es de $r = 0{,}02$. Una escena puede estar casi totalmente cubierta por lecho rocoso
+continuo y no contener ninguna roca contable, o presentar poca cobertura y varios bloques
+aislados. Los dos indicadores describen aspectos distintos del terreno y no son
+redundantes.
+
+\subsection{Variación a lo largo del recorrido (E3)}
+
+Ordenando las imágenes por el reloj de nave incluido en su identificador —que crece
+monótonamente con el tiempo y sirve como aproximación del avance del recorrido— y
+agrupándolas en tramos de igual número de imágenes, se observa
+(Figura~\ref{fig:recorrido}) una \textbf{alternancia clara entre tramos francamente
+rocosos y tramos de suelo o arena}, con concentraciones puntuales de roca grande que
+alcanzan hasta el \SI{40}{\percent} de las imágenes de un tramo.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_18_variacion_recorrido.png}
+  \caption[Variación a lo largo del recorrido]{Cobertura y presencia de roca grande a lo
+    largo del recorrido, en tramos de igual número de imágenes.}
+  \label{fig:recorrido}
+\end{figure}
+
+Esta lectura responde de forma directa a la pregunta sobre en qué tramos del trayecto se
+concentra la roca visible. Debe interpretarse como una \textbf{ordenación relativa} y no
+como una serie temporal calibrada, pues el eje refleja el orden de adquisición y no el sol
+ni la distancia recorrida.
+
+Cabe señalar que el subconjunto es casi enteramente de la cámara izquierda del par
+estéreo —\num{16027} imágenes frente a \num{37} de la derecha—, por lo que no fue posible
+la comparación entre ojos que E3 contemplaba.
+
+\section{Evaluación y validación}
+
+\subsection{Contraste con etiquetas de experto}
+
+El conjunto incluye \num{322} máscaras etiquetadas por especialistas con acuerdo del
+\SI{100}{\percent}. Se ejecutó sobre ellas el mismo procedimiento, sin modificar ningún
+parámetro, y se comparó con las máscaras colaborativas
+(Tabla~\ref{tab:validacion}, Figura~\ref{fig:validacion}).
+
+\begin{table}[H]
+  \centering
+  \caption{Comparación de indicadores entre máscaras colaborativas y de experto.}
+  \label{tab:validacion}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Indicador} & \textbf{Colaborativas} & \textbf{Experto} \\
+    \midrule
+    Cobertura mediana (escenas con roca)    & \SI{96.8}{\percent} & \textbf{\SI{46.1}{\percent}} \\
+    Imágenes con cobertura del \SI{100}{\percent} & \SI{42}{\percent}  & \textbf{\SI{8}{\percent}} \\
+    Píxeles de lecho rocoso                 & \SI{49}{\percent}   & \SI{31}{\percent} \\
+    Píxeles de suelo y arena                & \SI{50}{\percent}   & \textbf{\SI{69}{\percent}} \\
+    Imágenes con roca grande                & \SI{13.9}{\percent} & \SI{16.5}{\percent} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{Figura_19_validacion_experto.png}
+  \caption{Comparación de la cobertura entre etiquetas colaborativas y de experto.}
+  \label{fig:validacion}
+\end{figure}
+
+La discrepancia es \textbf{sistemática y de gran magnitud} en la cobertura, mientras que
+la presencia de roca grande y el conteo resultan comparables. La interpretación se
+desarrolla en la subsección~\ref{sec:sesgo}.
+
+\subsection{Comparación con métodos de aprendizaje automático}
+
+Como referencia externa se contrastó el procedimiento con dos enfoques de aprendizaje
+profundo, ejecutados en equipo local.
+
+\paragraph{Modelo general sin entrenamiento específico.} Un modelo fundacional de
+segmentación \citep{kirillov2023sam}, en su variante rápida \citep{zhao2023fastsam}, se
+aplicó a \num{50} imágenes con roca grande, restringiendo sus regiones a la zona
+etiquetada como roca. El acuerdo con el conteo clásico, medido por bandas, es del
+\SI{52}{\percent}, con correlación de rangos de $0{,}45$ y un error absoluto medio de
+$2{,}6$ rocas (Figura~\ref{fig:matriz-acuerdo}). El modelo tiende a subdividir una misma
+roca según su textura interna y, en otras escenas, a no detectar bloques de bajo
+contraste.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.72\textwidth]{Figura_20_matriz_acuerdo.png}
+  \caption{Matriz de acuerdo entre el conteo clásico y el modelo general.}
+  \label{fig:matriz-acuerdo}
+\end{figure}
+
+\paragraph{Modelo entrenado con las propias máscaras.} Se entrenó un segmentador
+DeepLabV3 \citep{chen2017deeplab} por aprendizaje por transferencia para distinguir roca
+de no-roca, empleando \num{2000} imágenes de entrenamiento, \num{400} de validación y
+\num{400} de prueba, muestreadas de forma equilibrada entre escenas con y sin roca. Se
+ejecutó durante seis épocas a una resolución de \num{512} píxeles en un computador
+portátil con aceleración por unidad gráfica integrada, con un coste de entre doce y
+treinta y dos minutos por época. Los píxeles sin etiqueta se excluyeron tanto de la
+función de pérdida como del cálculo de la métrica.
+
+\begin{table}[H]
+  \centering
+  \caption[Desempeño del segmentador entrenado]{Desempeño del segmentador DeepLabV3 en el
+    conjunto de prueba y acuerdo del indicador de cobertura derivado de sus predicciones.}
+  \label{tab:deeplab}
+  \begin{tabular}{lr}
+    \toprule
+    \textbf{Medida} & \textbf{Valor} \\
+    \midrule
+    IoU de la clase no-roca                                    & 0,955 \\
+    IoU de la clase roca                                       & 0,925 \\
+    IoU medio                                                  & \textbf{0,940} \\
+    Correlación de la cobertura predicha con la humana ($n = 200$) & \textbf{0,950} \\
+    Error absoluto medio de la cobertura                       & 4,3 p.p. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+El modelo alcanza un IoU medio de $0{,}940$ sobre imágenes no vistas durante el
+entrenamiento, y la cobertura calculada a partir de sus predicciones se correlaciona en
+$0{,}950$ con la obtenida de la anotación humana, con un error absoluto medio de
+$4{,}3$ puntos porcentuales. La Figura~\ref{fig:modelo-vs-humano} muestra que los puntos
+se agrupan estrechamente en torno a la recta de igualdad; las discrepancias mayores se
+concentran en escenas de cobertura total, donde el modelo tiende a quedarse por debajo.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{Figura_21_cobertura_modelo_vs_humano.png}
+  \caption[Cobertura del modelo frente a la humana]{Cobertura estimada por el modelo
+    entrenado frente a la derivada de la anotación humana, sobre las \num{200} imágenes
+    del conjunto de prueba.}
+  \label{fig:modelo-vs-humano}
+\end{figure}
+
+Este resultado tiene una lectura precisa y conviene no exagerarla en ninguna dirección. El
+modelo aprende a reproducir la anotación humana con alta fidelidad, y por tanto
+\textbf{reproduce también su sesgo}: la cobertura que deriva de sus predicciones se parece
+mucho a la humana justamente porque fue entrenado para parecerse a ella. No constituye una
+validación independiente de la cobertura, sino una confirmación de que la señal que las
+máscaras contienen es aprendible.
+
+\section{Implicaciones y limitaciones}
+
+\subsection{Interpretación de los indicadores}
+
+El trabajo confirma que las máscaras de AI4Mars pueden leerse como mapas cuantitativos y
+no solo como insumo de entrenamiento. Los dos indicadores propuestos se obtuvieron para la
+totalidad del subconjunto y resultan interpretables sin conocer los detalles del
+procedimiento: una cobertura del \SI{90}{\percent} describe una escena dominada por roca, y
+un conteo de ocho bloques describe un terreno con obstáculos discretos.
+
+El hallazgo de que ambos indicadores son estadísticamente independientes ($r = 0{,}02$)
+refuerza la decisión de reportarlos por separado. La cobertura mide \textit{cuánta} roca
+hay; el conteo mide \textit{cómo está organizada}. Un afloramiento continuo produce
+cobertura máxima y conteo nulo; un campo de bloques dispersos produce lo contrario. Para
+aplicaciones de transitabilidad ambas facetas importan y ninguna sustituye a la otra.
+
+\subsection{El sesgo de la anotación colaborativa}
+\label{sec:sesgo}
+
+El resultado más relevante de la validación es que la cobertura calculada sobre las
+máscaras colaborativas \textbf{sobreestima sistemáticamente} la proporción de roca: la
+mediana pasa del \SI{96.8}{\percent} al \SI{46.1}{\percent} cuando se emplean máscaras de
+experto, y la proporción de imágenes con cobertura total cae del \SI{42}{\percent} al
+\SI{8}{\percent}.
+
+La explicación más plausible es un \textbf{sesgo de saliencia} en la tarea de anotación. La
+roca es visualmente prominente y fácil de delimitar; el suelo y la arena son superficies
+extensas y homogéneas cuya delimitación resulta tediosa y menos evidente. Al exigirse
+acuerdo entre anotadores, los píxeles de suelo y arena sin consenso quedan sin etiqueta y
+desaparecen del denominador de la ecuación~\eqref{eq:cobertura}, lo que eleva la fracción
+de roca. La composición confirma el mecanismo: los expertos etiquetan un \SI{69}{\percent}
+de píxeles de suelo y arena frente al \SI{50}{\percent} de las máscaras colaborativas.
+
+Es importante precisar el alcance de esta limitación. \textbf{El procedimiento de cálculo
+no está sesgado}: aplicado a las máscaras de experto entrega valores plausibles. El sesgo
+reside en los datos de entrada. En consecuencia, las coberturas reportadas deben leerse
+como relativas al conjunto colaborativo y no como estimaciones absolutas de la abundancia
+de roca en el terreno. Para comparaciones entre escenas del mismo conjunto —el uso
+previsto— la utilidad se mantiene, porque el sesgo actúa en la misma dirección en todas
+ellas.
+
+Este hallazgo trasciende el presente trabajo. Cualquier estudio que emplee las máscaras
+colaborativas de AI4Mars como referencia —incluidos los que entrenan modelos de
+segmentación y reportan índices de solapamiento contra ellas— está midiendo el acuerdo con
+una anotación que sobreestima la roca. El resultado de la
+Figura~\ref{fig:modelo-vs-humano} lo ilustra: el modelo entrenado reproduce la cobertura
+humana con correlación de $0{,}950$, lo que significa que ha aprendido el sesgo junto con
+la señal.
+
+\subsection{Diagnóstico de los modos de error del conteo}
+\label{sec:diagnostico}
+
+Al inspeccionar visualmente los resultados se observaron dos comportamientos
+contradictorios: escenas en las que el conteo señalaba rocas donde un observador no las
+percibía, y escenas con bloques evidentes en las que el conteo era nulo. Puesto que una
+explicación natural sería la insuficiencia de las imágenes, se realizó un diagnóstico
+sistemático para atribuir cada modo de error a su causa.
+
+La primera constatación es de orden metodológico y descarta la hipótesis más inmediata:
+\textbf{el procedimiento no lee las imágenes}, de modo que su calidad no puede ser la
+causa. Las imágenes son además de \num{1024}$\times$\num{1024} píxeles, resolución
+completa de la cámara, y las máscaras tienen exactamente el mismo tamaño, por lo que
+tampoco hay pérdida por remuestreo.
+
+La Tabla~\ref{tab:diagnostico} atribuye el conteo nulo —presente en el
+\SI{89.0}{\percent} de las escenas— a sus dos causas.
+
+\begin{table}[H]
+  \centering
+  \caption{Atribución de las escenas con conteo nulo.}
+  \label{tab:diagnostico}
+  \begin{tabular}{lrl}
+    \toprule
+    \textbf{Causa} & \textbf{Escenas} & \textbf{Naturaleza} \\
+    \midrule
+    La máscara no tiene ningún píxel de roca grande & \num{13838} & límite de la etiqueta \\
+    Hay roca grande, pero los filtros la descartan  & \num{460}   & límite de los umbrales \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+El primer grupo representa el \SI{86.1}{\percent} del conjunto y su componente principal
+son las \num{8458} escenas con bandera \texttt{no\_bigrock}: \textbf{sí hay roca visible,
+pero el anotador la etiquetó como lecho rocoso}. La mediana de lecho rocoso en ese grupo
+es del \SI{99.7}{\percent}, y \num{5762} escenas tienen más del \SI{80}{\percent} de lecho
+rocoso y cero roca grande. El desequilibrio es estructural: sobre las escenas con roca, el
+lecho rocoso aporta el \SI{97.5}{\percent} de la roca etiquetada y la roca grande solo el
+\SI{2.5}{\percent}, y E2 cuenta únicamente esta última.
+
+La Figura~\ref{fig:diag-bedrock} muestra el caso con toda claridad: una escena repleta de
+bloques individuales perfectamente distinguibles, etiquetada en su totalidad como una sola
+región de lecho rocoso, sobre la que el conteo devuelve cero.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{diag_bedrock_no_contado.png}
+  \caption[Roca visible etiquetada como lecho rocoso]{Escena con bloques individuales
+    evidentes, etiquetada íntegramente como lecho rocoso. El conteo devuelve cero porque
+    la clase roca grande no está presente en la máscara.}
+  \label{fig:diag-bedrock}
+\end{figure}
+
+El segundo grupo —\num{460} escenas, el \SI{2.9}{\percent}— se revisó caso por caso y los
+filtros \textbf{aciertan}: se trata de motas de pocos píxeles, con un ejemplo de una única
+región de doce píxeles frente al umbral de \num{524}, o de bandas muy alargadas trazadas
+sobre el horizonte, descartadas por relación de aspecto. No conviene relajar los umbrales.
+
+Por el lado de los falsos positivos, la Tabla~\ref{tab:falsos-positivos} recoge las tres
+fuentes identificadas.
+
+\begin{table}[H]
+  \centering
+  \caption{Fuentes de conteo excesivo.}
+  \label{tab:falsos-positivos}
+  \begin{tabular}{lrl}
+    \toprule
+    \textbf{Fuente} & \textbf{Magnitud} & \textbf{Naturaleza} \\
+    \midrule
+    Subdivisión por división de aguas & \num{423} de \num{1766} escenas & algoritmo \\
+    Artefacto de anotación            & \num{43} escenas                & etiqueta \\
+    Anotación en contorno hueco       & \SI{0.2}{\percent} de las escenas & anecdótico \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+La subdivisión afecta al \SI{24.0}{\percent} de las escenas que cuentan y esas escenas
+aportan \num{1717} de las \num{4204} rocas, de modo que es la limitación algorítmica
+cuantitativamente más importante. La Figura~\ref{fig:subdivision} ilustra el mecanismo
+sobre un afloramiento.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{Figura_22_subdivision_afloramiento.png}
+  \caption{Subdivisión de un afloramiento continuo por la división de aguas.}
+  \label{fig:subdivision}
+\end{figure}
+
+Los artefactos de anotación constituyen el falso positivo más llamativo. La
+Figura~\ref{fig:diag-artefacto} muestra una escena en la que solo el \SI{2.0}{\percent} de
+los píxeles está etiquetado y todo ese \SI{2}{\percent} se marcó como roca grande, de modo
+que la roca mayor ocupa el \SI{100}{\percent} del área válida. Estos casos explican por qué
+el indicador de tamaño relativo alcanza valores extremos, y advierten contra su lectura
+literal en escenas de fracción etiquetada muy baja.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{diag_artefacto_anotacion.png}
+  \caption[Artefacto de anotación]{Escena con solo el \SI{2.0}{\percent} de los píxeles
+    etiquetados, marcados en su totalidad como roca grande. La roca resultante ocupa el
+    \SI{100}{\percent} del área válida.}
+  \label{fig:diag-artefacto}
+\end{figure}
+
+La anotación en forma de contorno hueco se midió sobre \num{600} escenas con roca grande y
+resultó \textbf{rara}: una región de \num{1019} examinadas. Se reporta por completitud,
+pero no admite generalización ni justifica un filtro adicional.
+
+\subsection{El techo del conteo no está en las imágenes}
+
+Un contraste adicional cierra el diagnóstico. Los conjuntos de máscaras de experto que el
+propio AI4Mars incluye contienen \textbf{menos} roca grande, no más, y la proporción
+disminuye a medida que se exige mayor acuerdo entre anotadores
+(Tabla~\ref{tab:gold}).
+
+\begin{table}[H]
+  \centering
+  \caption[Presencia de roca grande según la fuente de etiqueta]{Presencia de roca grande
+    según la fuente de etiqueta y el nivel de acuerdo exigido. La cobertura mediana se
+    calcula aquí sobre todas las escenas del conjunto —no solo sobre las que contienen
+    roca—, por lo que difiere de la reportada en la Tabla~\ref{tab:validacion}.}
+  \label{tab:gold}
+  \begin{tabular}{lrrrr}
+    \toprule
+    \textbf{Fuente} & \textbf{Escenas} & \textbf{Con roca grande} & \textbf{Conteo medio}
+    & \textbf{Cobertura mediana} \\
+    \midrule
+    Colaborativas       & \num{16064} & \SI{13.9}{\percent} & 0,26 & \SI{58.6}{\percent} \\
+    Experto, nivel 1    & \num{322}   & \SI{16.5}{\percent} & 0,30 & \SI{12.5}{\percent} \\
+    Experto, nivel 2    & \num{322}   & \SI{6.2}{\percent}  & 0,10 & \SI{7.7}{\percent} \\
+    Experto, nivel 3    & \num{322}   & \SI{1.6}{\percent}  & 0,03 & \SI{0.8}{\percent} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+La conclusión es que la rareza de la clase roca grande \textbf{no es un defecto de la
+anotación colaborativa corregible con mejores anotadores}: es una propiedad de la
+taxonomía. La clase lecho rocoso, definida como roca en continuidad con el sustrato,
+absorbe la mayoría de los bloques que un lector humano contaría como rocas individuales, y
+lo hace de forma más acentuada cuanto más estricto es el criterio de acuerdo. El techo de
+E2 es la definición de la clase, no la calidad del dato ni la resolución de la imagen.
+
+\subsection{Una vía para levantar ese techo}
+
+De lo anterior se sigue una consecuencia constructiva. No hacen falta imágenes mejores;
+hace falta \textbf{usar} las que ya existen. La máscara indica \textit{dónde} hay roca, y
+lo hace con datos abundantes; la imagen puede indicar \textit{cuántos} bloques hay dentro
+de esa región.
+
+Se realizó una prueba de concepto sobre la escena de la
+Figura~\ref{fig:diag-bedrock} —\SI{98.8}{\percent} de la escena etiquetada como roca, cero
+píxeles de roca grande, conteo nulo—, combinando el gradiente de intensidad de la imagen
+como relieve, semillas de prominencia en los interiores planos restringidas a la región de
+roca de la máscara, y división de aguas con los mismos filtros de área de E2. El resultado
+(Figura~\ref{fig:hibrido}) son \num{456} bloques cuyas fronteras siguen las fracturas
+visibles en la imagen. El procedimiento sigue siendo clásico y no entrena ningún modelo.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{diag_prueba_hibrido.png}
+  \caption[Prueba de concepto del enfoque híbrido]{Prueba de concepto: la máscara indica
+    dónde hay roca y el gradiente de la imagen cuántos bloques la componen. Donde el
+    conteo actual devuelve cero, el enfoque híbrido recupera \num{456} bloques con
+    fronteras que siguen las fracturas visibles.}
+  \label{fig:hibrido}
+\end{figure}
+
+Esta prueba se reporta como exploración y no como resultado. La cifra de \num{456} bloques
+es con toda probabilidad un sobreconteo, y el método requiere calibración y validación
+contra conteo humano antes de poder reportarse como indicador. Su valor aquí es
+demostrativo: prueba que la información que E2 no está viendo se encuentra en la imagen y
+no ausente del dato.
+
+\subsection{Limitaciones restantes}
+
+Además de las anteriores, conviene consignar cuatro limitaciones.
+
+\paragraph{Ausencia de escala métrica.} Los tamaños son relativos al campo de visión. Sin
+la geometría de la cámara o la información estereoscópica, no es posible expresarlos en
+centímetros ni construir distribuciones tamaño--frecuencia comparables con la literatura
+en magnitud. La cámara de navegación es un par estéreo, de modo que la vía existe, pero
+el subconjunto disponible es casi enteramente monocular.
+
+\paragraph{Ausencia de conteo de referencia.} No existe un conteo humano de rocas contra
+el cual medir el acierto de E2. La validación disponible es indirecta: coherencia de la
+forma de la distribución, contraste con etiquetas de experto y comparación con métodos de
+aprendizaje. Una validación con observadores humanos sobre una muestra acotada queda
+planteada como trabajo pendiente.
+
+\paragraph{Subdivisión residual.} El criterio de prominencia redujo sustancialmente la
+fragmentación, pero no la eliminó: el \SI{24.0}{\percent} de las escenas que cuentan
+presentan más rocas que componentes conectadas.
+
+\paragraph{Alcance del subconjunto.} Los resultados corresponden a una cámara de un rover
+en una región. No se extienden sin más a otras misiones, otras cámaras ni otros terrenos.

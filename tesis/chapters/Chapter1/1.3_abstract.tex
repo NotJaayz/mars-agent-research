@@ -1,0 +1,41 @@
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+
+Las misiones de superficie en Marte han acumulado cientos de miles de imágenes de
+cámaras de navegación, y el conjunto AI4Mars aporta además máscaras de segmentación por
+píxel producidas por anotación colaborativa. Esas máscaras se han empleado casi
+exclusivamente para entrenar redes neuronales, de modo que la información cuantitativa
+que ya contienen permanece en buena medida sin explotar. Este trabajo pregunta qué
+indicadores de terreno pueden derivarse directamente de ellas sin entrenar ningún modelo.
+
+Se implementó un procedimiento reproducible de procesamiento clásico de imagen que, para
+cada máscara, calcula la cobertura de roca visible como cociente entre píxeles de roca y
+píxeles etiquetados, y estima el número de rocas individuales mediante componentes
+conectadas, transformada de distancia euclidiana y división de aguas guiada por máximos
+de prominencia, con filtros explícitos de área y forma. El procedimiento se ejecutó sobre
+las \num{16064} imágenes de la cámara de navegación del rover \textit{Curiosity} que
+disponen de máscara de entrenamiento.
+
+La cobertura resultó calculable en el \SI{67.3}{\percent} de las escenas, con una
+mediana del \SI{96.8}{\percent} sobre píxeles etiquetados, mientras que el conteo se
+aplicó a \num{2193} imágenes y arrojó \num{4204} rocas con una distribución
+tamaño--frecuencia decreciente. Los dos indicadores resultaron estadísticamente
+independientes ($r = 0{,}02$), lo que confirma que miden facetas distintas del terreno.
+La validación contra las \num{322} máscaras de experto incluidas en el propio conjunto
+reveló que la anotación colaborativa sobreestima la cobertura de forma sistemática —la
+mediana cae al \SI{46.1}{\percent}—, sesgo que se atribuye a la mayor saliencia visual de
+la roca frente al suelo y la arena. Un diagnóstico de los modos de error mostró que el
+techo del conteo no está en la resolución de las imágenes sino en la taxonomía de las
+etiquetas: la clase \textit{roca grande} aporta solo el \SI{2.5}{\percent} de la roca
+anotada y es aún más escasa en las máscaras de experto.
+
+El trabajo entrega un conjunto de resultados con veinticuatro indicadores por imagen, un
+diagnóstico cuantitativo de las limitaciones del conjunto de datos y una comparación con
+dos enfoques de aprendizaje automático que sitúa el desempeño del método clásico en
+contexto.
+
+\vspace{0.4cm}
+\noindent
+\textbf{Palabras clave:} Marte; AI4Mars; segmentación semántica; división de aguas;
+morfología matemática; cobertura de roca; distribución tamaño--frecuencia;
+anotación colaborativa.

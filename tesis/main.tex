@@ -1,0 +1,185 @@
+\documentclass[12pt,twoside]{report}
+
+% =============================================================
+% CONFIGURACIÓN GENERAL
+% =============================================================
+
+% Condicionales para configuración por modalidad
+\usepackage{etoolbox}
+
+% Datos generales y modalidad del proyecto
+\input{config}
+
+% Codificación e idioma
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noquoting,es-lcroman,es-tabla]{babel}
+\usepackage{csquotes}
+
+% Página y tipografía
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{newtxtext,newtxmath}
+\usepackage{setspace}
+\doublespacing
+\setlength{\parindent}{1.27cm}
+\setlength{\parskip}{0pt}
+\usepackage{ragged2e}
+\justifying
+\clubpenalty=10000
+\widowpenalty=10000
+
+% Matemáticas, tablas y figuras
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage{booktabs,longtable,adjustbox}
+\usepackage{caption,subcaption}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{siunitx}
+% El separador de miles requiere dobles llaves: con {.} siunitx v3 lo descarta y
+% usa la coma por defecto, incorrecta en español.
+\sisetup{output-decimal-marker={,},group-separator={{.}}}
+
+% Diagramas
+\usepackage{tikz}
+\usetikzlibrary{fit,positioning,arrows.meta,calc,babel}
+
+% Títulos de capítulos y secciones
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\centering\huge}
+  {\chaptername\ \thechapter}
+  {0.5em}
+  {}
+\titlespacing*{\chapter}{0pt}{-10pt}{20pt}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+% Encabezados y pies de página
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[RO,LE]{\ThesisShortTitle}
+\fancyfoot[LE,RO]{\thepage}
+\fancyfoot[LO,RE]{Capítulo \thechapter}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Bibliografía APA 7 con Biber
+\usepackage[
+  style=apa,
+  backend=biber,
+  natbib=true
+]{biblatex}
+\DeclareLanguageMapping{spanish}{spanish-apa}
+\DeclareDelimFormat{nameyeardelim}{\addcomma\space}
+\addbibresource{references.bib}
+
+% Enlaces
+\usepackage[hidelinks]{hyperref}
+
+
+\begin{document}
+
+% =============================================================
+% PRELIMINARES
+% =============================================================
+
+\pagestyle{plain}
+\pagenumbering{roman}
+
+\input{chapters/Chapter1/1.1_title}
+\input{chapters/Chapter1/1.2_declaration}
+\input{chapters/Chapter1/1.3_abstract}
+\input{chapters/Chapter1/1.3_abstract_en}
+\input{chapters/Chapter1/1.4_Acknowledgements}
+\input{abbreviations}
+
+\begin{spacing}{1.5}
+  \tableofcontents
+\end{spacing}
+
+\clearpage
+\addcontentsline{toc}{chapter}{Índice de figuras}
+\listoffigures
+
+\clearpage
+\addcontentsline{toc}{chapter}{Índice de tablas}
+\listoftables
+
+
+% =============================================================
+% CUERPO DEL DOCUMENTO
+% =============================================================
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\pagestyle{fancy}
+
+% -------------------------------------------------------------
+% Capítulo 1. Introducción
+% -------------------------------------------------------------
+\input{chapters/Chapter1/1.5_chapter01-introduction}
+
+% -------------------------------------------------------------
+% Capítulo 2. Contexto y antecedentes
+% -------------------------------------------------------------
+\input{chapters/Chapter2/chapter02}
+
+% -------------------------------------------------------------
+% Capítulo 3. Diseño y métodos del proyecto
+% -------------------------------------------------------------
+\input{chapters/Chapter3/chapter03}
+
+% -------------------------------------------------------------
+% Desarrollo e implementación
+%
+% Este capítulo se omite automáticamente en investigación.
+% Se incluye en innovación y emprendimiento.
+% Su estructura interna se adapta automáticamente a la
+% modalidad seleccionada en config.tex.
+% -------------------------------------------------------------
+
+\ifdefstring{\ModalidadProyecto}{investigacion}{
+  % En investigación se omite este capítulo.
+}{
+  \input{chapters/Chapter4/chapter04}
+}
+
+% -------------------------------------------------------------
+% Resultados y evaluación
+% -------------------------------------------------------------
+\input{chapters/Chapter5/chapter05}
+
+% -------------------------------------------------------------
+% Conclusiones y recomendaciones
+% -------------------------------------------------------------
+\input{chapters/Chapter6/chapter06}
+
+
+% =============================================================
+% GLOSARIO Y ANEXOS
+% =============================================================
+
+\clearpage
+\pagestyle{plain}
+
+\input{glossary}
+
+\appendix
+\input{chapters/Appendices/appendixA}
+
+
+% =============================================================
+% REFERENCIAS
+% =============================================================
+
+\clearpage
+\chapter*{Referencias}
+\addcontentsline{toc}{chapter}{Referencias}
+\printbibliography[heading=none]
+
+\end{document}

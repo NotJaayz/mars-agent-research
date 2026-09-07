@@ -1,0 +1,353 @@
+\chapter{Diseño y métodos del proyecto}
+\label{cap:metodos}
+
+\section{Enfoque y diseño}
+
+El estudio es \textbf{observacional, descriptivo y de corte transversal}. Observacional
+porque no se interviene sobre el objeto de estudio: se analizan máscaras ya producidas,
+sin generar anotación nueva ni modificar las imágenes. Descriptivo porque el propósito es
+caracterizar el terreno mediante indicadores cuantitativos, no contrastar hipótesis
+causales. Y de corte transversal porque cada imagen se analiza de forma independiente,
+como una observación aislada; el orden de adquisición se emplea únicamente como variable
+descriptiva y no como serie temporal calibrada.
+
+La \textbf{unidad de análisis} es la pareja formada por una imagen y su máscara de
+segmentación. Cada unidad produce una fila del conjunto de resultados con los indicadores
+calculados. No hay agregación previa: las estadísticas del
+Capítulo~\ref{cap:resultados} se derivan de esas filas.
+
+Una decisión de diseño conviene explicitarla desde el principio, porque condiciona la
+interpretación de todo lo que sigue: \textbf{el procedimiento no lee las imágenes}. Toda
+la información que consume proviene de la máscara. Las imágenes se emplean únicamente
+para la inspección visual de las figuras y para fijar el identificador de cada escena.
+Esta elección responde a la pregunta de investigación —qué puede medirse sobre las
+máscaras— pero impone un techo que el Capítulo~\ref{cap:resultados} cuantifica.
+
+\section{Datos y fuentes de información}
+
+\subsection{Origen y versión}
+
+Se emplea el conjunto AI4Mars en su versión 0.6 \citep{swan2022ai4marsdata}, descargada
+del repositorio público. El conjunto reúne imágenes de los rovers \textit{Spirit},
+\textit{Opportunity} y \textit{Curiosity} procedentes del Planetary Data System
+\citep{nasapds2024}, junto con máscaras de segmentación por píxel obtenidas por anotación
+colaborativa.
+
+\subsection{Subconjunto de estudio}
+
+El alcance se restringe a la \textbf{cámara de navegación del rover \textit{Curiosity}}
+con \textbf{máscaras colaborativas de entrenamiento}. Quedan fuera los rovers de la misión
+\textit{Mars Exploration Rovers}, el rover \textit{Perseverance} y la cámara de mástil
+multiespectral. La restricción persigue homogeneidad instrumental: todas las escenas
+provienen del mismo sensor, con la misma resolución y el mismo régimen radiométrico, de
+modo que las comparaciones entre imágenes no arrastran diferencias de cámara.
+
+El emparejamiento entre imagen y máscara se realiza por coincidencia del nombre base. El
+directorio de imágenes contiene \num{18127} archivos y el de máscaras de entrenamiento
+\num{16064}; el análisis se aplica a las \num{16064} parejas completas, ya que sin máscara
+no hay dato de entrada.
+
+\subsection{Codificación de las máscaras}
+
+Cada máscara es una imagen en escala de grises del mismo tamaño que la original
+—\num{1024}$\times$\num{1024} píxeles— donde el valor entero de cada píxel identifica la
+clase de terreno. La Tabla~\ref{tab:codificacion} recoge la codificación de la escala de
+navegación.
+
+\begin{table}[H]
+  \centering
+  \caption{Codificación de la escala de navegación en las máscaras de AI4Mars v0.6.}
+  \label{tab:codificacion}
+  \begin{tabular}{clp{7.6cm}}
+    \toprule
+    \textbf{Valor} & \textbf{Clase} & \textbf{Descripción} \\
+    \midrule
+    0   & Suelo (\textit{soil})        & Regolito compacto transitable. \\
+    1   & Lecho rocoso (\textit{bedrock}) & Roca expuesta en continuidad con el sustrato. \\
+    2   & Arena (\textit{sand})        & Depósito suelto, riesgo de atrapamiento. \\
+    3   & Roca grande (\textit{big rock}) & Bloque discreto apoyado sobre el terreno. \\
+    255 & Sin etiqueta (\textit{null}) & Píxel sin clase asignada. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Esta codificación se verificó de tres formas independientes antes de calcular ningún
+indicador: contra el archivo de claves de clase distribuido con el conjunto, contra su
+documentación, y píxel a píxel sobre una muestra de máscaras contrastada con las imágenes
+correspondientes. La verificación fue necesaria porque la codificación asumida en la fase
+de propuesta era incorrecta —suponía cinco clases con el fondo en el valor cero— y
+haberla arrastrado habría invalidado silenciosamente todos los resultados.
+
+El valor \num{255} agrupa dos situaciones distintas: píxeles sin acuerdo suficiente entre
+anotadores y píxeles que el propio conjunto excluye por diseño, correspondientes al
+cuerpo del rover, al cielo y a distancias superiores a treinta metros. En ambos casos el
+píxel se excluye de todos los cálculos, y la fracción que representa se reporta como
+indicador de calidad de cada escena.
+
+\subsection{Criterios de inclusión}
+
+Se calcula la cobertura para toda máscara con al menos un píxel etiquetado. El conteo de
+rocas se aplica únicamente a las máscaras que contienen al menos un píxel de la clase
+roca grande, ya que es la única sobre la que el indicador está definido. Ninguna imagen se
+descarta del conjunto de resultados: las que no admiten un indicador reciben una bandera
+de calidad que lo documenta, de modo que el conjunto final describe también sus propias
+ausencias.
+
+\section{Métodos y herramientas}
+
+\subsection{Estructura del procedimiento}
+
+La Figura~\ref{fig:esquema-metodo} resume el flujo completo. La máscara de entrada se
+bifurca en dos ramas: una calcula la cobertura por conteo de píxeles, y la otra estima el
+número de rocas mediante una secuencia de operaciones geométricas.
+
+\begin{figure}[H]
+  \centering
+  % El documento va a doble espacio; dentro del diagrama se fuerza espacio simple
+  % para que el texto de los nodos no quede separado.
+  \begin{spacing}{1}
+  \begin{tikzpicture}[
+      font=\footnotesize,
+      node distance=5mm and 6mm,
+      caja/.style={draw, rounded corners=2pt, align=center, inner sep=3pt,
+                   minimum height=9mm, text width=24mm},
+      dato/.style={caja, fill=black!8},
+      op/.style={caja},
+      res/.style={caja, very thick, fill=black!3},
+      fl/.style={-{Latex[length=1.8mm]}, thick}
+    ]
+
+    \node[dato] (mask) {Máscara\\AI4Mars};
+
+    % --- Rama superior: cobertura (E1) ---
+    \node[op, above right=3mm and 9mm of mask] (val) {Píxeles válidos\\($\neq 255$)};
+    \node[res, right=of val] (e1) {\textbf{E1}\\Cobertura};
+
+    % --- Rama inferior: conteo (E2), en dos hileras ---
+    \node[op, below right=3mm and 9mm of mask] (bin) {Binaria de\\roca grande};
+    \node[op, right=of bin] (morf) {Apertura y\\cierre $3\times3$};
+    \node[op, right=of morf] (dist) {Transformada\\de distancia};
+
+    \node[op, below=8mm of bin]  (ws)   {División\\de aguas};
+    \node[op, below=8mm of morf] (filt) {Filtros de\\área y forma};
+    \node[res, below=8mm of dist] (e2)  {\textbf{E2}\\Conteo};
+    \node[op, left=of ws] (max) {Máximos de\\prominencia};
+
+    \draw[fl] (mask) |- (val);
+    \draw[fl] (val)  -- (e1);
+    \draw[fl] (mask) |- (bin);
+    \draw[fl] (bin)  -- (morf);
+    \draw[fl] (morf) -- (dist);
+    % El paso de la primera a la segunda hilera rodea por la izquierda.
+    \draw[fl] (dist.south) -- ++(0,-4mm) -| (max.north);
+    \draw[fl] (max)  -- (ws);
+    \draw[fl] (ws)   -- (filt);
+    \draw[fl] (filt) -- (e2);
+
+  \end{tikzpicture}
+  \end{spacing}
+  \caption[Esquema del procedimiento de cálculo]{Esquema del procedimiento. La rama
+    superior calcula la cobertura de roca visible (E1) por conteo de píxeles; la inferior
+    estima el número de rocas individuales (E2) mediante morfología matemática y división
+    de aguas.}
+  \label{fig:esquema-metodo}
+\end{figure}
+
+\subsection{Cobertura de roca visible (E1)}
+
+Sea $M$ la máscara y $|\cdot|$ el cardinal de un conjunto de píxeles. Se definen el
+conjunto de píxeles válidos y el de píxeles de roca como
+\[
+  V = \{p : M(p) \neq 255\},
+  \qquad
+  R = \{p : M(p) \in \{1, 3\}\},
+\]
+es decir, la roca agrupa el lecho rocoso y la roca grande. La cobertura se define como
+\begin{equation}
+  C = 100 \cdot \frac{|R|}{|V|}.
+  \label{eq:cobertura}
+\end{equation}
+
+La elección del denominador merece justificación, porque no es neutral. Usar $|V|$
+responde a la pregunta \textit{qué fracción del terreno clasificado es roca}, que es la
+definición adoptada en la propuesta. La alternativa —dividir por el total de píxeles de la
+imagen— responde a una pregunta distinta y entrega una cota inferior conservadora, ya que
+trata los píxeles sin etiqueta como si no fueran roca. Ambas medidas se reportan en el
+conjunto de resultados, junto con la fracción de escena etiquetada $|V|/|M|$, que permite
+al lector juzgar cuánto pesa la diferencia en cada escena.
+
+El riesgo de esta elección es que una escena escasamente etiquetada produzca coberturas
+altas espurias. El Capítulo~\ref{cap:resultados} contrasta explícitamente esa hipótesis.
+
+\subsection{Conteo aproximado de rocas individuales (E2)}
+
+El conteo opera sobre la máscara binaria $B = \{p : M(p) = 3\}$ y consta de seis etapas.
+
+\paragraph{Limpieza morfológica.} Se aplica una apertura seguida de un cierre, ambos con
+elemento estructurante de $3\times3$ píxeles. La apertura elimina píxeles aislados
+producto de imprecisiones en el trazado de los polígonos de anotación; el cierre rellena
+huecos pequeños dentro de una misma región.
+
+\paragraph{Componentes conectadas.} Se etiquetan las regiones conectadas con criterio de
+ocho vecinos. Su número se registra como indicador independiente, porque comparado con el
+conteo final permite medir cuánta subdivisión introduce la división de aguas.
+
+\paragraph{Transformada de distancia.} Sobre la binaria limpia se calcula la transformada
+de distancia euclidiana: cada píxel de roca recibe su distancia al fondo más cercano. La
+superficie resultante se suaviza con un filtro gaussiano de desviación
+$\sigma = 3{,}0$ píxeles, con el fin de evitar que las irregularidades del contorno
+generen máximos espurios.
+
+\paragraph{Detección de semillas por prominencia.} Las semillas de la división de aguas se
+obtienen mediante la \textbf{transformada de máximos h}, que conserva únicamente los
+máximos cuya altura sobre el entorno supera un umbral $h = 1{,}0$ píxeles de distancia.
+
+Este punto concentra la principal decisión de calibración del trabajo y conviene
+explicarlo. La alternativa habitual es detectar máximos locales imponiendo una separación
+mínima entre ellos. Ese criterio falla en un caso concreto y frecuente: una losa de lecho
+rocoso extensa etiquetada como roca grande genera, sobre la transformada de distancia
+suavizada, una cresta larga con muchas ondulaciones de poca altura, cada una de las cuales
+se convierte en una semilla y por tanto en una roca. Se observaron casos en que una sola
+región continua producía hasta ciento cuarenta y dos semillas. El criterio de prominencia
+descarta esas ondulaciones porque su altura sobre el entorno es pequeña, y conserva los
+máximos que corresponden a centros genuinos de bloques.
+
+Se verificó que el criterio actúa de forma \textbf{selectiva}, lo cual era la propiedad
+deseada y no algo garantizado de antemano: sobre escenas marcadas como sospechosas
+—solidez media inferior a $0{,}7$ o más de quince rocas— reduce el conteo entre un
+\SI{32}{\percent} y un \SI{44}{\percent}, mientras que en escenas normales, de una a cinco
+rocas y regiones compactas, no altera ningún conteo.
+
+\paragraph{División de aguas.} Se inunda el negativo de la transformada de distancia
+partiendo de las semillas, restringiendo el crecimiento a la máscara binaria
+\citep{vincent1991watersheds}. El resultado es una partición de la región de roca grande
+en subregiones disjuntas.
+
+\paragraph{Filtrado por tamaño y forma.} Cada subregión debe superar dos criterios para
+contarse como roca: un \textbf{área mínima} del \SI{0.05}{\percent} del área de la imagen
+—\num{524} píxeles para una imagen de \num{1024}$\times$\num{1024}—, y una
+\textbf{relación de aspecto} de su caja envolvente no superior a $5{,}0$. El primero
+descarta motas de anotación; el segundo descarta bandas muy alargadas, que en la práctica
+corresponden a trazados manuales del horizonte y no a bloques.
+
+\subsection{Parámetros}
+
+Todos los umbrales se pasan como argumentos con valores por defecto documentados; ninguno
+está fijado dentro de la lógica de cálculo. La Tabla~\ref{tab:parametros} los recoge.
+
+\begin{table}[H]
+  \centering
+  \caption{Parámetros del procedimiento y su efecto.}
+  \label{tab:parametros}
+  \begin{tabular}{llp{6.3cm}}
+    \toprule
+    \textbf{Parámetro} & \textbf{Valor} & \textbf{Efecto} \\
+    \midrule
+    Apertura            & $3$      & Elimina motas de anotación. \\
+    Cierre              & $3$      & Rellena huecos internos. \\
+    Área mínima         & \SI{0.05}{\percent} & Descarta regiones demasiado pequeñas. \\
+    Relación de aspecto & $5{,}0$  & Descarta bandas alargadas. \\
+    Suavizado $\sigma$  & $3{,}0$  & Evita máximos espurios del contorno. \\
+    Prominencia $h$     & $1{,}0$  & Suprime la subdivisión de regiones continuas. \\
+    Conectividad        & $8$      & Admite contacto diagonal entre píxeles. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+La calibración se realizó por inspección visual sobre escenas de tipos de terreno
+distintos, comparando el resultado de la división de aguas con la imagen original, según
+el criterio de que un parámetro está bien ajustado cuando el corte reproduce la separación
+que un observador humano trazaría.
+
+\subsection{Herramientas y reproducibilidad}
+
+El procedimiento se implementó en Python sobre \texttt{NumPy}
+\citep{harris2020numpy}, \texttt{SciPy} \citep{virtanen2020scipy} y
+\texttt{scikit-image} \citep{vanderwalt2014skimage}, con \texttt{pandas} para la
+construcción del conjunto de resultados. Corre íntegramente en procesador convencional
+y no requiere unidad gráfica. La Tabla~\ref{tab:versiones} registra las versiones
+empleadas.
+
+\begin{table}[H]
+  \centering
+  \caption{Versiones de las bibliotecas utilizadas.}
+  \label{tab:versiones}
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Componente} & \textbf{Versión} \\
+    \midrule
+    Python        & 3.13.13 \\
+    NumPy         & 2.5.1 \\
+    SciPy         & 1.18.0 \\
+    scikit-image  & 0.26.0 \\
+    pandas        & 3.0.5 \\
+    Pillow        & 12.3.0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+El código se organiza en módulos de responsabilidad única, con funciones que reciben
+arreglos y devuelven arreglos o números, sin efectos secundarios. Una única función
+concentra la lógica de segmentación y es reutilizada tanto por el cálculo de indicadores
+como por la generación de figuras, de modo que las figuras ilustran necesariamente el
+mismo cálculo que produce los resultados. El Anexo~\ref{app:material-complementario}
+describe la organización de los recursos.
+
+\section{Estrategia de evaluación y validación}
+
+Un procedimiento descriptivo como este no admite una métrica de acierto única, porque no
+existe un conteo de referencia con el cual compararse. La validación se abordó por tanto
+en cuatro frentes complementarios.
+
+\paragraph{Verificación de la codificación.} Comprobación triple de la correspondencia
+entre valores y clases, descrita más arriba. Es la validación más elemental y la más
+crítica, porque un error en este punto no produce fallos visibles.
+
+\paragraph{Control del artefacto del denominador.} Contraste explícito entre la cobertura
+y la fracción de escena etiquetada, para descartar que las coberturas altas sean un
+efecto de la fórmula de la ecuación~\eqref{eq:cobertura} y no del terreno.
+
+\paragraph{Contraste con etiquetas de experto.} El conjunto incluye \num{322} máscaras
+anotadas por especialistas con acuerdo del \SI{100}{\percent}, en tres niveles de
+exigencia según el número mínimo de anotadores coincidentes. Se ejecutó sobre ellas el
+mismo procedimiento, \textbf{sin modificar ningún parámetro}, y se compararon los
+indicadores resultantes con los obtenidos de las máscaras colaborativas. Este contraste no
+mide el acierto del procedimiento sino la calidad del dato de entrada, y resultó ser la
+fuente del hallazgo más relevante del trabajo.
+
+\paragraph{Comparación con aprendizaje automático.} Como referencia externa se contrastó
+el procedimiento con dos enfoques de aprendizaje profundo ejecutados en equipo local: un
+modelo fundacional de segmentación aplicado sin entrenamiento específico
+\citep{kirillov2023sam, zhao2023fastsam} y un segmentador entrenado por aprendizaje por
+transferencia sobre las propias máscaras \citep{chen2017deeplab}. El propósito no es
+competir con ellos, sino situar el desempeño del método clásico y separar las limitaciones
+atribuibles al procedimiento de las atribuibles a los datos.
+
+A estos frentes se añadió, tras observar comportamientos anómalos en el conteo, un
+\textbf{diagnóstico sistemático de los modos de error}, que atribuye cada tipo de fallo a
+su causa —la etiqueta, los umbrales o el algoritmo— y se reporta en el
+Capítulo~\ref{cap:resultados}.
+
+\section{Consideraciones éticas y de gestión de datos}
+
+El trabajo no involucra sujetos humanos ni datos personales, de modo que no requiere
+aprobación de un comité de ética. Hay, sin embargo, tres consideraciones pertinentes.
+
+\paragraph{Procedencia y licencia.} Las imágenes son productos públicos de la NASA
+obtenidos del Planetary Data System \citep{nasapds2024}, y las máscaras se distribuyen
+con el conjunto AI4Mars \citep{swan2022ai4marsdata} bajo licencia abierta. Ambas fuentes
+se citan explícitamente. El conjunto de datos, de unos dieciséis gigabytes, no se
+redistribuye con el material del proyecto: el código lo referencia por una ruta
+configurable, de modo que cualquier persona lo descargue de la fuente original.
+
+\paragraph{Reconocimiento del trabajo de anotación.} Las máscaras existen gracias al
+esfuerzo de miles de voluntarios. Un trabajo que analiza críticamente la calidad de esa
+anotación —como hace este— tiene la obligación de precisar el alcance de su crítica: el
+sesgo que se documenta en el Capítulo~\ref{cap:resultados} es un efecto estructural del
+diseño de la tarea de anotación, no una deficiencia atribuible a quienes la realizaron.
+
+\paragraph{Alcance de las afirmaciones.} Los indicadores derivados son relativos al
+conjunto de máscaras del que provienen y no constituyen estimaciones absolutas de la
+abundancia de roca en el terreno marciano. Presentarlos como tales sería una
+sobreinterpretación del dato, y el documento evita hacerlo de forma explícita en cada
+resultado afectado.

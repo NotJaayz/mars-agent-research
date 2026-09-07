@@ -1,0 +1,388 @@
+% =============================================================
+% REFERENCIAS BIBLIOGRÁFICAS
+% Estilo APA 7 vía biblatex + biber (configurado en main.tex).
+% Las entradas provienen de la revisión de literatura del proyecto;
+% se eliminaron las duplicadas de la versión anterior del documento.
+% =============================================================
+
+% ------------------------- Dataset y contexto AI4Mars ---------------------------
+
+@inproceedings{swan2021ai4mars,
+  author    = {Swan, R. Michael and Atha, Deegan and Leopold, Henry A. and
+               Gildner, Matthew and Oij, Stephanie and Chiu, Cindy and Ono, Masahiro},
+  title     = {{AI4MARS}: A Dataset for Terrain-Aware Autonomous Driving on Mars},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and
+               Pattern Recognition (CVPR) Workshops},
+  pages     = {1982--1991},
+  year      = {2021},
+  doi       = {10.1109/CVPRW53098.2021.00226}
+}
+
+@dataset{swan2022ai4marsdata,
+  author    = {Swan, R. Michael and Ono, Masahiro and Atha, Deegan},
+  title     = {{AI4Mars}: A Dataset for Terrain-Aware Autonomous Driving on Mars},
+  version   = {0.6},
+  publisher = {Zenodo},
+  year      = {2022},
+  doi       = {10.5281/zenodo.15995036}
+}
+
+@misc{nasapds2024,
+  author       = {{NASA Jet Propulsion Laboratory}},
+  title        = {Planetary Data System --- Imaging Node},
+  year         = {2024},
+  howpublished = {\url{https://pds-imaging.jpl.nasa.gov/}}
+}
+
+@misc{jpl2017wheels,
+  author       = {{NASA Jet Propulsion Laboratory}},
+  title        = {Premature Wear of the {MSL} Wheels},
+  series       = {NASA Lessons Learned Information System, Lesson 22401},
+  year         = {2017},
+  howpublished = {\url{https://llis.nasa.gov/lesson/22401}}
+}
+
+% ------------------------- Instrumentos de a bordo ------------------------------
+
+@article{bell2017mastcam,
+  author  = {Bell III, James F. and Godber, A. and McNair, S. and Caplinger, M. A. and
+             Maki, J. N. and Lemmon, M. T. and Deen, R. G.},
+  title   = {The {Mars Science Laboratory Curiosity} rover {Mastcam} instruments:
+             Preflight and in-flight calibration, validation, and data archiving},
+  journal = {Earth and Space Science},
+  volume  = {4},
+  number  = {7},
+  pages   = {396--452},
+  year    = {2017},
+  doi     = {10.1002/2016EA000219}
+}
+
+@article{edgett2012mahli,
+  author  = {Edgett, Kenneth S. and Yingst, R. Aileen and Ravine, Michael A. and
+             Caplinger, Michael A. and Maki, Justin N. and Ghaemi, F. Tony and
+             Schaffner, Jacob A. and Bell III, James F. and Edwards, Laurence J. and
+             Herkenhoff, Kenneth E.},
+  title   = {{Curiosity's Mars Hand Lens Imager (MAHLI)} investigation},
+  journal = {Space Science Reviews},
+  volume  = {170},
+  number  = {1--4},
+  pages   = {259--317},
+  year    = {2012},
+  doi     = {10.1007/s11214-012-9910-4}
+}
+
+% ------------------------- Abundancia y distribución de rocas -------------------
+
+@article{golombek2003mer,
+  author  = {Golombek, Matthew P. and Grant, John A. and Crumpler, Larry S. and
+             Greeley, Ronald and Arvidson, Raymond E. and Bell III, James F.},
+  title   = {Selection of the {Mars Exploration Rover} landing sites and rock
+             size--frequency distributions on {Mars}},
+  journal = {Journal of Geophysical Research: Planets},
+  volume  = {108},
+  number  = {E12},
+  pages   = {8072},
+  year    = {2003},
+  doi     = {10.1029/2003JE002074}
+}
+
+@article{golombek2012msl,
+  author  = {Golombek, Matthew P. and Grant, John A. and Vasavada, Ashwin R. and
+             Watkins, Michael M. and Grotzinger, John P. and Kipp, Devin},
+  title   = {Selection of the {Mars Science Laboratory} landing site},
+  journal = {Space Science Reviews},
+  volume  = {170},
+  number  = {1--4},
+  pages   = {641--737},
+  year    = {2012},
+  doi     = {10.1007/s11214-012-9916-y}
+}
+
+@article{golombek2021insight,
+  author  = {Golombek, Matthew P. and Warner, Nathan H. and Grant, John A. and
+             Hauber, Ernst and Ansan, Veronique and Weitz, Catherine M.},
+  title   = {Rock size--frequency distributions and surface properties at the
+             {InSight} landing site, {Mars}},
+  journal = {Journal of Geophysical Research: Planets},
+  volume  = {126},
+  number  = {9},
+  pages   = {e2021JE006883},
+  year    = {2021},
+  doi     = {10.1029/2021JE006883}
+}
+
+@article{di2015change3,
+  author  = {Di, Kaichang and Liu, Zhaoqin and Yue, Zongyu and Peng, Man and
+             Hu, Wenmin and Wan, Wenhui and Liu, Bin},
+  title   = {Rock size--frequency distribution analysis at the {Chang'e-3} landing site},
+  journal = {Geophysical Research Letters},
+  volume  = {42},
+  number  = {18},
+  pages   = {7406--7414},
+  year    = {2015},
+  doi     = {10.1002/2015GL065493}
+}
+
+@article{chen2022zhurong,
+  author  = {Chen, Zhen and Wu, Bo and Wang, Yiran and Liu, Shuo and Li, Zhaojin and
+             Yang, Chenyu and Rao, Wei},
+  title   = {Rock abundance and erosion rate at the {Zhurong} landing site in southern
+             {Utopia Planitia} on {Mars}},
+  journal = {Earth and Space Science},
+  volume  = {9},
+  number  = {8},
+  pages   = {e2022EA002252},
+  year    = {2022},
+  doi     = {10.1029/2022EA002252}
+}
+
+@article{sun2024zhurong,
+  author  = {Sun, Xiaohui and Chen, Zhen and Rao, Wei and Li, Jianjun and
+             Li, Chunlai and Liu, Yang},
+  title   = {The characteristic and size--frequency distribution of rocks at the
+             {Zhurong} landing site, {Mars}},
+  journal = {Frontiers in Astronomy and Space Sciences},
+  volume  = {11},
+  pages   = {1270079},
+  year    = {2024},
+  doi     = {10.3389/fspas.2024.1270079}
+}
+
+@article{lorenz2023analytic,
+  author  = {Lorenz, Ralph D.},
+  title   = {Analytic rock abundance distributions and their application to spacecraft
+             landing hazards},
+  journal = {Planetary and Space Science},
+  volume  = {234},
+  pages   = {105720},
+  year    = {2023},
+  doi     = {10.1016/j.pss.2023.105720}
+}
+
+@article{watkins2019boulder,
+  author  = {Watkins, Ryan N. and Bickel, Valentin T. and Kring, David A. and
+             Hirabayashi, Masatoshi and Minton, David A.},
+  title   = {Boulder distributions around young, small lunar impact craters},
+  journal = {Journal of Geophysical Research: Planets},
+  volume  = {124},
+  number  = {10},
+  pages   = {2754--2771},
+  year    = {2019},
+  doi     = {10.1029/2019JE005963}
+}
+
+% ------------------------- Segmentación de terreno marciano --------------------
+
+@article{qu2025review,
+  author  = {Qu, Yang and Chow, Chee-Onn and Chuah, Joon Huang and Soon, Kok Leong},
+  title   = {A systematic review of {Martian} image segmentation techniques for
+             {Mars} exploration (from 2019 to 2025)},
+  journal = {Advances in Space Research},
+  year    = {2025},
+  doi     = {10.1016/j.asr.2025.08.042}
+}
+
+@article{alkawi2025texture,
+  author  = {Alkawi, Osama and Qahwaji, Rami and Smith, Colin and Mnasri, Zied},
+  title   = {Texture-based segmentation for sand and rock in {Mars} images},
+  journal = {Advances in Space Research},
+  volume  = {76},
+  year    = {2025},
+  doi     = {10.1016/j.asr.2025.05.034}
+}
+
+@article{dai2022segmarsvit,
+  author  = {Dai, Yuqi and Zheng, Tie and Xue, Changbin and Zhou, Li},
+  title   = {{SegMarsViT}: Lightweight {Mars} terrain segmentation network for
+             autonomous driving in planetary exploration},
+  journal = {Remote Sensing},
+  volume  = {14},
+  number  = {24},
+  pages   = {6297},
+  year    = {2022},
+  doi     = {10.3390/rs14246297}
+}
+
+@article{liu2023hybrid,
+  author  = {Liu, Haiqiang and Yao, Meibao and Xiao, Xueming and Cui, Hutao},
+  title   = {A hybrid attention semantic segmentation network for unstructured
+             terrain on {Mars}},
+  journal = {Acta Astronautica},
+  volume  = {204},
+  pages   = {492--499},
+  year    = {2023},
+  doi     = {10.1016/j.actaastro.2022.08.002}
+}
+
+@article{xiong2023marsformer,
+  author  = {Xiong, Yiqing and Xiao, Xueming and Yao, Meibao and Liu, Haiqiang and
+             Yang, Hongwei and Fu, Yuegang},
+  title   = {{MarsFormer}: {Martian} rock semantic segmentation with transformer},
+  journal = {IEEE Transactions on Geoscience and Remote Sensing},
+  volume  = {61},
+  pages   = {1--12},
+  year    = {2023},
+  doi     = {10.1109/TGRS.2023.3302371}
+}
+
+@article{ma2025depthformer,
+  author  = {Ma, Yuchen and Li, Zhaojin and Wu, Bo and Duan, Ruilin},
+  title   = {{DepthFormer}: Depth-enhanced transformer network for semantic
+             segmentation of the {Martian} surface from rover images},
+  journal = {Earth and Space Science},
+  volume  = {12},
+  number  = {6},
+  pages   = {e2024EA003812},
+  year    = {2025},
+  doi     = {10.1029/2024EA003812}
+}
+
+@article{tian2024rsunet,
+  author  = {Tian, Peng and Yao, Meibao},
+  title   = {{RSU-Net}: An attention {U-Net} for {Martian} rock segmentation},
+  journal = {Journal of Physics: Conference Series},
+  volume  = {2762},
+  number  = {1},
+  pages   = {012001},
+  year    = {2024},
+  doi     = {10.1088/1742-6596/2762/1/012001}
+}
+
+@article{wang2021gmsri,
+  author  = {Wang, Chuanjin and Zhang, Zhen and Zhang, Yanan and Tian, Rui and
+             Ding, Mengyao},
+  title   = {{GMSRI}: A texture-based {Martian} surface rock image dataset},
+  journal = {Sensors},
+  volume  = {21},
+  number  = {16},
+  pages   = {5410},
+  year    = {2021},
+  doi     = {10.3390/s21165410}
+}
+
+@inproceedings{rothrock2016spoc,
+  author    = {Rothrock, Brandon and Kennedy, Ryan and Cunningham, Chris and
+               Papon, Jeremie and Heverly, Matthew and Ono, Masahiro},
+  title     = {{SPOC}: Deep learning-based terrain classification for
+               {Mars} rover missions},
+  booktitle = {AIAA SPACE 2016},
+  year      = {2016},
+  doi       = {10.2514/6.2016-5539}
+}
+
+% ------------------------- Watershed y morfología matemática -------------------
+
+@article{vincent1991watersheds,
+  author  = {Vincent, Luc and Soille, Pierre},
+  title   = {Watersheds in digital spaces: An efficient algorithm based on
+             immersion simulations},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume  = {13},
+  number  = {6},
+  pages   = {583--598},
+  year    = {1991},
+  doi     = {10.1109/34.87344}
+}
+
+@article{vanderwalt2014skimage,
+  author  = {van der Walt, Stéfan and Schönberger, Johannes L. and
+             Nunez-Iglesias, Juan and Boulogne, François and Warner, Joshua D. and
+             Yager, Neil and Gouillart, Emmanuelle and Yu, Tony},
+  title   = {scikit-image: Image processing in {Python}},
+  journal = {PeerJ},
+  volume  = {2},
+  pages   = {e453},
+  year    = {2014},
+  doi     = {10.7717/peerj.453}
+}
+
+@article{harris2020numpy,
+  author  = {Harris, Charles R. and Millman, K. Jarrod and van der Walt, Stéfan J.
+             and Gommers, Ralf and Virtanen, Pauli and Cournapeau, David},
+  title   = {Array programming with {NumPy}},
+  journal = {Nature},
+  volume  = {585},
+  number  = {7825},
+  pages   = {357--362},
+  year    = {2020},
+  doi     = {10.1038/s41586-020-2649-2}
+}
+
+@article{virtanen2020scipy,
+  author  = {Virtanen, Pauli and Gommers, Ralf and Oliphant, Travis E. and
+             Haberland, Matt and Reddy, Tyler and Cournapeau, David},
+  title   = {{SciPy} 1.0: Fundamental algorithms for scientific computing in {Python}},
+  journal = {Nature Methods},
+  volume  = {17},
+  number  = {3},
+  pages   = {261--272},
+  year    = {2020},
+  doi     = {10.1038/s41592-019-0686-2}
+}
+
+% ------------------------- Modelos usados en la comparación ---------------------
+
+@inproceedings{chen2017deeplab,
+  author    = {Chen, Liang-Chieh and Papandreou, George and Schroff, Florian and
+               Adam, Hartwig},
+  title     = {Rethinking atrous convolution for semantic image segmentation},
+  booktitle = {arXiv preprint arXiv:1706.05587},
+  year      = {2017},
+  doi       = {10.48550/arXiv.1706.05587}
+}
+
+@inproceedings{kirillov2023sam,
+  author    = {Kirillov, Alexander and Mintun, Eric and Ravi, Nikhila and
+               Mao, Hanzi and Rolland, Chloe and Gustafson, Laura and Xiao, Tete and
+               Whitehead, Spencer and Berg, Alexander C. and Lo, Wan-Yen and
+               Dollár, Piotr and Girshick, Ross},
+  title     = {Segment {Anything}},
+  booktitle = {Proceedings of the IEEE/CVF International Conference on
+               Computer Vision (ICCV)},
+  pages     = {4015--4026},
+  year      = {2023},
+  doi       = {10.1109/ICCV51070.2023.00371}
+}
+
+@article{zhao2023fastsam,
+  author  = {Zhao, Xu and Ding, Wenchao and An, Yongqi and Du, Yinglong and
+             Yu, Tao and Li, Min and Tang, Ming and Wang, Jinqiao},
+  title   = {Fast {Segment Anything}},
+  journal = {arXiv preprint arXiv:2306.12156},
+  year    = {2023},
+  doi     = {10.48550/arXiv.2306.12156}
+}
+
+% ------------------------- Aplicaciones terrestres análogas --------------------
+
+@article{grady2024rockfall,
+  author  = {Grady, Christopher L. and Bickel, Valentin T. and Mergili, Martin and
+             Jordan, Colm and McCoy, Scott},
+  title   = {A remote-sensing-based method using rockfall inventories for hazard
+             mapping at the community scale in the {Arequipa} region of {Peru}},
+  journal = {Remote Sensing},
+  volume  = {16},
+  number  = {19},
+  pages   = {3732},
+  year    = {2024},
+  doi     = {10.3390/rs16193732}
+}
+
+@article{guo2022blasted,
+  author  = {Guo, Xin and Zhang, Yong and Li, Jun and Wang, Hao},
+  title   = {Size measurement of blasted rock fragments based on a deep neural network},
+  journal = {Measurement},
+  volume  = {218},
+  pages   = {113207},
+  year    = {2022},
+  doi     = {10.1016/j.measurement.2023.113207}
+}
+
+@article{sharifi2024fragment,
+  author  = {Sharifi, Reza and Ghorbani, Ali and Deliormanli, Ahmet H.},
+  title   = {Determining rock fragment size distribution using a convolutional
+             neural network},
+  journal = {Rudarsko-geološko-naftni zbornik},
+  year    = {2024},
+  doi     = {10.17794/rgn.2024.2.1}
+}

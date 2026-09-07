@@ -1,0 +1,96 @@
+\chapter*{Glosario}
+\addcontentsline{toc}{chapter}{Glosario}
+
+\begin{description}
+
+  \item[Abundancia de rocas] Proporción de la superficie ocupada por rocas por
+    encima de un cierto tamaño, expresada habitualmente como porcentaje del área
+    total. En estudios de selección de sitio de aterrizaje, una abundancia baja
+    indica terreno relativamente limpio y valores altos señalan zonas peligrosas
+    para un módulo o un rover.
+
+  \item[Anotación colaborativa] Modalidad de trabajo en la que personas no
+    especialistas participan en tareas científicas, por ejemplo etiquetando
+    imágenes. En AI4Mars miles de voluntarios marcaron el tipo de terreno píxel a
+    píxel y las anotaciones se combinaron exigiendo acuerdo entre anotadores.
+
+  \item[Apertura morfológica] Erosión seguida de dilatación con el mismo elemento
+    estructurante. Elimina manchas pequeñas y ruido aislado sin alterar
+    sensiblemente las regiones grandes.
+
+  \item[Área de una componente] Número de píxeles que pertenecen a una misma
+    región conectada. Es una medida directa del tamaño proyectado del objeto.
+
+  \item[Caja envolvente] Rectángulo alineado con los ejes de la imagen que contiene
+    por completo una componente conectada. De ella se derivan el ancho, el alto y
+    la relación de aspecto.
+
+  \item[Cierre morfológico] Dilatación seguida de erosión. Rellena huecos pequeños
+    y une regiones separadas por una distancia mínima.
+
+  \item[Cobertura de roca visible] Porcentaje de píxeles etiquetados de una imagen
+    que corresponden a lecho rocoso o roca grande. Resume cuán rocoso es el terreno
+    de la escena.
+
+  \item[Componente conectada] Conjunto de píxeles activos de una imagen binaria en
+    el que cada píxel se alcanza desde los demás mediante pasos entre vecinos.
+    Con conectividad de ocho vecinos se admiten también los pasos diagonales.
+
+  \item[División de aguas] Técnica de segmentación que interpreta una imagen —o una
+    transformación de ella— como un relieve topográfico. A partir de semillas
+    situadas en los puntos altos, las regiones crecen hasta encontrarse y definen
+    las fronteras. Aquí se aplica sobre la transformada de distancia para separar
+    rocas que aparecen pegadas.
+
+  \item[Elemento estructurante] Máscara pequeña que define la vecindad empleada por
+    una operación morfológica.
+
+  \item[Lecho rocoso] Roca expuesta en continuidad con el sustrato, frente a los
+    bloques sueltos apoyados sobre el regolito. En la escala NAV corresponde a la
+    clase \textit{bedrock}.
+
+  \item[Máscara binaria] Imagen de dos valores en la que los píxeles activos
+    señalan la clase de interés y el resto el fondo.
+
+  \item[Máscara de segmentación por píxel] Imagen del mismo tamaño que la original
+    en la que cada píxel guarda un entero que identifica la clase de terreno a la
+    que pertenece.
+
+  \item[Máximo de prominencia] Máximo local cuya altura sobre el entorno supera un
+    umbral dado. Filtrar por prominencia descarta las crestas espurias que
+    subdividen una región continua.
+
+  \item[Píxel sin etiqueta] Píxel que la anotación deja sin clase asignada, por
+    falta de acuerdo entre anotadores o por corresponder al cuerpo del rover, al
+    cielo o a distancias mayores que el alcance definido. Se excluye de todos los
+    cálculos.
+
+  \item[Relación de aspecto] Cociente entre el lado mayor y el lado menor de la
+    caja envolvente. Sirve para descartar formas excesivamente alargadas, poco
+    plausibles como roca aislada.
+
+  \item[Reproducibilidad] Propiedad de un análisis que permite obtener los mismos
+    resultados a partir de los mismos datos siguiendo el procedimiento descrito,
+    con el código, los parámetros y las versiones de biblioteca documentados.
+
+  \item[Segmentación semántica] Tarea de asignar a cada píxel de una imagen una
+    etiqueta de clase, sin distinguir entre instancias de la misma clase.
+
+  \item[Semilla o marcador] Punto o región de partida a partir de la cual crece un
+    dominio en la división de aguas. Cada semilla origina, en principio, una región
+    de salida.
+
+  \item[Solidez] Cociente entre el área de una región y el área de su envolvente
+    convexa. Valores próximos a uno indican formas compactas; valores bajos
+    señalan contornos cóncavos o subdivisión excesiva.
+
+  \item[Transformada de distancia] Imagen en la que cada píxel activo guarda la
+    distancia al píxel de fondo más cercano. Sus máximos locales se sitúan en los
+    centros de las regiones y sirven como semillas naturales.
+
+  \item[Distribución tamaño--frecuencia] Relación entre el tamaño de las rocas y su
+    número. En superficies planetarias suele ser decreciente: predominan las rocas
+    pequeñas y la frecuencia cae al aumentar el tamaño.
+
+\end{description}
+\clearpage

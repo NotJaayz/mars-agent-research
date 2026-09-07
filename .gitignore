@@ -90,3 +90,20 @@ outputs/validacion_manual/imagenes/
 
 # Figuras de vetas: se regeneran con scripts/make_vein_figures.py
 outputs/figures/vetas/
+
+# ===== Artefactos de compilación LaTeX (tesis/) =====
+# El documento se compila en Overleaf o localmente; solo se versiona la fuente.
+tesis/*.aux
+tesis/*.log
+tesis/*.out
+tesis/*.toc
+tesis/*.lof
+tesis/*.lot
+tesis/*.bcf
+tesis/*.bbl
+tesis/*.blg
+tesis/*.run.xml
+tesis/*.fls
+tesis/*.fdb_latexmk
+tesis/*.synctex.gz
+tesis/main.pdf

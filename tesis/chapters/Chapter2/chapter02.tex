@@ -1,0 +1,159 @@
+\chapter{Contexto y antecedentes}
+\label{cap:contexto}
+
+\section{Caracterización del contexto}
+
+\subsection{Las rocas como restricción operativa}
+
+Un rover en Marte no dispone de asistencia. Cada metro recorrido se planifica desde la
+Tierra sobre imágenes tomadas el sol anterior, y cualquier obstáculo que el equipo de
+navegación no advierta se convierte en un riesgo real. Las rocas concentran ese riesgo por
+tres vías distintas.
+
+La primera es el daño mecánico. Las ruedas de aluminio de \textit{Curiosity} sufrieron
+perforaciones y desgarros muy por encima de lo previsto al transitar sobre lecho rocoso
+con aristas agudas fijas al sustrato, hasta el punto de motivar un cambio en la estrategia
+de conducción y una lección aprendida formal de la misión \citep{jpl2017wheels}. A
+diferencia de un bloque suelto, que cede al ser pisado, la roca anclada transmite toda la
+carga a la rueda.
+
+La segunda es el bloqueo de trayectoria. Un bloque de tamaño suficiente obliga a rodearlo,
+y en terreno con muchos bloques los desvíos se acumulan hasta hacer inviable una ruta.
+
+La tercera es el riesgo en el descenso. La abundancia de rocas por encima de un umbral de
+tamaño determina la probabilidad de que un módulo se apoye sobre un obstáculo o vuelque, y
+por eso entra directamente en la selección de sitio \citep{lorenz2023analytic}.
+
+\subsection{Cómo se ha medido la roca hasta ahora}
+
+La caracterización cuantitativa de rocas en superficies planetarias tiene una tradición
+consolidada, y su instrumento central es la \textbf{distribución tamaño--frecuencia}: el
+número de rocas por unidad de área que supera cada tamaño. \citet{golombek2003mer}
+establecieron el procedimiento para los sitios de los \textit{Mars Exploration Rovers},
+midiendo rocas sobre imágenes orbitales de alta resolución y ajustando modelos
+exponenciales; el mismo esquema se aplicó al sitio del \textit{Mars Science Laboratory}
+\citep{golombek2012msl} y, con instrumentación distinta, al entorno de \textit{InSight}
+\citep{golombek2021insight}.
+
+El enfoque se ha trasladado a otras misiones y otros cuerpos. En el sitio del rover chino
+\textit{Zhurong}, en \textit{Utopia Planitia}, la abundancia de rocas y la tasa de erosión
+se estimaron a partir de imágenes de superficie \citep{chen2022zhurong, sun2024zhurong}.
+En la Luna, \citet{di2015change3} midieron la distribución en el entorno del módulo
+\textit{Chang'e-3}, y \citet{watkins2019boulder} estudiaron la distribución de bloques
+alrededor de cráteres de impacto jóvenes.
+
+Estos trabajos comparten dos rasgos que conviene subrayar. Producen medidas
+\textbf{métricas} —tamaños en centímetros o metros, densidades por metro cuadrado—, lo que
+exige conocer la escala de la imagen mediante geometría de la cámara o estereoscopía. Y la
+identificación de las rocas es en buena parte \textbf{manual o semiautomática}: un
+especialista delimita los bloques sobre la imagen.
+
+\subsection{Segmentación automática de terreno marciano}
+
+En paralelo se ha desarrollado una línea de trabajo que busca automatizar la
+interpretación del terreno mediante aprendizaje profundo. La revisión sistemática de
+\citet{qu2025review} documenta la evolución del campo entre 2019 y 2025.
+
+El trabajo de referencia en clasificación de terreno para planificación de travesías es
+el sistema SPOC del Jet Propulsion Laboratory \citep{rothrock2016spoc}, que clasifica
+tipos de suelo y objetos en imágenes de rover para apoyar la selección de rutas. Sobre esa
+base, y una vez disponible AI4Mars, apareció una sucesión de arquitecturas cada vez más
+especializadas: redes ligeras pensadas para cómputo a bordo como SegMarsViT
+\citep{dai2022segmarsvit} y variantes bilaterales; redes de atención híbrida para terreno
+no estructurado \citep{liu2023hybrid}; transformadores como MarsFormer
+\citep{xiong2023marsformer} y modelos que incorporan información de profundidad
+\citep{ma2025depthformer}; y variantes de U-Net con atención orientadas específicamente a
+roca \citep{tian2024rsunet}. Se han propuesto además conjuntos de datos complementarios,
+basados en textura \citep{wang2021gmsri} o en segmentación por características de
+textura sin aprendizaje profundo \citep{alkawi2025texture}.
+
+El rasgo común de toda esta línea es su criterio de éxito: la métrica reportada es
+siempre el acuerdo con la máscara de referencia, medido con índices como la intersección
+sobre la unión. El objetivo es \textit{reproducir la anotación humana}.
+
+\subsection{Antecedentes metodológicos: división de aguas}
+
+El procedimiento de conteo empleado en este trabajo se apoya en una técnica clásica de
+morfología matemática. La formulación eficiente de la división de aguas por simulación de
+inmersión se debe a \citet{vincent1991watersheds}: la imagen se interpreta como un relieve
+topográfico que se inunda progresivamente desde sus mínimos, y las fronteras entre
+cuencas de inundación definen la segmentación.
+
+Aplicada a una imagen binaria, la técnica requiere un paso previo. Se calcula la
+transformada de distancia euclidiana, que asigna a cada píxel activo su distancia al fondo
+más cercano; sobre esa superficie, los centros de las regiones aparecen como máximos
+locales y los estrechamientos entre objetos pegados como valles. Inundando el negativo de
+esa superficie desde los máximos se obtiene una partición que corta precisamente por los
+estrechamientos, que es donde dos rocas en contacto se separarían a ojo.
+
+Este esquema es de uso corriente en dominios donde hay que contar objetos que se tocan.
+En minería y geotecnia se aplica a la estimación de la distribución de tamaños de
+fragmentos de roca tras una voladura, tanto con métodos clásicos como con redes
+convolucionales \citep{guo2022blasted, sharifi2024fragment}. En cartografía de riesgo por
+caída de rocas se emplea sobre inventarios obtenidos por teledetección
+\citep{grady2024rockfall}. La implementación utilizada aquí es la de la biblioteca
+\texttt{scikit-image} \citep{vanderwalt2014skimage}, sobre las estructuras de
+\texttt{NumPy} \citep{harris2020numpy} y \texttt{SciPy} \citep{virtanen2020scipy}.
+
+\section{Antecedentes y referentes}
+
+\subsection{El conjunto de datos AI4Mars}
+
+AI4Mars \citep{swan2021ai4mars} reúne imágenes de los rovers \textit{Spirit},
+\textit{Opportunity} y \textit{Curiosity}, procedentes del Planetary Data System
+\citep{nasapds2024}, con máscaras de segmentación por píxel obtenidas mediante anotación
+colaborativa. Miles de voluntarios marcaron el tipo de terreno y las anotaciones se
+consolidaron exigiendo acuerdo de al menos dos de cada tres anotadores; los píxeles sin
+consenso quedaron sin etiqueta. La versión empleada en este trabajo es la 0.6
+\citep{swan2022ai4marsdata}.
+
+La escala de navegación distingue cuatro clases —suelo, lecho rocoso, arena y roca
+grande— más un valor reservado para el píxel sin etiqueta. Esa distinción entre lecho
+rocoso y roca grande es central para este trabajo y merece precisarse: el lecho rocoso
+designa roca expuesta en continuidad con el sustrato, mientras que la roca grande designa
+bloques discretos. Es una distinción geológicamente sensata, pero, como se verá, su
+aplicación práctica por parte de anotadores no especialistas resulta difícil de sostener
+de manera consistente.
+
+El conjunto incluye, además de las máscaras colaborativas de entrenamiento, un subconjunto
+de máscaras anotadas por especialistas con distintos niveles de exigencia de acuerdo,
+destinado a validación. Esa inclusión resultó decisiva para este trabajo, porque permitió
+contrastar los indicadores contra una referencia de mayor calidad sin necesidad de
+producir anotación propia.
+
+\subsection{Instrumentación y sus consecuencias}
+
+Las imágenes empleadas provienen de la cámara de navegación de \textit{Curiosity}, un par
+estéreo montado en el mástil que produce imágenes de un megapíxel en escala de grises. Es
+una cámara de ingeniería: su función es la conducción, no la caracterización mineralógica.
+Los instrumentos con los que se caracteriza composición y textura fina en la misión son
+otros —la cámara de mástil multiespectral \citep{bell2017mastcam} y la lupa de mano
+\citep{edgett2012mahli}—, y esa diferencia acota lo que cabe esperar de un análisis basado
+en imágenes de navegación.
+
+\section{Brecha, necesidad u oportunidad identificada}
+
+De la revisión anterior se desprenden dos vacíos complementarios.
+
+Los estudios de abundancia de rocas producen medidas métricas rigurosas, pero a costa de
+identificación manual o semiautomática y sobre muestras reducidas: unas pocas escenas
+cuidadosamente analizadas por sitio de aterrizaje. No escalan a decenas de miles de
+imágenes.
+
+Los trabajos de segmentación automática sí escalan, pero su objetivo es reproducir la
+máscara. Producen un modelo, no un indicador. Una vez que la máscara existe —y en AI4Mars
+existe para más de dieciséis mil escenas de la cámara de navegación de
+\textit{Curiosity}— nadie ha planteado sistemáticamente la pregunta inversa: qué se puede
+medir directamente sobre ella.
+
+La oportunidad es precisamente ese hueco. Las máscaras de AI4Mars constituyen un mapa
+cuantitativo del terreno ya construido y validado, y sobre él pueden derivarse indicadores
+interpretables con técnicas clásicas, transparentes y de bajo costo computacional. Hacerlo
+tiene además un beneficio de segundo orden: al comparar los indicadores derivados de las
+máscaras colaborativas con los derivados de las máscaras de experto que el propio conjunto
+incluye, el procedimiento se convierte en un instrumento de diagnóstico de la calidad de
+la anotación, con implicaciones para todos los trabajos que la utilizan como referencia.
+
+Este trabajo se sitúa en ese hueco. No propone una arquitectura nueva ni compite con los
+modelos de segmentación; toma la máscara como dato de entrada y pregunta qué información
+cuantitativa puede extraerse de ella de forma reproducible, y con qué límites.

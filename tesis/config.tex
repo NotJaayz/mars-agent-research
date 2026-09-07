@@ -1,0 +1,68 @@
+% =============================================================
+% DATOS GENERALES DEL TRABAJO DE GRADO
+% Edite este archivo para personalizar la portada, el encabezado
+% y la modalidad del proyecto.
+% =============================================================
+
+% -------------------------------------------------------------
+% Información general
+% -------------------------------------------------------------
+
+\newcommand{\ThesisTitle}{Conteo de rocas visibles basado en las máscaras de AI4Mars}
+\newcommand{\ThesisShortTitle}{Conteo de rocas visibles en AI4Mars}
+\newcommand{\ThesisAuthors}{Juan Pablo Delgado Castro}
+
+\newcommand{\ThesisProgram}{Programa de Ciencia de Datos}
+\newcommand{\ThesisDepartment}{Departamento de Matemáticas}
+\newcommand{\ThesisUniversity}{Universidad Externado de Colombia}
+
+\newcommand{\ThesisAdvisors}{Por completar}
+\newcommand{\ThesisCity}{Bogotá, Colombia}
+\newcommand{\ThesisYear}{2026}
+
+% Archivo del logo institucional dentro de images/.
+\newcommand{\UniversityLogo}{logo-externado-matematicas.png}
+
+
+% =============================================================
+% MODALIDAD DEL PROYECTO
+% =============================================================
+
+% Seleccione UNA de las siguientes modalidades:
+%
+% investigacion   = Investigación
+% innovacion      = Innovación
+% emprendimiento = Emprendimiento
+%
+% Solo debe modificar el valor de la siguiente línea.
+
+\newcommand{\ModalidadProyecto}{investigacion}
+
+
+% -------------------------------------------------------------
+% Nombre de la modalidad para portada y otros elementos
+% -------------------------------------------------------------
+
+\ifdefstring{\ModalidadProyecto}{investigacion}{
+  \newcommand{\TipoProyecto}{Investigación}
+}{
+  \ifdefstring{\ModalidadProyecto}{innovacion}{
+    \newcommand{\TipoProyecto}{Innovación}
+  }{
+    \ifdefstring{\ModalidadProyecto}{emprendimiento}{
+      \newcommand{\TipoProyecto}{Emprendimiento}
+    }{
+      \newcommand{\TipoProyecto}{Modalidad no válida}
+    }
+  }
+}
+
+
+% -------------------------------------------------------------
+% Compatibilidad con versiones anteriores de la plantilla
+% -------------------------------------------------------------
+
+% Mantiene funcionando archivos que todavía utilicen
+% el comando \ProjectType.
+
+\newcommand{\ProjectType}{\TipoProyecto}

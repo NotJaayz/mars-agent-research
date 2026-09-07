@@ -1,0 +1,137 @@
+\chapter{Introducción}
+\label{cap:introduccion}
+
+\section{Planteamiento del proyecto}
+
+La exploración robótica de Marte ha mostrado que la distribución y el tamaño de las rocas
+en la superficie no son un detalle accesorio, sino una condición que limita lo que una
+misión puede hacer. La selección de los sitios de aterrizaje de los \textit{Mars
+Exploration Rovers} se apoyó explícitamente en distribuciones tamaño--frecuencia de rocas
+derivadas de imágenes orbitales \citep{golombek2003mer}, y el mismo tipo de análisis se
+repitió para el \textit{Mars Science Laboratory} \citep{golombek2012msl} y para el módulo
+\textit{InSight} \citep{golombek2021insight}. La razón es práctica: una roca de tamaño
+suficiente puede impedir el despliegue de un instrumento, obligar a un desvío costoso o
+dañar el vehículo. El desgaste prematuro de las ruedas de \textit{Curiosity} sobre terreno
+de lecho rocoso con aristas agudas quedó documentado como lección aprendida de la propia
+misión \citep{jpl2017wheels}.
+
+Las misiones de superficie han acumulado, a lo largo de dos décadas, cientos de miles de
+imágenes tomadas desde el propio terreno. Sobre ese acervo, el conjunto de datos AI4Mars
+\citep{swan2021ai4mars, swan2022ai4marsdata} añadió algo poco frecuente: máscaras de
+segmentación por píxel para decenas de miles de escenas, producidas mediante anotación
+colaborativa y depuradas exigiendo acuerdo entre anotadores. Cada píxel de esas máscaras
+lleva una etiqueta de tipo de terreno.
+
+El uso que ha recibido ese material es, casi sin excepción, el de insumo para entrenar
+redes neuronales de segmentación. Una revisión sistemática reciente de las técnicas de
+segmentación de imágenes marcianas entre 2019 y 2025 \citep{qu2025review} recoge una
+sucesión de arquitecturas —redes convolucionales, transformadores, variantes ligeras para
+cómputo a bordo— evaluadas todas ellas por su capacidad de reproducir las máscaras. La
+máscara funciona como la respuesta correcta contra la cual se mide un modelo.
+
+Este trabajo parte de una observación distinta. Las máscaras de AI4Mars no son solo la
+respuesta de un problema de aprendizaje: son en sí mismas un mapa cuantitativo del
+terreno. Si un píxel etiquetado como roca informa de que en ese punto de la escena hay
+roca, entonces contar píxeles y agrupar los que se tocan permite medir cuánta roca hay y
+cómo está organizada, sin entrenar ningún modelo y sin generar máscaras nuevas. Esa
+información ya está pagada —el esfuerzo de anotación ya se realizó— y permanece en buena
+medida sin explotar.
+
+\section{Pregunta o propósito central}
+
+La pregunta que orienta el trabajo es la siguiente:
+
+\begin{quote}
+¿Cómo cuantificar, a partir de las máscaras etiquetadas de AI4Mars, la cobertura de roca
+visible y el número aproximado de rocas individuales por imagen, mediante un flujo de
+procesamiento de imágenes con parámetros explícitos y resultados reproducibles?
+\end{quote}
+
+La pregunta tiene dos mitades de dificultad muy distinta. Medir cobertura es, en esencia,
+un conteo de píxeles con un denominador bien elegido. Contar rocas individuales exige
+resolver un problema de segmentación de instancias sobre una máscara que no distingue
+instancias: cuando dos rocas se tocan, la máscara las registra como una sola región
+conectada, y separarlas requiere criterios geométricos. El trabajo aborda las dos y
+reporta con igual detalle dónde cada una funciona y dónde no.
+
+\section{Justificación y valor esperado}
+
+El interés de derivar indicadores directamente de las máscaras es triple.
+
+En primer lugar, \textbf{transparencia}. Un indicador calculado con morfología matemática
+y división de aguas se puede auditar: cada umbral es un número explícito y cada etapa
+intermedia es una imagen que puede inspeccionarse. Un modelo entrenado entrega una
+predicción cuya justificación no es directamente legible. Para un uso en el que el
+resultado deba defenderse ante un tercero —la planificación de una travesía, por
+ejemplo— esa diferencia importa.
+
+En segundo lugar, \textbf{costo}. El procedimiento propuesto corre sobre procesador
+convencional, sin unidad gráfica ni conjunto de entrenamiento, y procesa el subconjunto
+completo en minutos. Esto lo hace reproducible en cualquier equipo y adecuado como línea
+de base contra la cual comparar métodos más costosos.
+
+En tercer lugar, y de manera menos evidente, \textbf{diagnóstico del propio conjunto de
+datos}. Al derivar medidas cuantitativas de las máscaras y contrastarlas con las máscaras
+de experto que AI4Mars incluye para validación, el procedimiento se convierte en un
+instrumento para examinar la calidad de la anotación. El trabajo encontró en esa dirección
+uno de sus resultados más relevantes, expuesto en el
+Capítulo~\ref{cap:resultados}: la anotación colaborativa sobreestima de forma sistemática
+la cobertura de roca. Ese hallazgo tiene consecuencias para cualquier estudio que use
+AI4Mars, incluidos los que entrenan modelos.
+
+El valor esperado del trabajo es, por tanto, un procedimiento documentado, un conjunto de
+resultados reutilizable con un indicador por imagen y un diagnóstico honesto de los
+límites que impone el material de partida.
+
+\section{Objetivos}
+
+\subsection{Objetivo general}
+
+Diseñar, implementar y documentar un procedimiento de procesamiento de imágenes que, a
+partir de las máscaras etiquetadas del conjunto de datos AI4Mars, permita cuantificar para
+cada imagen la proporción de terreno ocupada por roca visible y el número aproximado de
+rocas individuales presentes en las zonas etiquetadas como roca grande, de forma que los
+resultados sean reproducibles y comparables entre diferentes escenas.
+
+\subsection{Objetivos específicos}
+
+\begin{description}
+
+  \item[E1.] Estimar, para cada imagen con máscara válida de AI4Mars, la cobertura de
+    roca visible, entendida como el porcentaje de píxeles etiquetados de la escena que
+    corresponden a roca expuesta o roca grande.
+
+  \item[E2.] Estimar, para cada imagen, el número aproximado de rocas individuales
+    presentes en las zonas etiquetadas como roca grande, separando las que aparecen
+    pegadas en la máscara mediante componentes conectadas, transformada de distancia y
+    división de aguas, y filtrando las regiones resultantes según criterios de tamaño y
+    forma.
+
+  \item[E3.] Explorar de forma descriptiva cómo cambian la cobertura y el conteo entre
+    distintos subconjuntos y a lo largo del recorrido del rover, en la medida en que esa
+    información esté presente en los metadatos disponibles.
+
+  \item[E4.] Implementar el procedimiento en un conjunto de recursos reproducibles que
+    incluya código, guiones de ejecución, parámetros empleados, versiones de biblioteca y
+    un archivo tabular con los indicadores calculados para cada imagen.
+
+  \item[E5.] Analizar e interpretar los indicadores obtenidos, identificando patrones
+    generales, casos atípicos y limitaciones del procedimiento, y plantear líneas de
+    trabajo futuras que puedan construirse sobre estos resultados.
+
+\end{description}
+
+\section{Estructura del documento}
+
+El Capítulo~\ref{cap:contexto} caracteriza el contexto del problema, revisa los
+antecedentes en abundancia de rocas y en segmentación de terreno marciano, y precisa la
+brecha que el trabajo aborda. El Capítulo~\ref{cap:metodos} describe el diseño del
+estudio, la fuente de datos, el procedimiento de cálculo con todos sus parámetros y la
+estrategia de validación. El Capítulo~\ref{cap:resultados} presenta los resultados de los
+cinco objetivos específicos, su validación contra etiquetas de experto y una comparación
+con dos enfoques de aprendizaje automático, y discute las implicaciones y limitaciones,
+incluido un diagnóstico cuantitativo del origen de los errores del conteo. El
+Capítulo~\ref{cap:conclusiones} sintetiza las conclusiones, los aportes y las
+recomendaciones. El Anexo~\ref{app:material-complementario} recoge material de soporte:
+el esquema del conjunto de resultados, casos adicionales del procedimiento y la
+descripción de los recursos reproducibles.

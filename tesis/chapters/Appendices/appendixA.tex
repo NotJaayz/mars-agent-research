@@ -1,0 +1,143 @@
+\chapter{Material complementario}
+\label{app:material-complementario}
+
+\section{Esquema del conjunto de resultados}
+
+El archivo tabular de resultados contiene una fila por imagen y veinticuatro columnas,
+organizadas en cinco grupos. La Tabla~\ref{tab:esquema} las describe.
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption{Esquema del conjunto de resultados.}
+  \label{tab:esquema}
+  \begin{tabular}{llp{6.0cm}}
+    \toprule
+    \textbf{Grupo} & \textbf{Columna} & \textbf{Descripción} \\
+    \midrule
+    Identificación & \texttt{image\_id}   & Identificador de la escena. \\
+                   & \texttt{rover}       & Misión de procedencia. \\
+                   & \texttt{camera}      & Cámara de procedencia. \\
+                   & \texttt{eye}         & Ojo del par estéreo (L o R). \\
+                   & \texttt{sol}         & Día marciano, si está disponible. \\
+    \midrule
+    Cobertura (E1) & \texttt{rock\_coverage\_pct}  & Roca sobre píxeles etiquetados. \\
+                   & \texttt{coverage\_total\_pct} & Roca sobre la imagen completa. \\
+                   & \texttt{frac\_valid}          & Fracción de escena etiquetada. \\
+    \midrule
+    Composición    & \texttt{pct\_soil}       & Proporción de suelo. \\
+                   & \texttt{pct\_bedrock}    & Proporción de lecho rocoso. \\
+                   & \texttt{pct\_sand}       & Proporción de arena. \\
+                   & \texttt{pct\_bigrock}    & Proporción de roca grande. \\
+                   & \texttt{dominant\_class} & Clase mayoritaria. \\
+                   & \texttt{scene\_type}     & Tipología de escena. \\
+    \midrule
+    Conteo (E2)    & \texttt{n\_bigrock}          & Píxeles de roca grande. \\
+                   & \texttt{n\_rocks}            & Rocas tras división de aguas y filtros. \\
+                   & \texttt{n\_raw\_components}  & Componentes conectadas previas. \\
+                   & \texttt{largest\_rock\_pct}  & Tamaño de la roca mayor. \\
+                   & \texttt{mean\_rock\_area\_px}& Área media de las rocas. \\
+                   & \texttt{n\_small}            & Rocas pequeñas. \\
+                   & \texttt{n\_medium}           & Rocas medianas. \\
+                   & \texttt{n\_large}            & Rocas grandes. \\
+    \midrule
+    Calidad        & \texttt{mean\_solidity} & Solidez media de las regiones aceptadas. \\
+                   & \texttt{quality\_flag}  & Bandera de aptitud de la escena. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Casos adicionales del procedimiento}
+
+Las figuras de esta sección muestran el procedimiento sobre escenas de tipos de terreno
+distintos, y sirven de complemento a la Figura~\ref{fig:paso-a-paso}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_A1_procedimiento_anexo_1.png}
+  \caption{Procedimiento sobre una escena con una roca aislada.}
+  \label{fig:anexo1}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_A2_procedimiento_anexo_2.png}
+  \caption{Procedimiento sobre una escena con varios bloques próximos.}
+  \label{fig:anexo2}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_A3_procedimiento_anexo_3.png}
+  \caption{Procedimiento sobre una escena de terreno mixto.}
+  \label{fig:anexo3}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_A4_procedimiento_anexo_4.png}
+  \caption{Procedimiento sobre una escena dominada por afloramiento.}
+  \label{fig:anexo4}
+\end{figure}
+
+\section{Modos de error descartados por los filtros}
+
+Las dos figuras siguientes documentan los casos que el
+Tabla~\ref{tab:diagnostico} atribuye a los umbrales del procedimiento, y respaldan la
+afirmación de que en esas escenas los filtros aciertan.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{diag_bajo_umbral_area.png}
+  \caption[Región por debajo del área mínima]{Escena con una única región de roca grande
+    de doce píxeles, por debajo del umbral de \num{524}. El conteo devuelve cero
+    correctamente.}
+  \label{fig:diag-area}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{diag_filtro_aspecto.png}
+  \caption[Región descartada por relación de aspecto]{Escena en la que la anotación de
+    roca grande es una banda alargada trazada sobre el horizonte, descartada por relación
+    de aspecto.}
+  \label{fig:diag-aspecto}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{diag_sobresegmentacion.png}
+  \caption[Anotación en contorno hueco]{Caso atípico de anotación trazada como contorno
+    hueco. La división de aguas fragmenta el anillo resultante. Se midió que este patrón
+    afecta a cerca del \SI{0.2}{\percent} de las escenas con roca grande.}
+  \label{fig:diag-sobreseg}
+\end{figure}
+
+\section{Recursos reproducibles}
+
+Los recursos que respaldan el trabajo se organizan como sigue.
+
+\begin{description}
+
+  \item[Módulos de cálculo] Implementan la lectura de máscaras, el cálculo de cobertura,
+    el conteo de rocas, los descriptores de composición y geometría, y la orquestación
+    que produce una fila de resultados por imagen. Las funciones reciben arreglos y
+    devuelven arreglos o números, sin efectos secundarios, y todos los umbrales se pasan
+    como argumentos con valores por defecto documentados.
+
+  \item[Guiones de ejecución] Automatizan el recorrido del subconjunto, la generación de
+    las figuras del documento, el diagnóstico de los modos de error y las comparaciones
+    con los métodos de aprendizaje automático.
+
+  \item[Conjunto de resultados] Archivo tabular con los veinticuatro indicadores para las
+    \num{16064} escenas, según el esquema de la Tabla~\ref{tab:esquema}.
+
+  \item[Especificación del entorno] Archivo de definición del entorno con las
+    dependencias, complementado por el registro de versiones exactas del
+    Tabla~\ref{tab:versiones}.
+
+\end{description}
+
+El conjunto de datos AI4Mars no se distribuye con estos recursos, dado su volumen. El
+código lo referencia mediante una ruta configurable, de modo que debe descargarse de la
+fuente original \citep{swan2022ai4marsdata}.
