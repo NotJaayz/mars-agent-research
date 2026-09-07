@@ -107,3 +107,6 @@ tesis/*.fls
 tesis/*.fdb_latexmk
 tesis/*.synctex.gz
 tesis/main.pdf
+
+# PDF de revisión local (el entregable se compila en Overleaf)
+tesis_revision.pdf
