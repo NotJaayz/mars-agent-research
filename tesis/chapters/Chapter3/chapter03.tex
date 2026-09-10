@@ -296,8 +296,8 @@ describe la organización de los recursos.
 \section{Estrategia de evaluación y validación}
 
 Un procedimiento descriptivo como este no admite una métrica de acierto única, porque no
-existe un conteo de referencia con el cual compararse. La validación se abordó por tanto
-en cuatro frentes complementarios.
+existe verdad de campo sobre el número de rocas de una escena. La validación se abordó por
+tanto en cinco frentes complementarios.
 
 \paragraph{Verificación de la codificación.} Comprobación triple de la correspondencia
 entre valores y clases, descrita más arriba. Es la validación más elemental y la más
@@ -314,6 +314,18 @@ mismo procedimiento, \textbf{sin modificar ningún parámetro}, y se compararon 
 indicadores resultantes con los obtenidos de las máscaras colaborativas. Este contraste no
 mide el acierto del procedimiento sino la calidad del dato de entrada, y resultó ser la
 fuente del hallazgo más relevante del trabajo.
+
+\paragraph{Contraste con conteo humano.} Sobre una muestra de \num{24} escenas con roca
+grande se recogió un conteo manual por bandas —cero, una a tres, cuatro a nueve, diez o
+más— y se comparó con el automático mediante el coeficiente kappa de Cohen, en su versión
+simple y ponderada, esta última apropiada porque las bandas son ordinales. El material se
+presentó con identificadores neutros y en orden barajado, resaltando en cada imagen la
+región etiquetada como roca grande, de modo que persona y procedimiento respondieran a la
+misma pregunta: cuántas rocas se distinguen \textbf{dentro de esa región}. Preguntar por la
+escena completa habría mezclado dos cuestiones distintas —si la anotación es completa y si
+el procedimiento la subdivide bien—. El resultado automático no apareció en el material
+consultado al responder. Se responde por bandas y no con cifras exactas porque el objetivo
+es comprobar la coincidencia en orden de magnitud, no medir una precisión inexistente.
 
 \paragraph{Comparación con aprendizaje automático.} Como referencia externa se contrastó
 el procedimiento con dos enfoques de aprendizaje profundo ejecutados en equipo local: un

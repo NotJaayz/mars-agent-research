@@ -66,17 +66,55 @@ corrige el acuerdo esperable por azar, más informativo que el porcentaje a seca
 dirección del desacuerdo (si el algoritmo tiende a situarse por encima o por debajo) y una
 matriz de acuerdo. Genera además la figura correspondiente en formato tesis.
 
-## Interpretación
+---
 
-Como referencia habitual para el coeficiente kappa: por debajo de 0,20 el acuerdo es
-escaso; entre 0,21 y 0,40 aceptable; entre 0,41 y 0,60 moderado; entre 0,61 y 0,80
-sustancial; y por encima de 0,80 casi perfecto.
+## Resultado obtenido
 
-Un acuerdo moderado o superior respaldaría el uso del indicador para comparar escenas.
-Un acuerdo bajo, acompañado de un sesgo sistemático en una dirección, indicaría que el
-procedimiento sobreestima o subestima de forma consistente, lo que también es un resultado
-informativo y debe reportarse como tal.
+Ejecutada sobre 24 escenas con un observador. `python scripts/eval_validation.py`:
 
-El tamaño de muestra es reducido por diseño —veinticinco escenas—, de modo que el
-resultado debe leerse como una comprobación cualitativa y no como una medición con
-intervalos de confianza estrechos.
+| Subconjunto | n | Acuerdo exacto | Kappa | Kappa ponderado |
+|---|---:|---:|---:|---:|
+| Todas las escenas | 24 | 46 % | 0,28 | 0,40 |
+| Anotación apreciable (≥ 2000 px) | 17 | 41 % | 0,16 | 0,31 |
+| Anotación mínima (< 2000 px) | 7 | 57 % | 0,28 | 0,11 |
+
+Se reporta el **kappa ponderado** porque las bandas son ordinales y el kappa simple
+penaliza igual un desacuerdo de una banda que de tres.
+
+**Excluir las escenas mal planteadas empeora el resultado**, no lo mejora: el kappa cae de
+0,28 a 0,16. Tres de las siete escenas de anotación mínima eran acuerdos triviales en la
+banda cero, y esos aciertos fáciles inflaban el índice. Que el ponderado se sostenga en
+0,31 indica que los desacuerdos son mayoritariamente de una sola banda.
+
+### Dirección del error
+
+El algoritmo queda **por debajo** del observador en 8 casos y por encima en 5. Esto corrige
+la expectativa de la calibración: el riesgo que se temía era la sobresegmentación, y el
+sesgo residual va en sentido contrario — **subconteo en escenas densas**.
+
+De las 8 escenas subcontadas:
+
+| Mecanismo | Escenas | Origen |
+|---|---:|---|
+| Polígono único extenso | 3 | La anotación cubre con una sola región un campo de rocas |
+| Regiones bajo los filtros | 4 | Pequeñas o muy alargadas, descartadas por área o aspecto |
+| Anotación insuficiente | 1 | 411 px en cuatro motas, todas bajo el área mínima |
+
+El caso más claro es una anotación de **una sola región de 199 782 px** (46,8 % del área
+etiquetada) donde el observador distinguió más de diez rocas y el algoritmo contó seis. La
+división de aguas solo corta donde la transformada de distancia presenta estrechamientos, y
+un polígono trazado holgadamente alrededor de un campo de rocas no los tiene.
+
+## Debilidad del instrumento
+
+En **7 de las 24 escenas** la región anotada suma menos de 2000 px, menos del 0,2 % de la
+imagen. La zona resaltada es entonces apenas visible y la pregunta «cuántas rocas hay
+dentro» queda mal planteada: el observador tiende a contar las rocas de la escena. Una
+versión mejorada debería excluir esas escenas o mostrar un recorte ampliado de la región.
+El kappa global debe leerse con esa reserva.
+
+## Interfaz para responder
+
+`scripts/responder_validacion.py` muestra las escenas una a una y registra la banda con las
+teclas 1 a 4, escribiendo `plantilla.csv` en cada respuesta. No lee `clave.csv` en ningún
+momento y no permite volver atrás, salvo deshacer la última respuesta.

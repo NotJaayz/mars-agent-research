@@ -75,6 +75,28 @@ como referencia, incluidos los que entrenan modelos de segmentación: el segment
 entrenado en este trabajo reproduce la cobertura humana con correlación de $0{,}950$,
 lo que significa que ha aprendido el sesgo junto con la señal.
 
+\subsection{Sobre el acuerdo con el juicio humano}
+
+La validación por bandas sobre \num{24} escenas arrojó un acuerdo exacto del
+\SI{46}{\percent}, con kappa de Cohen de $0{,}28$ y kappa ponderado de $0{,}40$. Restringida
+a las diecisiete escenas cuya anotación delimita una zona apreciable —donde la pregunta
+está bien planteada— el acuerdo baja al \SI{41}{\percent} y el kappa a $0{,}16$, con
+ponderado de $0{,}31$. Que el ponderado se sostenga mientras el simple cae indica que los
+desacuerdos son mayoritariamente de una sola banda.
+
+De este resultado se extraen dos conclusiones. La primera es que el conteo \textbf{no}
+reproduce el juicio humano con fidelidad suficiente para leerse como una medida de la
+cantidad de rocas de una escena; sostiene, a lo sumo, la distinción aproximada entre
+escenas con y sin obstáculos discretos.
+
+La segunda corrige la expectativa con la que se calibró el procedimiento. El riesgo que se
+temía era la sobresegmentación, y contra ella se introdujo el criterio de prominencia. La
+validación muestra que el sesgo residual va en \textbf{sentido opuesto}: el procedimiento
+subestima el número de rocas en terreno denso. La causa dominante no es algorítmica sino de
+granularidad de la anotación: en tres de las ocho escenas subcontadas, un único polígono
+—de hasta \num{199782} píxeles, el \SI{46.8}{\percent} del área etiquetada— cubre un campo
+entero de rocas, y la división de aguas no dispone de estrechamientos por donde cortar.
+
 \subsection{Sobre el origen de los errores del conteo}
 
 El diagnóstico sistemático de los modos de error descartó la explicación intuitiva —la
@@ -112,10 +134,12 @@ sobreestiman la roca de forma sistemática, y estimar la magnitud del efecto, es
 información pertinente para todos esos trabajos y no solo para este.
 
 \paragraph{La atribución de los límites del conteo.} Mostrar con datos que el techo del
-conteo está en la definición de las clases, y no en la resolución de las imágenes ni en la
-pericia de los anotadores, delimita con precisión qué cabe esperar de AI4Mars para tareas
-de conteo de instancias. Es un resultado negativo, y por eso mismo útil: ahorra a otros
-recorrer un camino cerrado.
+conteo está en la definición de las clases y en la granularidad del trazado, y no en la
+resolución de las imágenes ni en la pericia de los anotadores, delimita con precisión qué
+cabe esperar de AI4Mars para tareas de conteo de instancias. La validación humana lo
+confirma desde el otro extremo: el desacuerdo se concentra donde la anotación agrupa en un
+polígono lo que el observador separa. Es un resultado negativo, y por eso mismo útil:
+ahorra a otros recorrer un camino cerrado.
 
 \paragraph{Una vía constructiva.} La prueba de concepto del enfoque híbrido —la máscara
 indica dónde hay roca, el gradiente de la imagen cuántos bloques la componen— muestra que
@@ -145,10 +169,13 @@ fijar los parámetros del gradiente y de las semillas sobre una muestra de escen
 terreno variado y, sobre todo, validar el conteo resultante contra conteo humano. Sin esa
 validación el método no puede reportarse como indicador.
 
-\paragraph{Realizar una validación con observadores humanos.} La ausencia de un conteo de
-referencia es la limitación metodológica más seria del trabajo. Una muestra acotada de
-escenas contadas por varias personas permitiría estimar por primera vez el acierto de E2 y
-la variabilidad entre observadores, que probablemente sea considerable.
+\paragraph{Ampliar la validación humana.} La validación realizada empleó \num{24} escenas
+y un único observador, de modo que no permite estimar la variabilidad entre observadores.
+Repetirla con varias personas y una muestra mayor daría un intervalo de confianza a los
+coeficientes reportados. Dos correcciones al instrumento son necesarias antes de repetirla:
+excluir las escenas cuya anotación no delimite una zona apreciable —siete de las
+veinticuatro empleadas— y presentar un recorte ampliado de la región, para que la pregunta
+esté bien planteada en todos los casos.
 
 \paragraph{Recuperar la escala métrica.} La cámara de navegación es un par estéreo. Un
 subconjunto con ambos ojos disponibles permitiría estimar distancias y expresar los
