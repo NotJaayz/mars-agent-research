@@ -21,10 +21,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-BANDAS = ["0", "1-3", "4-9", "10+"]
+# Dos escalas de banda. La primera ronda usó una banda superior abierta en "10+"; con
+# ella, un método que contaba 84 rocas donde el observador veía una decena puntuaba como
+# acierto exacto. El kit v2 la subdivide.
+BANDAS_V1 = ["0", "1-3", "4-9", "10+"]
+BANDAS_V2 = ["0", "1-3", "4-9", "10-24", "25-49", "50+"]
+BANDAS = BANDAS_V1          # se ajusta en main() según el kit
 
 
 def banda(v: int) -> str:
+    """Banda del conteo ``v`` en la escala activa."""
+    if BANDAS is BANDAS_V2:
+        return ("0" if v == 0 else "1-3" if v <= 3 else "4-9" if v <= 9
+                else "10-24" if v <= 24 else "25-49" if v <= 49 else "50+")
     return "0" if v == 0 else "1-3" if v <= 3 else "4-9" if v <= 9 else "10+"
 
 
@@ -100,6 +109,12 @@ def main() -> None:
     plantilla = pd.read_csv(d / "plantilla.csv", dtype={"banda": str})
     clave = pd.read_csv(d / "clave.csv")
     m = plantilla.merge(clave, on="id")
+
+    # El kit v2 se reconoce por sus identificadores (W01, W02, ...).
+    global BANDAS
+    if len(m) and str(m.id.iloc[0]).startswith("W"):
+        BANDAS = BANDAS_V2
+    print(f"Escala de bandas: {', '.join(BANDAS)}")
     m["banda"] = m.banda.astype(str).str.strip()
 
     sin_responder = m[~m.banda.isin(BANDAS)]

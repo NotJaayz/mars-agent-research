@@ -18,6 +18,7 @@ Uso:  python scripts/responder_validacion.py
 """
 from __future__ import annotations
 
+import argparse
 import csv
 import sys
 import tkinter as tk
@@ -26,30 +27,37 @@ from pathlib import Path
 from PIL import Image, ImageTk
 
 RAIZ = Path(__file__).resolve().parent.parent
-DIR_VAL = RAIZ / "outputs" / "validacion_manual"
-PLANTILLA = DIR_VAL / "plantilla.csv"
-DIR_IMG = DIR_VAL / "imagenes"
 
 # Paleta institucional de la NASA, la misma de app.py.
 AZUL, ROJO = "#0B3D91", "#FC3D21"
 FONDO, TARJETA, TEXTO, TENUE = "#0f1319", "#171d29", "#e8eaf0", "#8b93a7"
 
-# Las cuatro bandas de respuesta, en el orden de las teclas 1 a 4.
-BANDAS = [
-    ("0",    "sin rocas distinguibles"),
-    ("1-3",  "entre una y tres"),
-    ("4-9",  "entre cuatro y nueve"),
-    ("10+",  "diez o más"),
+# Bandas de respuesta. El kit v2 subdivide la banda superior: con "10+" abierta, un
+# método que contaba 84 rocas donde el observador veía una decena puntuaba como acierto
+# exacto, lo que favorecía a los métodos que sobreestiman.
+BANDAS_V1 = [
+    ("0",    "ninguna"),
+    ("1-3",  "entre 1 y 3"),
+    ("4-9",  "entre 4 y 9"),
+    ("10+",  "10 o más"),
+]
+BANDAS_V2 = [
+    ("0",     "ninguna"),
+    ("1-3",   "entre 1 y 3"),
+    ("4-9",   "entre 4 y 9"),
+    ("10-24", "entre 10 y 24"),
+    ("25-49", "entre 25 y 49"),
+    ("50+",   "50 o más"),
 ]
 
 
-def leer_plantilla() -> list[dict[str, str]]:
-    with PLANTILLA.open(newline="") as f:
+def leer_plantilla(plantilla: Path) -> list[dict[str, str]]:
+    with plantilla.open(newline="") as f:
         return list(csv.DictReader(f))
 
 
-def guardar_plantilla(filas: list[dict[str, str]]) -> None:
-    with PLANTILLA.open("w", newline="") as f:
+def guardar_plantilla(filas: list[dict[str, str]], plantilla: Path) -> None:
+    with plantilla.open("w", newline="") as f:
         # lineterminator explícito: el valor por defecto es CRLF y cambiaría los
         # finales de línea del archivo original, ensuciando el diff.
         w = csv.DictWriter(f, fieldnames=["id", "banda"], lineterminator="\n")
@@ -58,9 +66,13 @@ def guardar_plantilla(filas: list[dict[str, str]]) -> None:
 
 
 class App(tk.Tk):
-    def __init__(self, filas: list[dict[str, str]]) -> None:
+    def __init__(self, filas: list[dict[str, str]], bandas, plantilla: Path,
+                 dir_img: Path) -> None:
         super().__init__()
         self.filas = filas
+        self.bandas = bandas
+        self.plantilla = plantilla
+        self.dir_img = dir_img
         self.historial: list[int] = []      # índices respondidos en esta sesión
         self._img_tk: ImageTk.PhotoImage | None = None
 
@@ -72,7 +84,8 @@ class App(tk.Tk):
         cab.pack(fill="x", padx=20, pady=(16, 6))
         tk.Label(cab, text="¿Cuántas rocas distingues DENTRO de la zona resaltada?",
                  bg=FONDO, fg=TEXTO, font=("Helvetica", 15, "bold")).pack(anchor="w")
-        tk.Label(cab, text="Responde de corrido, sin volver atrás. Teclas 1 a 4.",
+        tk.Label(cab, text=f"Responde de corrido, sin volver atrás. "
+                            f"Teclas 1 a {len(self.bandas)}.",
                  bg=FONDO, fg=TENUE, font=("Helvetica", 11)).pack(anchor="w")
 
         self.lbl_img = tk.Label(self, bg=TARJETA, bd=0)
@@ -84,15 +97,20 @@ class App(tk.Tk):
 
         botones = tk.Frame(self, bg=FONDO)
         botones.pack(pady=(0, 6))
-        for i, (banda, ayuda) in enumerate(BANDAS):
+        ancho = max(9, 15 - len(self.bandas))
+        for i, (banda, ayuda) in enumerate(self.bandas):
             b = tk.Frame(botones, bg=FONDO)
-            b.grid(row=0, column=i, padx=6)
-            tk.Button(b, text=f"{i+1}   {banda}", width=14, bd=0,
+            b.grid(row=0, column=i, padx=5)
+            # El número de tecla va en una línea aparte: pegado a la banda se leía
+            # como parte de la respuesta ("4   10+" parecía significar cuatro).
+            tk.Button(b, text=banda, width=ancho, bd=0,
                       bg=AZUL, fg="white", activebackground=ROJO,
-                      activeforeground="white", font=("Helvetica", 13, "bold"),
+                      activeforeground="white", font=("Helvetica", 14, "bold"),
                       command=lambda x=banda: self.responder(x)).pack()
-            tk.Label(b, text=ayuda, bg=FONDO, fg=TENUE,
-                     font=("Helvetica", 9)).pack(pady=(3, 0))
+            tk.Label(b, text=ayuda, bg=FONDO, fg=TEXTO,
+                     font=("Helvetica", 10)).pack(pady=(3, 0))
+            tk.Label(b, text=f"tecla {i+1}", bg=FONDO, fg=TENUE,
+                     font=("Helvetica", 8)).pack()
 
         pie = tk.Frame(self, bg=FONDO)
         pie.pack(pady=(4, 14))
@@ -104,7 +122,7 @@ class App(tk.Tk):
                   activebackground=TARJETA, font=("Helvetica", 10),
                   command=self.destroy).pack(side="left", padx=6)
 
-        for k, (banda, _) in enumerate(BANDAS, start=1):
+        for k, (banda, _) in enumerate(self.bandas, start=1):
             self.bind(str(k), lambda _e, x=banda: self.responder(x))
         self.bind("<BackSpace>", lambda _e: self.deshacer())
 
@@ -131,7 +149,7 @@ class App(tk.Tk):
             self.lbl_prog.config(text=f"{n_ok} de {len(self.filas)} respondidas")
             return
 
-        ruta = DIR_IMG / f"{self.filas[i]['id']}.png"
+        ruta = self.dir_img / f"{self.filas[i]['id']}.png"
         if not ruta.exists():
             self.lbl_img.config(image="", text=f"No se encuentra {ruta.name}", fg=ROJO)
             return
@@ -146,7 +164,7 @@ class App(tk.Tk):
             return
         self.filas[i]["banda"] = banda
         self.historial.append(i)
-        guardar_plantilla(self.filas)
+        guardar_plantilla(self.filas, self.plantilla)
         self.mostrar()
 
     def deshacer(self) -> None:
@@ -154,23 +172,36 @@ class App(tk.Tk):
             return
         i = self.historial.pop()
         self.filas[i]["banda"] = ""
-        guardar_plantilla(self.filas)
+        guardar_plantilla(self.filas, self.plantilla)
         self.mostrar()
 
 
 def main() -> None:
-    if not PLANTILLA.exists():
-        sys.exit("Falta plantilla.csv. Genera el kit con scripts/make_validation_kit.py")
-    filas = leer_plantilla()
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--dir", default="outputs/validacion_manual",
+                    help="directorio del kit a responder")
+    args = ap.parse_args()
+
+    dir_val = (RAIZ / args.dir) if not Path(args.dir).is_absolute() else Path(args.dir)
+    plantilla, dir_img = dir_val / "plantilla.csv", dir_val / "imagenes"
+    if not plantilla.exists():
+        sys.exit(f"Falta {plantilla}. Genera el kit con make_validation_kit2.py")
+
+    # El kit v2 se reconoce por sus identificadores (W01, W02, ...).
+    filas = leer_plantilla(plantilla)
+    bandas = BANDAS_V2 if filas and filas[0]["id"].startswith("W") else BANDAS_V1
+
     faltan = sum(1 for f in filas if not (f.get("banda") or "").strip())
     print(f"{len(filas) - faltan} de {len(filas)} ya respondidas; faltan {faltan}.")
-    App(filas).mainloop()
-    filas = leer_plantilla()
+    print(f"bandas: {', '.join(b for b, _ in bandas)}")
+    App(filas, bandas, plantilla, dir_img).mainloop()
+    filas = leer_plantilla(plantilla)
     faltan = sum(1 for f in filas if not (f.get("banda") or "").strip())
     if faltan:
         print(f"Guardado. Faltan {faltan}; al volver a ejecutar continúa donde quedó.")
     else:
-        print("Completado. Evalúa con: python scripts/eval_validation.py")
+        print(f"Completado. Evalúa con: "
+              f"python scripts/eval_validation.py --dir {args.dir}")
 
 
 if __name__ == "__main__":

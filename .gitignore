@@ -79,6 +79,7 @@ CLAUDE.md
 # Las imágenes se regeneran con scripts/make_validation_kit.py; los CSV sí se versionan
 # porque plantilla.csv contiene las respuestas humanas de la validación.
 outputs/validacion_manual/imagenes/
+outputs/validacion_manual_v2/imagenes/
 
 # ===== Salidas del sistema de alertas =====
 # El panel HTML y los resúmenes se versionan (son el entregable consultable);
