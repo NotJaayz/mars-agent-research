@@ -116,6 +116,21 @@ no más, y la proporción cae al endurecer el criterio de acuerdo, del \SI{16.5}
 taxonomía, en la que la clase lecho rocoso absorbe los bloques que un lector humano
 contaría como rocas individuales.
 
+\subsection{Sobre la detección de vetas}
+
+Se ensayó detectar vetas minerales a partir de la imagen, por ser el rasgo de mayor
+interés científico presente en las anotaciones. El resultado fue negativo y se reporta
+como tal: el detector mejora nueve veces la tasa base, de modo que hay señal, pero
+recupera menos del \SI{7}{\percent} de los píxeles de veta y falla por completo en casi la
+mitad de las escenas. La hipótesis de que el color permitiría discriminar el sulfato quedó
+refutada por una medición propia, que halló un contraste azul/rojo de apenas $1{,}025$
+veces y con dirección inconsistente.
+
+La explicación es instrumental y no algorítmica: el polvo recubre las vetas, las imágenes
+del conjunto son archivos comprimidos con balance de blancos y no productos radiométricos
+calibrados, y la cámara del subconjunto es un instrumento de navegación. Perseguir esta
+línea exigiría datos espectrales que AI4Mars no contiene.
+
 \section{Aportes}
 
 El trabajo deja cuatro aportes que conviene distinguir por su naturaleza.
@@ -140,6 +155,13 @@ cabe esperar de AI4Mars para tareas de conteo de instancias. La validación huma
 confirma desde el otro extremo: el desacuerdo se concentra donde la anotación agrupa en un
 polígono lo que el observador separa. Es un resultado negativo, y por eso mismo útil:
 ahorra a otros recorrer un camino cerrado.
+
+\paragraph{Una capa aplicada sobre los indicadores.} Los indicadores se tradujeron en seis
+reglas de aviso con umbrales explícitos y justificados, y en una aplicación que hace el
+conjunto de resultados consultable sin programar. El valor no está en la sofisticación
+técnica sino en que el criterio queda a la vista: cada umbral lleva asociado el percentil
+que lo fija y la razón que lo motiva, de modo que es discutible y ajustable por quien use
+el sistema, en lugar de quedar oculto.
 
 \paragraph{Una vía constructiva.} La prueba de concepto del enfoque híbrido —la máscara
 indica dónde hay roca, el gradiente de la imagen cuántos bloques la componen— muestra que

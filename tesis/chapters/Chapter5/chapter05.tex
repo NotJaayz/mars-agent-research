@@ -239,6 +239,161 @@ Cabe señalar que el subconjunto es casi enteramente de la cámara izquierda del
 estéreo —\num{16027} imágenes frente a \num{37} de la derecha—, por lo que no fue posible
 la comparación entre ojos que E3 contemplaba.
 
+\subsection{Extensión aplicada: de indicador a aviso operativo}
+\label{sec:extension}
+
+Los indicadores anteriores describen el terreno, pero no dicen qué hacer con esa
+descripción. Como extensión del trabajo se construyó una capa que los traduce en avisos
+sobre las condiciones que la literatura de exploración planetaria asocia a riesgo para un
+vehículo, y una aplicación para consultarlos. Ambas se derivan del conjunto de resultados
+y no requieren reprocesar las máscaras.
+
+\subsubsection{Reglas de aviso}
+
+Se definieron seis reglas, cada una con un umbral explícito, el percentil de la
+distribución observada al que corresponde y la razón que la motiva
+(Tabla~\ref{tab:reglas}). Los umbrales se fijaron sobre los percentiles del propio
+subconjunto y no de forma arbitraria, de modo que el criterio sea discutible y ajustable
+en lugar de quedar oculto en el código.
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption[Reglas del sistema de aviso]{Reglas de aviso, con su umbral y la condición que
+    pretenden capturar. La severidad distingue los avisos operativos (2 y 3) de los
+    meramente informativos (1).}
+  \label{tab:reglas}
+  \begin{tabular}{llcp{5.0cm}}
+    \toprule
+    \textbf{Aviso} & \textbf{Umbral} & \textbf{Sev.} & \textbf{Motivación} \\
+    \midrule
+    Daño en ruedas & roca grande \textgreater\ \SI{5}{\percent} y solidez \textless\ 0,85
+      & 3 & Abundancia de bloques con contornos angulosos: la condición asociada al
+        desgaste prematuro documentado en \textit{Curiosity} \citep{jpl2017wheels}. \\
+    Obstáculo mayor & roca mayor \textgreater\ \SI{15}{\percent}
+      & 3 & Un bloque que domina la escena puede superar la altura franqueable. \\
+    Atrapamiento en arena & arena \textgreater\ \SI{70}{\percent}
+      & 3 & La arena suelta compromete la tracción; es el modo de fallo que inmovilizó a
+        \textit{Spirit}. \\
+    Campo de bloques & 5 o más rocas
+      & 2 & Muchos bloques discretos reducen las trayectorias viables aunque ninguno sea
+        infranqueable. \\
+    Terreno rocoso & cobertura \textgreater\ \SI{80}{\percent}
+      & 1 & Informativa: buena tracción, pero superficie irregular. \\
+    Escena poco evaluable & más del \SI{95}{\percent} sin etiquetar
+      & 1 & Señala que la ausencia de avisos no debe leerse como ausencia de riesgo. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+El nivel de riesgo de una escena se determina solo con las reglas de severidad dos o tres:
+las informativas no lo elevan. Se califica de riesgo \textbf{alto} cuando concurren al
+menos dos reglas operativas y alguna es de severidad tres, \textbf{medio} cuando hay una
+sola de severidad tres, y \textbf{bajo} cuando únicamente se activan reglas de severidad
+dos. La Figura~\ref{fig:alertas} presenta el resultado sobre el subconjunto completo.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_24_alertas_terreno.png}
+  \caption[Distribución de los avisos de terreno]{Escenas por nivel de riesgo, en escala
+    logarítmica, y número de escenas que activa cada regla.}
+  \label{fig:alertas}
+\end{figure}
+
+De las \num{16064} escenas, \num{104} resultan de riesgo alto, \num{1359} de riesgo medio
+y \num{124} de riesgo bajo; las \num{14477} restantes no activan ninguna regla operativa.
+La categoría \textit{bajo} es deliberadamente estrecha —solo se alcanza cuando se activa
+en exclusiva la única regla de severidad dos— y por eso resulta menos frecuente que
+\textit{medio}, lo que a primera vista parece una anomalía del conteo y no lo es.
+
+El aviso más frecuente es el informativo de terreno rocoso, con \num{6855} escenas, lo que
+concuerda con la tipología de la Figura~\ref{fig:tipologia}. Entre los operativos destaca
+el riesgo de atrapamiento en arena, con \num{1174} escenas, y el más restrictivo es el de
+daño en ruedas, con \num{73}: exige simultáneamente abundancia de roca grande y contornos
+irregulares, una conjunción poco común.
+
+Conviene subrayar el alcance de esta capa. Los avisos \textbf{heredan las limitaciones de
+los indicadores de los que derivan}, incluido el sesgo de la anotación documentado en la
+subsección~\ref{sec:sesgo}. No constituyen una valoración de transitabilidad validada
+contra incidentes reales —no existe tal registro para este subconjunto— sino una
+priorización de escenas para revisión, cuyo criterio queda explícito y es por tanto
+auditable y ajustable.
+
+\subsubsection{Aplicación de consulta}
+
+Para que el conjunto de resultados sea consultable sin conocimientos de programación se
+desarrolló una aplicación de escritorio en Python, con cuatro vistas: un resumen
+descriptivo del subconjunto, la distribución de avisos, un explorador que muestra para
+cada escena la imagen, la anotación y las rocas detectadas, y una vista de los rasgos
+geológicos del conjunto extendido. Se distribuye junto al código y opera sobre los mismos
+archivos de resultados, de modo que cualquier reejecución del procedimiento se refleja
+en ella sin pasos adicionales. El Anexo~\ref{app:material-complementario} detalla su
+estructura.
+
+\subsubsection{Exploración: detección de vetas}
+\label{sec:vetas}
+
+Las vetas de sulfato de calcio son depósitos precipitados por circulación de agua y
+constituyen el rasgo de mayor interés científico que aparece en las anotaciones del
+conjunto. La escala de navegación empleada en este trabajo no las etiqueta, de modo que la
+única vía para inventariarlas en las imágenes de \textit{Curiosity} sería detectarlas a
+partir de la propia imagen. Se ensayó esa vía y \textbf{el resultado fue negativo}; se
+reporta porque delimita lo que cabe esperar de este material.
+
+El procedimiento aplicó un filtro de crestas de Meijering sobre la región de lecho rocoso.
+Ese filtro analiza los autovalores del Hessiano para realzar estructuras curvilíneas finas
+y es de uso corriente en angiografía; una veta es geométricamente el mismo tipo de objeto.
+Se ensayó además una variante que pondera la respuesta por el cociente azul/rojo, bajo la
+hipótesis de que el sulfato, blanquecino, resultaría menos rojizo que el polvo marciano.
+La evaluación se hizo sobre \num{24} escenas del conjunto extendido cuya anotación de veta
+se consideró plausible, midiendo la precisión frente a la tasa base
+(Tabla~\ref{tab:vetas}, Figura~\ref{fig:vetas}).
+
+\begin{table}[H]
+  \centering
+  \caption{Desempeño del detector de vetas sobre \num{24} escenas anotadas.}
+  \label{tab:vetas}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Medida} & \textbf{Sin color} & \textbf{Con color} \\
+    \midrule
+    Precisión media               & 0,261 & 0,267 \\
+    Recall medio                  & 0,067 & 0,041 \\
+    Mejora sobre la tasa base     & 9,1$\times$ & 10,2$\times$ \\
+    Escenas sin ningún acierto    & 11 de 24 & 12 de 24 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_25_exploracion_vetas.png}
+  \caption[Desempeño del detector de vetas]{Mejora sobre la tasa base por escena, ordenada
+    de mayor a menor, y precisión frente a recall en las dos variantes.}
+  \label{fig:vetas}
+\end{figure}
+
+La lectura es que \textbf{hay señal pero el detector es inutilizable}. Una mejora de nueve
+veces sobre la tasa base no es ruido; sin embargo recupera menos del \SI{7}{\percent} de
+los píxeles de veta y falla por completo en casi la mitad de las escenas. La variante con
+color no aporta: la precisión apenas cambia, el recall empeora y los fallos aumentan.
+
+La hipótesis del color se refutó con una medición propia. Sobre imágenes de la cámara de
+mástil de \textit{Curiosity}, el cociente azul/rojo en las zonas claras del lecho rocoso
+resultó ser apenas $1{,}025$ veces el del conjunto de la roca, y con dirección
+inconsistente entre escenas. Dos causas lo explican: el polvo rojizo recubre también las
+vetas y borra el contraste espectral, y las imágenes del conjunto son archivos comprimidos
+con balance de blancos aplicado, no productos radiométricos calibrados, de modo que la
+información espectral fina que permitiría discriminar el sulfato ya no está presente.
+A ello se añade que la cámara del subconjunto es un instrumento de navegación —campo
+amplio, escala de grises, resolución modesta—: las vetas del cráter Gale se caracterizaron
+con la lupa de mano \citep{edgett2012mahli} y la cámara de mástil \citep{bell2017mastcam},
+no con la de navegación.
+
+La conclusión es que perseguir esta línea exigiría datos espectrales calibrados, que no
+forman parte de AI4Mars. Se documenta para que el ensayo no se repita sin conocer sus
+límites.
+
 \section{Evaluación y validación}
 
 \subsection{Contraste con etiquetas de experto}

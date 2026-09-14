@@ -113,6 +113,62 @@ afirmación de que en esas escenas los filtros aciertan.
   \label{fig:diag-sobreseg}
 \end{figure}
 
+\section{Documentación técnica de la extensión aplicada}
+\label{app:extension}
+
+Esta sección documenta los componentes descritos en la
+subsección~\ref{sec:extension}.
+
+\subsection*{Capa de avisos}
+
+Se implementa como un módulo independiente que opera sobre el archivo de resultados y le
+añade cuatro columnas: las claves de los avisos activados, su número, la severidad máxima
+y el nivel de riesgo resultante. Cada regla se declara como un objeto con su clave, su
+título legible, su severidad, la condición —una función sobre la fila de resultados—, el
+criterio en texto y su motivación. Esa estructura permite añadir, retirar o reajustar
+reglas sin tocar la lógica de evaluación, y garantiza que todo umbral quede acompañado de
+su justificación en el mismo lugar del código.
+
+La evaluación no reprocesa máscaras: recorre el archivo de resultados, de modo que
+recalcular los avisos sobre las \num{16064} escenas es inmediato. Las salidas son la tabla
+completa con las columnas añadidas, un catálogo de las reglas con sus umbrales y un
+resumen agregado por nivel y por tipo de aviso.
+
+\subsection*{Aplicación de consulta}
+
+Aplicación de escritorio en Python construida sobre una biblioteca de componentes gráficos
+modernos, con la paleta institucional de la agencia responsable del conjunto de datos. La
+ventana se organiza en una barra lateral de navegación y cuatro vistas:
+
+\begin{description}
+  \item[Resumen] Estadísticos descriptivos del subconjunto y composición del terreno.
+  \item[Avisos] Distribución por nivel de riesgo y por tipo de regla, con el detalle del
+    criterio que motivó cada aviso.
+  \item[Explorador] Para la escena seleccionada, la imagen original, la anotación del
+    terreno y las rocas detectadas por el procedimiento, en paneles contiguos.
+  \item[Geología] Presencia de los rasgos de la taxonomía extendida en el conjunto de la
+    misión posterior, incluidas las vetas.
+\end{description}
+
+Las figuras se generan en el momento a partir de los mismos archivos de resultados que
+respaldan este documento, de modo que la aplicación no mantiene una copia propia de los
+datos y cualquier reejecución del procedimiento se refleja en ella sin pasos adicionales.
+
+\subsection*{Exploración de rasgos geológicos}
+
+El conjunto de datos incluye, para la misión posterior a la estudiada, una taxonomía
+geológica más detallada que la escala de navegación: distingue subtipos de lecho rocoso,
+roca suelta, guijarros y vetas. Se recorrieron sus \num{8497} máscaras registrando la
+presencia y extensión de cada rasgo. Las vetas aparecen en \num{294} escenas, el
+\SI{3.5}{\percent}, de las cuales \num{150} presentan una geometría compatible con una
+veta genuina —alargada y de área reducida— y \num{69} resultan dudosas.
+
+Ese recorrido tiene un interés que excede la exploración de vetas y se recoge entre las
+recomendaciones del Capítulo~\ref{cap:conclusiones}: la clase de \textit{roca suelta} de
+esa taxonomía aparece en una proporción muy superior a la de \textit{roca grande} en la
+escala de navegación, lo que la convierte en la vía natural para sortear el techo del
+conteo documentado en la subsección~\ref{sec:diagnostico}.
+
 \section{Recursos reproducibles}
 
 Los recursos que respaldan el trabajo se organizan como sigue.
