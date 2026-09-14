@@ -435,123 +435,106 @@ desarrolla en la subsección~\ref{sec:sesgo}.
 \label{sec:validacion-manual}
 
 La metodología comprometía un contraste entre el conteo automático y un conteo manual. Se
-realizó sobre una muestra de \num{24} escenas con roca grande, presentadas con
-identificadores neutros y en orden barajado. En cada imagen se resaltó la región que
-AI4Mars etiquetó como roca grande y se preguntó cuántas rocas se distinguen
-\textbf{dentro de esa zona}, en una de cuatro bandas: cero, una a tres, cuatro a nueve, o
-diez o más. Se responde por bandas —y no con una cifra exacta— porque el objetivo no es
-medir la precisión del conteo, imposible de establecer sin verdad de campo, sino
-comprobar si el procedimiento sitúa las escenas en el mismo orden de magnitud que un
-observador. El resultado automático no apareció en ningún momento del material consultado.
+realizó en dos rondas: una primera de \num{24} escenas, que sirvió de prueba piloto y
+reveló defectos del propio instrumento, y una segunda de \num{60} escenas con el diseño
+corregido, que es la que se reporta como resultado.
 
-El acuerdo exacto de banda es del \SI{46}{\percent} sobre las \num{24} escenas. Dado que
-las bandas son \textbf{ordinales}, el coeficiente kappa sin ponderar penaliza por igual un
-desacuerdo de una banda y uno de tres, de modo que se reportan también las versiones
-ponderadas, que son la medida apropiada para una escala de este tipo
-(Tabla~\ref{tab:kappa}).
+\subsubsection{Diseño del instrumento}
 
-\begin{table}[H]
-  \centering
-  \caption[Acuerdo entre el conteo manual y el automático]{Acuerdo entre el conteo manual y
-    el automático. La partición distingue las escenas cuya anotación delimita una zona
-    apreciable de aquellas en que no lo hace.}
-  \label{tab:kappa}
-  \begin{tabular}{lcccc}
-    \toprule
-    \textbf{Subconjunto} & \textbf{$n$} & \textbf{Acuerdo} & \textbf{$\kappa$} &
-    \textbf{$\kappa$ ponderado} \\
-    \midrule
-    Todas las escenas                       & 24 & \SI{46}{\percent} & 0,28 & 0,40 \\
-    Anotación apreciable ($\geq$ \num{2000} px) & 17 & \SI{41}{\percent} & 0,16 & 0,31 \\
-    Anotación mínima (\textless\ \num{2000} px) &  7 & \SI{57}{\percent} & 0,28 & 0,11 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+En cada escena se resalta la región que la anotación marcó como roca grande y se pregunta
+cuántas rocas se distinguen \textbf{dentro de esa región}, en una de seis bandas: cero, una
+a tres, cuatro a nueve, diez a veinticuatro, veinticinco a cuarenta y nueve, o cincuenta o
+más. Preguntar por la escena completa habría mezclado dos cuestiones distintas —si la
+anotación es completa y si el procedimiento la subdivide bien—, de modo que acotar la
+pregunta a la región anotada es lo que permite atribuir el desacuerdo. Se responde por
+bandas y no con cifras exactas porque el objetivo es comprobar la coincidencia en orden de
+magnitud, no medir una precisión inalcanzable sin verdad de campo. El material se presenta
+con identificadores neutros, en orden barajado, y el resultado automático no aparece en
+ningún momento.
 
-Dos lecturas se desprenden de esta tabla, y conviene no quedarse con la primera.
+La ronda piloto empleaba cuatro bandas, la última de ellas abierta en «diez o más». Ese
+diseño resultó defectuoso: un procedimiento que contara ochenta rocas donde el observador
+distinguía una decena puntuaba como acierto exacto, de modo que la escala
+\textbf{favorecía sistemáticamente a los métodos que sobreestiman}. La ronda definitiva
+subdivide esa banda. Corrige además otros tres defectos detectados: excluye las escenas
+cuya región anotada no alcanza los \num{2000} píxeles —en la ronda piloto siete de
+veinticuatro eran imperceptibles y la pregunta quedaba mal planteada—, sustituye el relleno
+opaco por un tinte tenue que no oculta la textura que hay que examinar, y estratifica la
+muestra por área de la región en lugar de por la banda del propio procedimiento, que
+condicionaba la muestra al método evaluado.
 
-La primera es que el acuerdo es \textbf{modesto}. Sobre el conjunto completo, el kappa
-ponderado de $0{,}40$ se sitúa en el límite superior de lo aceptable en las escalas de
-referencia habituales; el kappa sin ponderar, de $0{,}28$, es apenas aceptable. El
-procedimiento no reproduce el juicio humano banda a banda.
+\subsubsection{Resultado}
 
-La segunda, menos evidente, es que \textbf{excluir las escenas mal planteadas empeora el
-resultado} en lugar de mejorarlo: el kappa cae de $0{,}28$ a $0{,}16$ y el ponderado de
-$0{,}40$ a $0{,}31$. El motivo es que tres de las siete escenas de anotación mínima eran
-acuerdos triviales en la banda cero —el observador no distinguió ninguna roca y el
-procedimiento tampoco contó ninguna—, y esos aciertos fáciles inflaban el índice. Sobre las
-escenas en que la pregunta está bien planteada, el acuerdo exacto es del
-\SI{41}{\percent} y el kappa sin ponderar de $0{,}16$, que corresponde a un acuerdo
-\textbf{escaso}. Que el kappa ponderado se mantenga en $0{,}31$ indica que la mayoría de
-los desacuerdos son de \textbf{una sola banda} y no de varias: el procedimiento se sitúa
-habitualmente en la vecindad del juicio humano, pero rara vez coincide con él.
+Sobre las \num{60} escenas, el acuerdo exacto de banda es del \SI{50}{\percent}, con
+coeficiente kappa de Cohen de $0{,}13$ y kappa ponderado de $0{,}11$. Ambos corresponden a
+un acuerdo \textbf{escaso} en las escalas de referencia habituales. El
+\SI{50}{\percent} de acuerdo aparente es engañoso: veintiséis de las treinta
+coincidencias se concentran en una sola celda, la de una a tres rocas.
 
-El desacuerdo es además \textbf{asimétrico}: el procedimiento sitúa la escena en una banda
-inferior a la del observador en ocho casos y superior en cinco. La
-Figura~\ref{fig:validacion-manual} presenta la matriz completa.
+El desacuerdo es \textbf{marcadamente asimétrico}. El procedimiento sitúa la escena en una
+banda inferior a la del observador en \textbf{veintiocho casos} y superior en solo
+\textbf{dos}. La Figura~\ref{fig:validacion-manual} muestra por qué.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.78\textwidth]{Figura_23_validacion_manual.png}
-  \caption[Matriz de acuerdo del conteo manual]{Matriz de acuerdo entre el conteo manual
-    por bandas y el automático, sobre las \num{24} escenas.}
+  \includegraphics[width=0.78\textwidth]{Figura_26_validacion_manual_v2.png}
+  \caption[Acuerdo entre el conteo manual y el automático]{Matriz de acuerdo entre el
+    conteo manual por bandas y el automático, sobre \num{60} escenas. Las tres columnas de
+    la derecha están vacías: el procedimiento no produce ningún conteo superior a nueve.}
   \label{fig:validacion-manual}
 \end{figure}
 
-La dirección del error corrige una expectativa previa, y es el aporte principal de esta
-validación. La preocupación durante la calibración había sido la sobresegmentación —que el
-procedimiento partiera una roca en varias—, y el criterio de prominencia se introdujo para
-contenerla. La validación muestra que, una vez aplicado ese criterio, el sesgo residual va
-en \textbf{sentido contrario}: el procedimiento \textbf{subestima} el número de rocas en las
-escenas densas. De las diez escenas en que el observador identificó diez o más rocas, el
-procedimiento situó dos en la banda cero, una entre una y tres y tres entre cuatro y nueve.
+El rasgo decisivo de esa matriz son las \textbf{tres columnas vacías}. En ninguna de las
+sesenta escenas el procedimiento devuelve más de nueve rocas, mientras que el observador
+identificó diez o más en doce de ellas y veinticinco o más en cinco. No se trata de un
+sesgo que pudiera corregirse recalibrando un umbral: el procedimiento tiene un
+\textbf{techo estructural} en el número de rocas que puede llegar a contar sobre estas
+anotaciones.
 
-El examen de las ocho escenas subcontadas identifica tres mecanismos distintos, y
-solo uno es atribuible al algoritmo (Tabla~\ref{tab:mecanismos-subconteo}).
+Este resultado corrige la expectativa con la que se calibró el procedimiento. La
+preocupación durante la calibración fue la sobresegmentación —que una roca se partiera en
+varias—, y el criterio de prominencia se introdujo para contenerla. La validación muestra
+que el problema real va en sentido contrario y es de mayor magnitud de lo que la ronda
+piloto sugería.
 
-\begin{table}[H]
-  \centering
-  \caption[Mecanismos del subconteo]{Mecanismos identificados en las ocho escenas donde el
-    procedimiento cuenta menos rocas que el observador.}
-  \label{tab:mecanismos-subconteo}
-  \begin{tabular}{lcp{6.3cm}}
-    \toprule
-    \textbf{Mecanismo} & \textbf{Escenas} & \textbf{Origen} \\
-    \midrule
-    Polígono único extenso   & 3 & La anotación cubre con una sola región un campo
-      de rocas; la etiqueta agrupa lo que el observador separa. \\
-    Regiones bajo los filtros & 4 & Regiones pequeñas o muy alargadas descartadas por
-      área o por relación de aspecto. \\
-    Anotación insuficiente    & 1 & La región anotada suma \num{411} píxeles en cuatro
-      motas, todas por debajo del área mínima. \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+\subsubsection{Por qué el techo: la anotación no es exhaustiva}
+\label{sec:anotacion-parcial}
 
-El primer mecanismo es el más instructivo y refuerza el diagnóstico de la
-subsección~\ref{sec:diagnostico}. En una de esas escenas la anotación de roca grande es
-una \textbf{única región de \num{199782} píxeles}, el \SI{46.8}{\percent} del área
-etiquetada, sobre la cual el observador distinguió más de diez rocas y el procedimiento
-contó seis. La división de aguas solo puede separar bloques cuando la transformada de
-distancia presenta estrechamientos; un polígono trazado holgadamente alrededor de un campo
-de rocas no los presenta, de modo que el procedimiento no tiene sobre qué cortar. El límite
-vuelve a estar en la \textbf{granularidad de la anotación}, no en el algoritmo.
+El examen de las escenas discrepantes identifica la causa, y no es algorítmica. La
+anotación de roca grande \textbf{no marca todas las rocas de la escena, sino algunas}.
 
-Conviene declarar una debilidad del propio instrumento de validación. En siete de las
-\num{24} escenas la región anotada suma menos de \num{2000} píxeles, es decir menos del
-\SI{0.2}{\percent} de la imagen. En esos casos la zona resaltada es apenas visible y la
-pregunta «cuántas rocas hay dentro de la zona» queda mal planteada, porque el observador
-tiende entonces a contar las rocas de la escena. Una versión mejorada del instrumento
-debería excluir las escenas cuya anotación no delimite una zona apreciable, o presentar un
-recorte ampliado de ella. El valor de kappa reportado debe leerse con esa reserva.
+En \num{36} de las \num{60} escenas, la clase roca grande representa menos del
+\SI{20}{\percent} de la roca etiquetada; el resto se anotó como lecho rocoso. La mediana es
+del \SI{9.1}{\percent}. Dicho de otro modo: de toda la roca que la anotación reconoce en una
+escena típica, apenas una décima parte quedó marcada como bloque discreto.
 
-El balance obliga a acotar las pretensiones del indicador más de lo que sugerían los
-resultados agregados. El conteo \textbf{no} reproduce el juicio humano con fidelidad
-suficiente para tratarse como una medida de la cantidad de rocas de una escena. Lo que
-sostiene la evidencia es un uso más débil: distinguir de forma aproximada escenas sin
-obstáculos discretos de escenas que los tienen, sabiendo que en terreno denso el valor
-quedará sistemáticamente por debajo. Cualquier uso más exigente requeriría antes resolver
-la granularidad de la anotación, que es la causa dominante del desacuerdo.
+El efecto es más acusado precisamente donde más escenas hay. En las veintisiete escenas que
+el observador situó entre una y tres rocas, la región resaltada ocupa una mediana del
+\SI{1.11}{\percent} de la imagen y del \SI{5.4}{\percent} de la roca etiquetada. Son
+regiones diminutas que contienen, en efecto, una o dos rocas —y en torno a ellas, fuera de
+la región, la escena contiene muchas más que la anotación no recoge.
+
+De aquí se sigue una precisión importante sobre qué mide realmente el indicador. El conteo
+no estima el número de rocas presentes en una escena, sino el número de bloques
+\textbf{dentro de la fracción de roca que el anotador decidió delimitar como roca grande}.
+Ambas cantidades pueden diferir en un orden de magnitud. Incluso un procedimiento perfecto
+sobre estas máscaras seguiría contando solo lo que la anotación delimitó.
+
+\subsubsection{Alcance del indicador}
+
+El resultado obliga a acotar las pretensiones de E2 más de lo que sugerían los estadísticos
+agregados del apartado anterior. El conteo \textbf{no} reproduce el juicio humano con
+fidelidad suficiente para leerse como el número de rocas de una escena, ni siquiera
+restringido a la región anotada. Lo que la evidencia sostiene es un uso más débil: ordenar
+de forma aproximada escenas según contengan o no bloques discretos delimitados, sabiendo
+que el valor queda sistemáticamente por debajo de lo que un observador contaría y que el
+procedimiento no supera las nueve rocas.
+
+Conviene también consignar las limitaciones de la propia validación. Se empleó un único
+observador, de modo que no permite estimar la variabilidad entre personas, que en una tarea
+de este tipo es previsiblemente considerable. Y la muestra, aunque estratificada por área
+de la región para no favorecer a ningún método, no es representativa del subconjunto en su
+conjunto.
 
 \subsection{Comparación con métodos de aprendizaje automático}
 
@@ -857,17 +840,18 @@ en magnitud. La cámara de navegación es un par estéreo, de modo que la vía e
 el subconjunto disponible es casi enteramente monocular.
 
 \paragraph{Alcance de la validación humana.} La validación de la
-subsección~\ref{sec:validacion-manual} se realizó sobre \num{24} escenas y con un único
-observador, de modo que no permite estimar la variabilidad entre observadores ni acompañar
-el kappa de un intervalo de confianza estrecho. Debe leerse como una comprobación
-cualitativa. A ello se añade la debilidad del instrumento ya declarada: en siete escenas la
-anotación era demasiado pequeña para delimitar una zona evaluable.
+subsección~\ref{sec:validacion-manual} se realizó con un único observador, de modo que no
+permite separar el desacuerdo atribuible al procedimiento del inherente a la tarea, que en
+un juicio de este tipo es previsiblemente considerable. Debe leerse como una comprobación
+cualitativa sobre una muestra estratificada, no como una medición con intervalos de
+confianza estrechos.
 
 \paragraph{Subdivisión residual y subconteo.} El criterio de prominencia redujo
 sustancialmente la fragmentación, pero no la eliminó: el \SI{24.0}{\percent} de las escenas
 que cuentan presentan más rocas que componentes conectadas. La validación humana muestra,
-sin embargo, que el sesgo neto va en sentido opuesto —subconteo en escenas densas—, de modo
-que ambos efectos coexisten en escenas distintas y no se cancelan.
+sin embargo, que el sesgo neto va en sentido opuesto y es de mayor magnitud —el
+procedimiento no supera las nueve rocas en ninguna de las \num{60} escenas evaluadas—, de
+modo que ambos efectos coexisten en escenas distintas y no se cancelan.
 
 \paragraph{Alcance del subconjunto.} Los resultados corresponden a una cámara de un rover
 en una región. No se extienden sin más a otras misiones, otras cámaras ni otros terrenos.

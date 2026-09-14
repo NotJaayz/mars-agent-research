@@ -37,13 +37,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src import config, mask_utils as mu  # noqa: E402
 from src.rock_count import _aspect_ratio  # noqa: E402
 
-BANDAS = ["0", "1-3", "4-9", "10+"]
+# Dos escalas. La primera ronda cerraba en "10+", banda abierta que puntuaba como acierto
+# exacto un conteo de 84 frente a una decena observada. El kit v2 la subdivide.
+BANDAS_V1 = ["0", "1-3", "4-9", "10+"]
+BANDAS_V2 = ["0", "1-3", "4-9", "10-24", "25-49", "50+"]
+BANDAS = BANDAS_V1
 GRID_H = [0.004, 0.008, 0.015, 0.025, 0.04, 0.06, 0.09, 0.13]
 GRID_A = [0.0005, 0.002, 0.005, 0.01]
-DIR_VAL = Path("outputs/validacion_manual")
+DIR_VAL = Path("outputs/validacion_manual")   # por defecto; se ajusta con --dir
 
 
 def banda(n: int) -> str:
+    """Banda del conteo ``n`` en la escala activa."""
+    if BANDAS is BANDAS_V2:
+        return ("0" if n == 0 else "1-3" if n <= 3 else "4-9" if n <= 9
+                else "10-24" if n <= 24 else "25-49" if n <= 49 else "50+")
     return "0" if n == 0 else "1-3" if n <= 3 else "4-9" if n <= 9 else "10+"
 
 
@@ -90,10 +98,18 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--rapido", action="store_true",
                     help="rejilla reducida (para comprobar que el guion corre)")
+    ap.add_argument("--dir", default=str(DIR_VAL), help="directorio del kit a evaluar")
     args = ap.parse_args()
 
-    plantilla = pd.read_csv(DIR_VAL / "plantilla.csv", dtype={"banda": str})
-    clave = pd.read_csv(DIR_VAL / "clave.csv")
+    d_val = Path(args.dir)
+    plantilla = pd.read_csv(d_val / "plantilla.csv", dtype={"banda": str})
+    clave = pd.read_csv(d_val / "clave.csv")
+
+    # El kit v2 se reconoce por sus identificadores (W01, W02, ...).
+    global BANDAS
+    if len(plantilla) and str(plantilla.id.iloc[0]).startswith("W"):
+        BANDAS = BANDAS_V2
+    print(f"Escala de bandas: {', '.join(BANDAS)}")
     d = plantilla.merge(clave, on="id")
     d["banda"] = d.banda.astype(str).str.strip()
     d = d[d.banda.isin(BANDAS)]

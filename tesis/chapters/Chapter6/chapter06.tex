@@ -77,25 +77,30 @@ lo que significa que ha aprendido el sesgo junto con la señal.
 
 \subsection{Sobre el acuerdo con el juicio humano}
 
-La validación por bandas sobre \num{24} escenas arrojó un acuerdo exacto del
-\SI{46}{\percent}, con kappa de Cohen de $0{,}28$ y kappa ponderado de $0{,}40$. Restringida
-a las diecisiete escenas cuya anotación delimita una zona apreciable —donde la pregunta
-está bien planteada— el acuerdo baja al \SI{41}{\percent} y el kappa a $0{,}16$, con
-ponderado de $0{,}31$. Que el ponderado se sostenga mientras el simple cae indica que los
-desacuerdos son mayoritariamente de una sola banda.
+La validación por bandas sobre \num{60} escenas arrojó un acuerdo exacto del
+\SI{50}{\percent}, con kappa de Cohen de $0{,}13$ y kappa ponderado de $0{,}11$: un acuerdo
+escaso. La cifra de acuerdo es además engañosa, porque veintiséis de las treinta
+coincidencias se concentran en una sola banda. El desacuerdo es marcadamente asimétrico
+—el procedimiento queda por debajo del observador en veintiocho casos y por encima en
+dos— y su rasgo decisivo es que \textbf{en ninguna escena el procedimiento supera las nueve
+rocas}, mientras el observador identificó diez o más en doce de ellas.
 
-De este resultado se extraen dos conclusiones. La primera es que el conteo \textbf{no}
+De este resultado se extraen tres conclusiones. La primera es que el conteo \textbf{no}
 reproduce el juicio humano con fidelidad suficiente para leerse como una medida de la
 cantidad de rocas de una escena; sostiene, a lo sumo, la distinción aproximada entre
-escenas con y sin obstáculos discretos.
+escenas con y sin bloques discretos delimitados.
 
 La segunda corrige la expectativa con la que se calibró el procedimiento. El riesgo que se
-temía era la sobresegmentación, y contra ella se introdujo el criterio de prominencia. La
-validación muestra que el sesgo residual va en \textbf{sentido opuesto}: el procedimiento
-subestima el número de rocas en terreno denso. La causa dominante no es algorítmica sino de
-granularidad de la anotación: en tres de las ocho escenas subcontadas, un único polígono
-—de hasta \num{199782} píxeles, el \SI{46.8}{\percent} del área etiquetada— cubre un campo
-entero de rocas, y la división de aguas no dispone de estrechamientos por donde cortar.
+temía era la sobresegmentación, y contra ella se introdujo el criterio de prominencia. El
+sesgo real va en \textbf{sentido opuesto} y tiene un techo estructural, no ajustable
+mediante umbrales.
+
+La tercera precisa qué mide el indicador. La anotación de roca grande \textbf{no marca
+todas las rocas de una escena, sino algunas}: en \num{36} de las \num{60} escenas
+representa menos del \SI{20}{\percent} de la roca etiquetada, con una mediana del
+\SI{9.1}{\percent}. El conteo estima por tanto el número de bloques dentro de la fracción
+que el anotador decidió delimitar, no el número de rocas presentes, y ambas cantidades
+pueden diferir en un orden de magnitud.
 
 \subsection{Sobre el origen de los errores del conteo}
 
@@ -191,13 +196,11 @@ fijar los parámetros del gradiente y de las semillas sobre una muestra de escen
 terreno variado y, sobre todo, validar el conteo resultante contra conteo humano. Sin esa
 validación el método no puede reportarse como indicador.
 
-\paragraph{Ampliar la validación humana.} La validación realizada empleó \num{24} escenas
-y un único observador, de modo que no permite estimar la variabilidad entre observadores.
-Repetirla con varias personas y una muestra mayor daría un intervalo de confianza a los
-coeficientes reportados. Dos correcciones al instrumento son necesarias antes de repetirla:
-excluir las escenas cuya anotación no delimite una zona apreciable —siete de las
-veinticuatro empleadas— y presentar un recorte ampliado de la región, para que la pregunta
-esté bien planteada en todos los casos.
+\paragraph{Ampliar la validación humana.} La validación definitiva empleó \num{60} escenas
+y un único observador, de modo que no permite estimar la variabilidad entre personas, que
+en una tarea de este tipo es previsiblemente considerable. Repetirla con varios
+observadores daría un intervalo de confianza a los coeficientes reportados y permitiría
+separar el desacuerdo atribuible al procedimiento del inherente a la tarea.
 
 \paragraph{Recuperar la escala métrica.} La cámara de navegación es un par estéreo. Un
 subconjunto con ambos ojos disponibles permitiría estimar distancias y expresar los

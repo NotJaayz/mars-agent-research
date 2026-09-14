@@ -5,7 +5,8 @@ Lee ``plantilla.csv`` una vez completada y ``clave.csv``, y produce:
   - porcentaje de acuerdo y coeficiente kappa de Cohen (acuerdo corregido por azar),
   - matriz de acuerdo entre bandas,
   - dirección del desacuerdo (si el algoritmo sobreestima o subestima),
-  - figura ``Figura_23_validacion_manual.png`` en formato tesis.
+  - figura en formato tesis: ``Figura_23`` para la primera ronda y
+    ``Figura_26`` para la segunda, de modo que una no sobrescriba a la otra.
 
 Uso:  python scripts/eval_validation.py
 """
@@ -159,7 +160,11 @@ def main() -> None:
             ax.text(j, i, v, ha="center", va="center", fontsize=11,
                     color="white" if v > M.values.max() / 2 else "black")
     fig.colorbar(im, ax=ax, label="número de escenas"); fig.tight_layout()
-    out = Path("outputs/figures/tesis/Figura_23_validacion_manual.png")
+    # Cada ronda escribe su propia figura: la ronda 1 (Figura 23) se cita en el documento
+    # y no debe quedar sobrescrita por una ronda posterior.
+    n_fig = 26 if BANDAS is BANDAS_V2 else 23
+    out = Path(f"outputs/figures/tesis/Figura_{n_fig}_validacion_manual"
+               f"{'_v2' if BANDAS is BANDAS_V2 else ''}.png")
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, dpi=200, bbox_inches="tight")
     print(f"\nFigura -> {out}")
