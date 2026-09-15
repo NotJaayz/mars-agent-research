@@ -18,48 +18,49 @@ interiores de cada bloque son relativamente planos. Este módulo:
 
 Sigue siendo procesamiento clásico: no entrena ningún modelo.
 
-RESULTADO MEDIDO — no usar como sustituto del conteo basado en máscara
----------------------------------------------------------------------
-Evaluado contra las 24 escenas con conteo humano (``outputs/validacion_manual``) y
-calibrado por rejilla con validación cruzada dejando una fuera:
+RESULTADO MEDIDO (60 escenas con conteo humano)
+----------------------------------------------
+Evaluado contra ``outputs/validacion_manual_v2``, con seis bandas y muestreo estratificado
+por área de la región. Configuración fija ``seed_h=0,008``, ``min_area_frac=0,0005``:
 
-======================================  =======  ==========
-método                                   kappa   ponderado
-======================================  =======  ==========
-conteo basado en máscara (``rock_count``)  0,28       0,40
-híbrido, parámetros por defecto            0,26       0,38
-híbrido, calibrado (h=0,008, área=0,002)   0,28       0,44
-======================================  =======  ==========
+====================================  =========  =======  ==========
+método                                 acuerdo    kappa   ponderado
+====================================  =========  =======  ==========
+conteo basado en máscara (E2)             50 %     0,13       0,11
+híbrido                                   45 %     0,21       0,21
+====================================  =========  =======  ==========
 
-La diferencia del híbrido calibrado frente al conteo basado en máscara es de
-**+0,04 en kappa ponderado, con intervalo de confianza del 95 % de [-0,14, +0,23]**
-(bootstrap, 4000 remuestreos). El intervalo contiene el cero: con n = 24 la mejora
-**no es demostrable**. El híbrido gana en el 67 % de los remuestreos.
+**Lo que sí queda demostrado.** El híbrido corrige dos defectos estructurales de E2, y
+ambos se leen directamente en las distribuciones, sin depender de ningún estadístico:
 
-El comportamiento de las dos configuraciones conviene distinguirlo, porque explica por qué
-la mejora es marginal:
+- *Elimina el techo.* E2 no supera las nueve rocas en ninguna de las 60 escenas, de modo
+  que las bandas ``10-24``, ``25-49`` y ``50+`` quedan vacías aunque el observador situó
+  doce escenas en ellas. El híbrido las alcanza (máximo 127 rocas).
+- *Elimina el sesgo sistemático.* E2 queda por debajo del observador en 28 escenas y por
+  encima en 2. El híbrido reparte 16 por debajo y 17 por encima.
+- *Reproduce la forma de la distribución.* E2 acumula 51 de 60 escenas en la banda
+  ``1-3``, donde el observador situó 27; el híbrido sitúa 26.
 
-- Con los **parámetros por defecto** el híbrido invierte el sesgo en lugar de eliminarlo.
-  Corrige los subconteos de escenas densas —en una escena pasa de 6 a 81 bloques donde el
-  observador vio más de diez— pero sobreestima en afloramientos continuos, donde el
-  observador identificó de una a tres rocas y el híbrido cuenta decenas. Sobre las escenas
-  de anotación apreciable pasa de 5 subconteos y 5 sobreconteos a 0 y 9 respectivamente.
-- La **calibración** corrige ese exceso subiendo el área mínima cuatro veces, lo que
-  suprime los bloques añadidos. El resultado vuelve a subcontar (9 por debajo frente a 4
-  por encima), con un comportamiento próximo al del conteo basado en máscara. De ahí que
-  el kappa apenas se mueva: la calibración deshace buena parte de lo que el híbrido aporta.
+**Lo que NO queda demostrado.** Que el acuerdo con el juicio humano sea mejor. La
+diferencia en kappa ponderado es de **+0,10 con intervalo de confianza del 95 % de
+[-0,12, +0,31]** (bootstrap, 4000 remuestreos); el intervalo contiene el cero. El híbrido
+gana en el 81 % de los remuestreos, frente al 67 % que daba la muestra piloto de 24
+escenas, pero la muestra sigue siendo insuficiente para concluir. Nótese además que el
+acuerdo *exacto* del híbrido es menor (45 % frente a 50 %): E2 acierta más veces por
+concentrarse en la banda más poblada, que es justamente lo que el kappa penaliza.
 
-La causa es que el gradiente no distingue **el borde entre dos rocas** de **la textura
-interna de una sola**: una losa estratificada produce crestas de gradiente en cada estrato.
-Es la misma limitación observada en el modelo fundacional de segmentación, que subdivide
-una roca según su textura.
+La selección de parámetros es estable en lo que importa: las dos combinaciones que se
+reparten los pliegues de la validación cruzada dan ambas un kappa ponderado de 0,21
+aplicadas fijas a las 60 escenas. El valor de *leave-one-out* que reporta
+``scripts/eval_hybrid.py`` (0,06) mide el desempeño de un procedimiento que **reelige**
+parámetros en cada pliegue, que es inestable; no el de una configuración fija, que es como
+se usaría.
 
-Este módulo se conserva como exploración documentada y como base para la línea futura de
-trabajo, no como mejora del indicador. Para levantar el techo haría falta antes una muestra
-de conteo humano sustancialmente mayor, que permita distinguir mejoras de este tamaño.
+**Límite de fondo.** Ninguna de las dos variantes puede contar lo que la anotación no
+delimita. En 36 de las 60 escenas la clase roca grande cubre menos del 20 % de la roca
+etiquetada (mediana 9,1 %), de modo que ambos métodos cuentan dentro de una fracción
+pequeña y arbitraria de la roca visible.
 
-El conteo se realiza dentro de la región de *roca grande*, que es la misma zona sobre la
-que se recogió el conteo humano, de modo que ambos responden a la misma pregunta.
 """
 from __future__ import annotations
 
