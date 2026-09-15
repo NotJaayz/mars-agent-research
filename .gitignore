@@ -111,3 +111,11 @@ tesis/main.pdf
 
 # PDF de revisión local (el entregable se compila en Overleaf)
 tesis_revision.pdf
+
+# ===== Guion de defensa =====
+# Se versiona la fuente; el PDF se regenera con: tectonic -k defensa/guion_defensa.tex
+defensa/*.aux
+defensa/*.log
+defensa/*.out
+defensa/*.toc
+defensa/guion_defensa.pdf
