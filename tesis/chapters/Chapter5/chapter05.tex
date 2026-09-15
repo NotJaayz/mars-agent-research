@@ -600,12 +600,74 @@ concentran en escenas de cobertura total, donde el modelo tiende a quedarse por 
   \label{fig:modelo-vs-humano}
 \end{figure}
 
-Este resultado tiene una lectura precisa y conviene no exagerarla en ninguna dirección. El
-modelo aprende a reproducir la anotación humana con alta fidelidad, y por tanto
-\textbf{reproduce también su sesgo}: la cobertura que deriva de sus predicciones se parece
-mucho a la humana justamente porque fue entrenado para parecerse a ella. No constituye una
-validación independiente de la cobertura, sino una confirmación de que la señal que las
-máscaras contienen es aprendible.
+Esa cifra, sin embargo, no puede leerse como acierto. El modelo se entrenó con máscaras
+colaborativas y se evaluó contra máscaras colaborativas, de modo que mide \textbf{cuánto se
+parece a la anotación de la que aprendió}, no cuánta roca hay. Dado que esa anotación
+sobreestima la roca de forma sistemática (subsección~\ref{sec:sesgo}), cabía esperar que el
+modelo hubiera aprendido el sesgo junto con la señal. Esa hipótesis exigía una comprobación
+independiente.
+
+\subsubsection{Contraste del modelo con etiquetas de experto}
+\label{sec:modelo-experto}
+
+Se evaluó el mismo modelo, sin reentrenarlo, contra las \num{322} máscaras de experto, que
+no formaron parte de su entrenamiento ni de su validación. La comparación se restringe a
+los píxeles que el experto etiquetó. La Tabla~\ref{tab:modelo-experto} recoge el contraste.
+
+\begin{table}[H]
+  \centering
+  \caption[Desempeño del modelo según la referencia]{Desempeño del segmentador según la
+    referencia empleada para evaluarlo.}
+  \label{tab:modelo-experto}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Medida} & \textbf{Contra colaborativas} & \textbf{Contra experto} \\
+    \midrule
+    IoU medio                          & 0,940 & 0,843 \\
+    Correlación de la cobertura        & 0,950 & 0,927 \\
+    Error absoluto medio               & 4,3 p.p. & 7,5 p.p. \\
+    Mediana del error                  & --- & $+0{,}0$ p.p. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+El desempeño baja al evaluarse fuera del dominio del que aprendió, como era previsible,
+pero se mantiene alto. El dato relevante es otro: el modelo resulta
+\textbf{esencialmente insesgado} frente al experto. La mediana del error de cobertura es de
+$+0{,}0$ puntos porcentuales, con un \SI{37}{\percent} de escenas sobreestimadas y un
+\SI{30}{\percent} subestimadas (Figura~\ref{fig:modelo-experto}). \textbf{No reprodujo el
+sesgo de la anotación con la que fue entrenado.}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_27_modelo_vs_experto.png}
+  \caption[Cobertura del modelo frente a la del experto]{Cobertura estimada por el modelo
+    frente a la derivada de la anotación de experto, y distribución del error, sobre las
+    \num{322} escenas con máscara de especialista.}
+  \label{fig:modelo-experto}
+\end{figure}
+
+La explicación es coherente con el mecanismo del sesgo descrito en la
+subsección~\ref{sec:sesgo}. Allí se estableció que la anotación colaborativa sobreestima la
+cobertura porque deja \textbf{sin etiquetar} mucho suelo y arena, que desaparecen del
+denominador de la ecuación~\eqref{eq:cobertura}, y no porque asigne mal la clase de los
+píxeles que sí etiqueta. Como el entrenamiento excluye los píxeles sin etiqueta tanto de la
+función de pérdida como de la métrica, el modelo aprendió apariencia de roca a partir de
+píxeles correctamente etiquetados. El sesgo residía en la fórmula de agregación, no en el
+contenido de las etiquetas, y por eso no se transmitió al modelo.
+
+Conviene acotar el alcance de esta conclusión. La estimación es fiable \textbf{en
+agregado}, no escena por escena: el error absoluto medio es de $7{,}5$ puntos porcentuales,
+el \SI{23}{\percent} de las escenas supera los diez puntos de error y cinco escenas superan
+los cincuenta. Sirve para caracterizar un tramo del recorrido, no para decidir sobre una
+imagen concreta.
+
+Este resultado tiene una consecuencia que excede la comparación de métodos. El
+procedimiento clásico de este trabajo necesita una máscara humana, que no existe en el
+momento en que las imágenes llegan a la Tierra. El segmentador, en cambio, lee la imagen
+directamente. Que estime la cobertura sin sesgo frente a una referencia de experto sugiere
+que el indicador definido y auditado aquí \textbf{podría calcularse sin anotación humana en
+el bucle}, lo que se recoge entre las líneas futuras del Capítulo~\ref{cap:conclusiones}.
 
 \section{Implicaciones y limitaciones}
 

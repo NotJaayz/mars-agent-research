@@ -71,9 +71,28 @@ El procedimiento de cálculo no está sesgado —aplicado a las máscaras de exp
 valores plausibles—, de modo que el sesgo reside en los datos. La consecuencia es que las
 coberturas reportadas deben leerse como relativas al conjunto colaborativo. Y la
 consecuencia de mayor alcance es que afecta a cualquier trabajo que emplee esas máscaras
-como referencia, incluidos los que entrenan modelos de segmentación: el segmentador
-entrenado en este trabajo reproduce la cobertura humana con correlación de $0{,}950$,
-lo que significa que ha aprendido el sesgo junto con la señal.
+como referencia, incluidos los que entrenan modelos de segmentación y reportan índices de
+solapamiento contra ellas: esas cifras miden el acuerdo con una anotación sesgada.
+
+\subsection{Sobre la transmisión del sesgo a un modelo entrenado}
+
+Cabía esperar que un modelo entrenado con las máscaras colaborativas heredase su sesgo. La
+comprobación lo desmiente. Evaluado sin reentrenar contra las \num{322} máscaras de
+experto, el segmentador binario alcanza un IoU medio de $0{,}843$ y una correlación de la
+cobertura de $0{,}927$, y sobre todo resulta \textbf{esencialmente insesgado}: la mediana
+del error es de $+0{,}0$ puntos porcentuales.
+
+La razón es que el sesgo de la anotación opera por el \textbf{denominador} —los píxeles de
+suelo y arena que quedan sin etiquetar y desaparecen del cálculo— y no por error de clase
+en los píxeles etiquetados. Como el entrenamiento excluye los píxeles sin etiqueta, el
+modelo aprendió apariencia de roca correcta.
+
+La conclusión debe acotarse en dos sentidos. El modelo estima \textbf{cobertura, no
+conteo}: distingue roca de no-roca y no separa bloques, de modo que no sustituye a E2. Y su
+estimación es fiable en agregado y no escena por escena, con un error absoluto medio de
+$7{,}5$ puntos porcentuales. Con esas reservas, el resultado sugiere que el indicador
+definido y auditado en este trabajo podría calcularse sin anotación humana, lo que abre la
+vía que se recoge entre las recomendaciones.
 
 \subsection{Sobre el acuerdo con el juicio humano}
 

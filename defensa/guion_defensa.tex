@@ -163,6 +163,7 @@ Roca grande sobre la roca etiquetada (mediana) & \SI{9.1}{\percent}\\
 \multicolumn{2}{l}{\textbf{Comparación con aprendizaje automático}}\\
 DeepLabV3, IoU medio (colaborativas / experto) & 0,940 / 0,843\\
 Correlación de la cobertura (colab. / experto) & 0,950 / 0,927\\
+Sesgo del modelo frente al experto (mediana) & $+0{,}0$ p.p.\\
 Modelo general (FastSAM), acuerdo por bandas & \SI{52}{\percent}\\
 \bottomrule
 \end{tabular}
@@ -267,6 +268,21 @@ región anotada; rompe el techo, pero la mejora en acuerdo no es estadísticamen
 demostrable con \num{60} escenas. Tercera: el segmentador entrenado lee las imágenes
 directamente y alcanza IoU de 0,843 contra etiquetas de experto, lo que prueba que la
 señal está en la imagen.
+\end{resp}
+
+\pregunta{Si el modelo aprendió de máscaras sesgadas, ¿no heredó el sesgo?}
+\begin{resp}
+Era lo esperable, y por eso lo comprobé. Lo evalué sin reentrenarlo contra las \num{322}
+máscaras de experto: IoU medio de $0{,}843$, correlación de la cobertura de $0{,}927$ y,
+sobre todo, mediana del error de $+0{,}0$ puntos porcentuales. No heredó el sesgo.
+
+La razón encaja con el mecanismo que había medido antes: el sesgo opera por el
+\emph{denominador} —los voluntarios dejan sin etiquetar mucho suelo y arena, que desaparece
+del cálculo— y no por error de clase en los píxeles que sí etiquetan. Como el entrenamiento
+excluye los píxeles sin etiqueta, el modelo aprendió apariencia de roca correcta.
+
+Con dos reservas: estima cobertura, no conteo, y es fiable en agregado y no escena por
+escena, con un error absoluto medio de $7{,}5$ puntos.
 \end{resp}
 
 \subsection*{Sobre la validación}
