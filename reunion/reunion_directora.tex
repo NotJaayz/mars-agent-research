@@ -116,6 +116,7 @@ independientes} ($r = 0{,}02$). Miden cosas distintas —cuánta roca hay y cóm
 organizada— y ninguno sustituye al otro.
 
 \subsection{Hallazgo 1: la anotación colaborativa sobreestima la roca}
+\label{sec:sesgo-doc}
 
 El conjunto incluye \num{322} máscaras anotadas por especialistas. Se ejecutó sobre ellas
 el mismo código, sin cambiar ningún parámetro.
@@ -190,16 +191,56 @@ mediana del \SI{9.1}{\percent}: la anotación marca \emph{algunas} rocas, no tod
     mientras el observador identificó diez o más en doce de ellas.}
 \end{figure}
 
+La causa se ve mejor de lo que se explica. La Figura~\ref{fig:mecanismo} contrapone una
+escena donde el procedimiento acierta con otra donde subcuenta de forma grave.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_28_mecanismo_subconteo.png}
+  \caption{Arriba, la anotación traza cada bloque por separado: hay regiones distintas con
+    estrangulamientos claros y el corte funciona. Abajo, un único polígono trazado
+    holgadamente sobre un campo de roca estratificada: la transformada de distancia forma
+    una sola meseta y, por muchas rocas que contenga, no hay por dónde cortar.}
+  \label{fig:mecanismo}
+\end{figure}
+
 La consecuencia, que el documento declara: el indicador \textbf{no estima el número de
 rocas de una escena}, sino el de bloques dentro de la fracción que el anotador decidió
 delimitar. Ambas cantidades pueden diferir en un orden de magnitud.
 
-\subsection{Un resultado inesperado: el modelo entrenado no heredó el sesgo}
+\subsection{Contraste con aprendizaje automático}
 
-Como contraste se entrenó un segmentador (DeepLabV3, aprendizaje por transferencia) que
-lee la imagen \textbf{sin máscara humana}. Cabía esperar que reprodujese el sesgo de las
-anotaciones con las que aprendió. Evaluado contra las \num{322} máscaras de experto, no lo
-hizo.
+Se contrastó el procedimiento con dos enfoques, ejecutados en equipo local.
+
+\textbf{Modelo general, sin entrenamiento específico.} Un modelo fundacional de
+segmentación (FastSAM) aplicado a \num{50} escenas, restringido a la región de roca. El
+acuerdo con el conteo clásico es del \SI{52}{\percent} por bandas, con correlación de
+rangos de $0{,}45$ y error absoluto medio de $2{,}6$ rocas. Tiende a subdividir una misma
+roca según su textura interna y a no detectar bloques de bajo contraste.
+
+\textbf{Modelo entrenado con las propias máscaras.} Un segmentador DeepLabV3 por
+aprendizaje por transferencia, que distingue roca de no-roca leyendo la imagen
+\textbf{sin máscara humana}. Alcanza un IoU medio de $0{,}940$ y su cobertura correlaciona
+$0{,}950$ con la humana.
+
+\subsubsection*{Una hipótesis que hubo que poner a prueba}
+
+Esa cifra de $0{,}940$ \textbf{no puede leerse como acierto}: el modelo se entrenó con
+máscaras colaborativas y se evaluó contra máscaras colaborativas, de modo que mide cuánto
+se parece a la anotación de la que aprendió. Y como esa anotación sobreestima la roca
+(sección~\ref{sec:sesgo-doc}), lo esperable era que el modelo hubiera aprendido el sesgo
+junto con la señal.
+
+\begin{caja}
+\noindent\textbf{La prueba.} Si el modelo heredó el sesgo, al evaluarlo contra las
+\num{322} máscaras de experto debería \textbf{sobreestimar} la cobertura de forma
+sistemática, igual que las máscaras con las que aprendió.
+
+\smallskip
+\noindent\textbf{El resultado.} No sobreestima. La mediana del error es de
+$\mathbf{+0{,}0}$ \textbf{puntos porcentuales}, con un \SI{37}{\percent} de escenas por
+encima y un \SI{30}{\percent} por debajo. \emph{La hipótesis queda descartada.}
+\end{caja}
 
 \begin{table}[H]
 \centering\small
@@ -209,22 +250,41 @@ hizo.
 \midrule
 IoU medio & 0,940 & 0,843\\
 Correlación de la cobertura & 0,950 & 0,927\\
-Mediana del error & --- & \textbf{$+0{,}0$ p.p.}\\
+Error absoluto medio & 4,3 p.p. & 7,5 p.p.\\
+Mediana del error (sesgo) & --- & \textbf{$+0{,}0$ p.p.}\\
 \bottomrule
 \end{tabular}
+\caption{El desempeño baja al salir del dominio de entrenamiento, como era previsible,
+  pero el modelo no arrastra el sesgo de la anotación.}
 \end{table}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{Figura_27_modelo_vs_experto.png}
-  \caption{Cobertura del modelo frente a la del experto, y distribución del error.}
+  \caption{Izquierda: cobertura del modelo frente a la del experto; los puntos se reparten
+    a ambos lados de la recta de igualdad. Derecha: el error se concentra en cero, sin
+    desplazamiento hacia la sobreestimación.}
 \end{figure}
 
-La razón encaja con el mecanismo del sesgo: opera por el \textbf{denominador} —el suelo sin
-etiquetar que sale del cálculo— y no por error de clase en los píxeles etiquetados. Como el
-entrenamiento excluye los píxeles sin etiqueta, el modelo aprendió apariencia de roca
-correcta. \emph{Reservas:} estima cobertura y no conteo, y es fiable en agregado, no escena
-por escena (error absoluto medio de $7{,}5$ puntos).
+\noindent\textbf{Por qué no lo heredó.} Encaja con el mecanismo del sesgo. Este opera por
+el \textbf{denominador} —el suelo y la arena sin etiquetar, que salen del cálculo— y no por
+error de clase en los píxeles que sí se etiquetan. Como el entrenamiento excluye los
+píxeles sin etiqueta de la función de pérdida, el modelo aprendió apariencia de roca a
+partir de píxeles correctamente etiquetados. \emph{El sesgo vivía en la fórmula de
+agregación, no en el contenido de las etiquetas.}
+
+\smallskip
+\noindent\textbf{Reservas que declaro.} Estima \textbf{cobertura, no conteo}: no separa
+bloques y no sustituye a E2. Y es fiable \textbf{en agregado, no escena por escena}: el
+error absoluto medio es de $7{,}5$ puntos, el \SI{23}{\percent} de las escenas supera los
+diez puntos y cinco superan los cincuenta.
+
+\smallskip
+\noindent\textbf{Lo que abre.} El procedimiento clásico necesita una máscara humana, que no
+existe cuando las imágenes llegan a la Tierra. El segmentador lee la imagen directamente.
+Que estime la cobertura sin sesgo frente a una referencia de experto sugiere que el
+indicador definido y auditado aquí podría calcularse \textbf{sin anotación humana en el
+bucle}.
 
 \section{La extensión aplicada}
 
