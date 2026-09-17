@@ -128,3 +128,6 @@ reunion/*.log
 reunion/*.out
 reunion/*.png
 reunion/reunion_directora.pdf
+
+# Paquete de entrega (se regenera)
+tesis_Delgado_para_directora.zip

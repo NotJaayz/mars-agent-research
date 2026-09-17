@@ -48,17 +48,46 @@
 \thispagestyle{empty}
 
 \begin{caja}
-\noindent\textbf{Resumen de la situación.} El documento está redactado y compila:
-\textbf{87 páginas} sobre la plantilla oficial del Departamento. Los cinco objetivos
-específicos están cumplidos. El procedimiento se ejecutó sobre las \num{16064} escenas del
-subconjunto. Se realizó una validación con conteo humano de \num{60} escenas y un contraste
-con dos enfoques de aprendizaje automático.
+\noindent\textbf{En esencia.} AI4Mars es un conjunto de datos que contiene decenas de
+miles de imágenes de Marte con \textbf{mapas de terreno pintados píxel a píxel} por
+voluntarios. Ese material se ha usado casi siempre para una cosa: \emph{entrenar redes
+neuronales}, donde el mapa hace de respuesta correcta contra la que se mide un modelo.
 
 \smallskip
-\noindent Traigo \textbf{ocho decisiones} que necesito consultar, listadas en la
-sección~\ref{sec:preguntas}. Las dos más importantes son la \textbf{estructura del
-documento} (Pregunta~1) y el \textbf{encuadre de los resultados}
-(Pregunta~3).
+\noindent Este trabajo parte de otra observación: ese mapa no es solo la respuesta de un
+problema de aprendizaje, es en sí mismo un \textbf{mapa cuantitativo del terreno}. Si un
+píxel dice «aquí hay roca», entonces contar píxeles y agrupar los que se tocan permite
+medir cuánta roca hay y cómo está organizada, \textbf{sin entrenar ningún modelo}.
+
+\smallskip
+\noindent \textbf{Qué se midió y con qué resultado:}
+\begin{itemize}
+  \item La \textbf{cobertura de roca} se mide bien. Calculada para las \num{16064} escenas
+    del subconjunto y definida en el \SI{67.3}{\percent} de ellas.
+  \item El \textbf{conteo de rocas} no. Tiene un techo, y el trabajo \emph{demuestra por
+    qué}: la anotación no delimita las rocas individuales.
+  \item En el camino se encontró que \textbf{esos mapas exageran la cantidad de roca}
+    —\SI{96.8}{\percent} frente al \SI{46.1}{\percent} de los mapas de experto—, lo que
+    afecta a todo trabajo que los use como referencia.
+\end{itemize}
+\end{caja}
+
+\begin{caja}
+\noindent\textbf{Estado.} El documento de tesis está redactado y compila:
+\textbf{87 páginas} sobre la plantilla oficial del Departamento, con los cinco objetivos
+específicos cumplidos. Se adjunta el PDF completo.
+
+\smallskip
+\noindent\textbf{Código y datos.} Todo el trabajo —código, guiones de ejecución,
+resultados y figuras— está en un repositorio público:
+
+\begin{center}
+\small\url{https://github.com/NotJaayz/mars-agent-research}
+\end{center}
+
+\noindent\textbf{Qué le pido.} Traigo \textbf{ocho decisiones} que necesito consultar
+(sección~\ref{sec:preguntas}). Las dos primeras son las que más condicionan el resto:
+la \textbf{estructura del documento} y el \textbf{encuadre de los resultados}.
 \end{caja}
 
 \section{Qué se hizo}
@@ -104,6 +133,84 @@ separarlas exige criterios geométricos. Son cinco etapas.
   trazados a mano y no bloques.
 
 \end{enumerate}
+
+\subsubsection*{El procedimiento matemático, con un ejemplo}
+
+\textbf{Cobertura.} Sea $M$ la máscara. Se definen el conjunto de píxeles
+\emph{etiquetados} y el de píxeles de \emph{roca}:
+\[
+  V = \{p : M(p) \neq 255\}, \qquad R = \{p : M(p) \in \{1, 3\}\},
+\]
+donde $255$ marca el píxel sin etiqueta, $1$ el lecho rocoso y $3$ la roca grande. La
+cobertura es
+\[
+  C = 100 \cdot \frac{|R|}{|V|}.
+\]
+Ejemplo: en una imagen de \num{100} píxeles de los que \num{45} recibieron etiqueta y
+\num{30} son roca, $C = 100 \cdot 30/45 = \SI{66.7}{\percent}$. Nótese que el denominador
+es lo etiquetado, no la imagen: sobre la imagen completa serían \SI{30}{\percent}. Ambas
+se reportan, y de esa diferencia surge el Hallazgo~1.
+
+\medskip
+\textbf{Conteo.} Sea $B$ la máscara binaria de roca grande. Para cada píxel se calcula la
+\emph{transformada de distancia euclidiana}
+\[
+  D(p) = \min_{q \,\notin\, B} \; \lVert p - q \rVert,
+\]
+es decir, la distancia de $p$ al píxel de fondo más cercano. Tómese este ejemplo de dos
+rocas de $3\times3$ unidas por un puente de un píxel:
+
+\begin{center}\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}l@{\hspace{2.5em}}l@{}}
+\textbf{Máscara $B$} & \textbf{Distancia $D$}\\[3pt]
+$\begin{array}{ccccccccccc}
+\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot\\
+\cdot&\blacksquare&\blacksquare&\blacksquare&\cdot&\cdot&\cdot&\blacksquare&\blacksquare&\blacksquare&\cdot\\
+\cdot&\blacksquare&\blacksquare&\blacksquare&\blacksquare&\blacksquare&\blacksquare&\blacksquare&\blacksquare&\blacksquare&\cdot\\
+\cdot&\blacksquare&\blacksquare&\blacksquare&\cdot&\cdot&\cdot&\blacksquare&\blacksquare&\blacksquare&\cdot\\
+\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot
+\end{array}$
+&
+$\begin{array}{ccccccccccc}
+\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot\\
+\cdot&1{,}0&1{,}0&1{,}0&\cdot&\cdot&\cdot&1{,}0&1{,}0&1{,}0&\cdot\\
+\cdot&1{,}0&\mathbf{2{,}0}&1{,}4&1{,}0&\mathbf{1{,}0}&1{,}0&1{,}4&\mathbf{2{,}0}&1{,}0&\cdot\\
+\cdot&1{,}0&1{,}0&1{,}0&\cdot&\cdot&\cdot&1{,}0&1{,}0&1{,}0&\cdot\\
+\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot
+\end{array}$
+\end{tabular}
+\end{center}
+
+Las componentes conectadas dan \textbf{una sola región}: para ese criterio hay una roca.
+Pero $D$ revela la estructura. Los centros valen $2{,}0$ —son las \emph{cimas}— y el
+puente vale $1{,}0$ —es el \emph{valle}—, porque ahí el fondo está a un solo píxel por
+arriba y por abajo.
+
+La \emph{división de aguas} coloca semillas en las cimas e inunda el relieve invertido
+$-D$ hasta que las regiones se encuentran. El resultado:
+
+\begin{center}\small
+$\begin{array}{ccccccccccc}
+\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot\\
+\cdot&1&1&1&\cdot&\cdot&\cdot&2&2&2&\cdot\\
+\cdot&1&1&1&1&1&2&2&2&2&\cdot\\
+\cdot&1&1&1&\cdot&\cdot&\cdot&2&2&2&\cdot\\
+\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot&\cdot
+\end{array}$
+\end{center}
+
+\textbf{Dos rocas}, con la frontera exactamente en el puente: donde un observador humano
+también cortaría. Formalmente, la frontera se sitúa en el mínimo local de $D$ entre dos
+máximos, y ese mínimo es el estrangulamiento geométrico de la región.
+
+\medskip
+\textbf{Y aquí está el límite del método.} La división de aguas \emph{solo} puede cortar
+donde $D$ presenta un valle. Si la anotación es un polígono amplio y liso trazado sobre un
+campo de rocas, $D$ forma una \textbf{única meseta sin valles}: el procedimiento devuelve
+una región, por muchas rocas que contenga. No es un umbral mal elegido —es que la
+información necesaria para cortar \textbf{no está en la máscara}. Ese es el mecanismo que
+el Hallazgo~3 documenta con datos.
 
 \begin{caja}
 \noindent\textbf{Lo que hay que retener del método.} Los siete umbrales son
