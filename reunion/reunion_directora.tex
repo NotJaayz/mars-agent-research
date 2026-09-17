@@ -7,6 +7,8 @@
 \usepackage{newtxtext,newtxmath}
 \usepackage{booktabs}
 \usepackage{graphicx}
+% Las figuras se toman de su ubicación versionada, para no duplicarlas aquí.
+\graphicspath{{../tesis/images/}}
 \usepackage{caption}
 \usepackage{enumitem}
 \usepackage{xcolor}
@@ -101,6 +103,8 @@ explícitos y documentados. Corre en procesador convencional, sin entrenar ning�
 Escenas donde está definido & \SI{67.3}{\percent} & \SI{13.9}{\percent}\\
 Valor central & mediana \SI{96.8}{\percent} & mediana 1 roca\\
 Validación & control del denominador ($r=-0{,}02$) & conteo humano ($\kappa = 0{,}13$)\\
+\multicolumn{3}{l}{\footnotesize El kappa mide cuánto coincide \emph{el procedimiento} con
+el conteo humano, que actúa de referencia.}\\
 Veredicto & \textbf{\color{verde}utilizable} & \textbf{\color{rojo}con techo estructural}\\
 \bottomrule
 \end{tabular}
