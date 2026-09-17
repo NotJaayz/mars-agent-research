@@ -1,0 +1,305 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noquoting,es-tabla]{babel}
+\usepackage[letterpaper,margin=2.1cm]{geometry}
+\usepackage{newtxtext,newtxmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\usepackage{siunitx}
+\sisetup{output-decimal-marker={,},group-separator={{.}}}
+
+\definecolor{azul}{HTML}{0B3D91}
+\definecolor{rojo}{HTML}{C0392B}
+\definecolor{verde}{HTML}{1E6B45}
+\definecolor{fondo}{HTML}{F1F5FA}
+
+\titleformat{\section}{\large\bfseries\color{azul}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\setlist{nosep, leftmargin=1.3em}
+\captionsetup{font=small, labelfont={small,bf}}
+
+\newmdenv[backgroundcolor=fondo, linewidth=0pt, skipabove=5pt, skipbelow=9pt,
+          innertopmargin=7pt, innerbottommargin=7pt]{caja}
+
+% Pregunta para la directora, numerada aparte del cuerpo.
+\newcounter{preg}
+\newcommand{\preg}[1]{\refstepcounter{preg}%
+  \medskip\noindent\textbf{\color{rojo}Pregunta \thepreg.}\; \textbf{#1}\par\nopagebreak}
+
+\title{\vspace{-1.6cm}\textbf{Estado del trabajo de grado}\\[2mm]
+\large Conteo de rocas visibles basado en las máscaras de AI4Mars\\[3mm]
+\normalsize Documento de reunión con la dirección de tesis}
+\author{Juan Pablo Delgado Castro}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\begin{caja}
+\noindent\textbf{Resumen de la situación.} El documento está redactado y compila:
+\textbf{87 páginas} sobre la plantilla oficial del Departamento. Los cinco objetivos
+específicos están cumplidos. El procedimiento se ejecutó sobre las \num{16064} escenas del
+subconjunto. Se realizó una validación con conteo humano de \num{60} escenas y un contraste
+con dos enfoques de aprendizaje automático.
+
+\smallskip
+\noindent Traigo \textbf{ocho decisiones} que necesito consultar, listadas en la
+sección~\ref{sec:preguntas}. Las dos más importantes son la \textbf{estructura del
+documento} (Pregunta~1) y el \textbf{encuadre de los resultados}
+(Pregunta~3).
+\end{caja}
+
+\section{Qué se hizo}
+
+\subsection{El procedimiento}
+
+Para cada máscara de AI4Mars se calculan dos indicadores: la \textbf{cobertura de roca
+visible} (proporción de píxeles de roca sobre los etiquetados) y el \textbf{número
+aproximado de rocas individuales}, mediante componentes conectadas, transformada de
+distancia y división de aguas, con filtros de área y forma. Todos los umbrales son
+explícitos y documentados. Corre en procesador convencional, sin entrenar ningún modelo.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_11_procedimiento_paso_a_paso.png}
+  \caption{Procedimiento completo sobre una escena: imagen original, máscara de AI4Mars,
+    binaria depurada, transformada de distancia con las semillas, y resultado del conteo.}
+\end{figure}
+
+\subsection{Lo que se entrega}
+
+\begin{itemize}
+  \item Archivo de resultados con \textbf{24 indicadores por imagen} para las \num{16064}
+    escenas.
+  \item Código modular (12 módulos, 22 guiones de ejecución), con parámetros y versiones
+    registradas.
+  \item 27 figuras y el documento completo en \LaTeX.
+  \item Como extensión: un sistema de seis reglas de aviso de terreno y una aplicación de
+    escritorio de consulta.
+\end{itemize}
+
+\section{Los resultados principales}
+
+\subsection{La cobertura funciona; el conteo tiene un techo}
+
+\begin{table}[H]
+\centering\small
+\begin{tabular}{lcc}
+\toprule
+ & \textbf{Cobertura (E1)} & \textbf{Conteo (E2)}\\
+\midrule
+Escenas donde está definido & \SI{67.3}{\percent} & \SI{13.9}{\percent}\\
+Valor central & mediana \SI{96.8}{\percent} & mediana 1 roca\\
+Validación & control del denominador ($r=-0{,}02$) & conteo humano ($\kappa = 0{,}13$)\\
+Veredicto & \textbf{\color{verde}utilizable} & \textbf{\color{rojo}con techo estructural}\\
+\bottomrule
+\end{tabular}
+\caption{Los dos indicadores no están al mismo nivel de solidez, y el documento lo dice.}
+\end{table}
+
+Un resultado que no era evidente: los dos indicadores son \textbf{estadísticamente
+independientes} ($r = 0{,}02$). Miden cosas distintas —cuánta roca hay y cómo está
+organizada— y ninguno sustituye al otro.
+
+\subsection{Hallazgo 1: la anotación colaborativa sobreestima la roca}
+
+El conjunto incluye \num{322} máscaras anotadas por especialistas. Se ejecutó sobre ellas
+el mismo código, sin cambiar ningún parámetro.
+
+\begin{table}[H]
+\centering\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Indicador} & \textbf{Colaborativas} & \textbf{Experto}\\
+\midrule
+Cobertura mediana & \SI{96.8}{\percent} & \textbf{\SI{46.1}{\percent}}\\
+Escenas con cobertura total & \SI{42}{\percent} & \textbf{\SI{8}{\percent}}\\
+Píxeles de suelo y arena & \SI{50}{\percent} & \textbf{\SI{69}{\percent}}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.72\textwidth]{Figura_19_validacion_experto.png}
+  \caption{Comparación de la cobertura entre etiquetas colaborativas y de experto.}
+\end{figure}
+
+El mecanismo es un \textbf{sesgo de saliencia}: la roca es visualmente prominente y fácil
+de delimitar; el suelo y la arena son superficies extensas cuya anotación es tediosa. Los
+píxeles sin consenso quedan sin etiquetar y salen del denominador, lo que eleva la fracción
+de roca.
+
+\begin{caja}
+\noindent\textbf{Por qué creo que este es el aporte más transferible del trabajo.} Toda la
+línea de investigación que usa AI4Mars evalúa sus modelos por el acuerdo con estas
+máscaras. Documentar que sobreestiman la roca, y cuantificar cuánto, es información
+pertinente para esos trabajos y no solo para el mío.
+\end{caja}
+
+\subsection{Hallazgo 2: el techo del conteo es la taxonomía, no las imágenes}
+
+La explicación intuitiva del bajo desempeño del conteo sería que faltan imágenes mejores.
+Se descartó con tres mediciones:
+
+\begin{itemize}
+  \item El procedimiento \textbf{no abre las imágenes}: opera solo sobre la máscara. Las
+    imágenes ya son de resolución completa (\num{1024}$\times$\num{1024}) y la máscara
+    tiene el mismo tamaño.
+  \item En \num{13838} escenas (\SI{86.1}{\percent}) la máscara \textbf{no tiene ningún
+    píxel} de la clase roca grande. De la roca etiquetada en el conjunto, el lecho rocoso
+    aporta el \SI{97.5}{\percent} y la roca grande solo el \SI{2.5}{\percent}.
+  \item Las máscaras de experto tienen \textbf{menos} roca grande, no más: del
+    \SI{16.5}{\percent} de escenas al \SI{1.6}{\percent} según se endurece el criterio de
+    acuerdo.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{diag_bedrock_no_contado.png}
+  \caption{Escena repleta de bloques individuales evidentes, etiquetada en su totalidad
+    como una sola región de lecho rocoso. El conteo devuelve cero. La imagen es excelente;
+    la etiqueta es el límite.}
+\end{figure}
+
+\subsection{Hallazgo 3: la anotación no es exhaustiva}
+
+La validación con conteo humano lo mostró. En \num{36} de las \num{60} escenas, la clase
+roca grande cubre \textbf{menos del \SI{20}{\percent}} de la roca etiquetada, con una
+mediana del \SI{9.1}{\percent}: la anotación marca \emph{algunas} rocas, no todas.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.66\textwidth]{Figura_26_validacion_manual_v2.png}
+  \caption{Acuerdo entre el conteo manual y el automático ($n = 60$). Las tres columnas de
+    la derecha están vacías: el procedimiento no supera las nueve rocas en ninguna escena,
+    mientras el observador identificó diez o más en doce de ellas.}
+\end{figure}
+
+La consecuencia, que el documento declara: el indicador \textbf{no estima el número de
+rocas de una escena}, sino el de bloques dentro de la fracción que el anotador decidió
+delimitar. Ambas cantidades pueden diferir en un orden de magnitud.
+
+\subsection{Un resultado inesperado: el modelo entrenado no heredó el sesgo}
+
+Como contraste se entrenó un segmentador (DeepLabV3, aprendizaje por transferencia) que
+lee la imagen \textbf{sin máscara humana}. Cabía esperar que reprodujese el sesgo de las
+anotaciones con las que aprendió. Evaluado contra las \num{322} máscaras de experto, no lo
+hizo.
+
+\begin{table}[H]
+\centering\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Medida} & \textbf{Contra colaborativas} & \textbf{Contra experto}\\
+\midrule
+IoU medio & 0,940 & 0,843\\
+Correlación de la cobertura & 0,950 & 0,927\\
+Mediana del error & --- & \textbf{$+0{,}0$ p.p.}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_27_modelo_vs_experto.png}
+  \caption{Cobertura del modelo frente a la del experto, y distribución del error.}
+\end{figure}
+
+La razón encaja con el mecanismo del sesgo: opera por el \textbf{denominador} —el suelo sin
+etiquetar que sale del cálculo— y no por error de clase en los píxeles etiquetados. Como el
+entrenamiento excluye los píxeles sin etiqueta, el modelo aprendió apariencia de roca
+correcta. \emph{Reservas:} estima cobertura y no conteo, y es fiable en agregado, no escena
+por escena (error absoluto medio de $7{,}5$ puntos).
+
+\section{La extensión aplicada}
+
+Los indicadores se tradujeron en seis reglas de aviso de terreno, con umbrales fijados
+sobre percentiles de la distribución observada y cada uno acompañado de su justificación.
+De las \num{16064} escenas, \num{104} resultan de riesgo alto y \num{1359} de riesgo medio.
+Se desarrolló además una aplicación de escritorio con cuatro vistas para consultar los
+resultados sin programar.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_24_alertas_terreno.png}
+  \caption{Escenas por nivel de riesgo y avisos emitidos por tipo.}
+\end{figure}
+
+\noindent\textbf{Cómo está presentado hoy:} como subsección del capítulo de resultados y
+con la documentación técnica en anexo, \emph{no} como capítulo propio. El documento declara
+que los avisos heredan las limitaciones de los indicadores de los que derivan y que no son
+una valoración de transitabilidad validada contra incidentes reales.
+
+\section{Preguntas y decisiones a consultar}
+\label{sec:preguntas}
+
+\preg{¿Autoriza un capítulo propio de «Desarrollo e implementación» para el sistema de
+avisos y la aplicación?}
+La plantilla lo omite por defecto en la modalidad de investigación, y solo lo admite «si la
+investigación incluye el desarrollo e implementación de un artefacto sustantivo que
+justifique un capítulo independiente, \textbf{con autorización del tutor}». Hoy está como
+subsección de resultados. Si lo autoriza, el cambio es inmediato y el texto ya existe.
+
+\preg{¿Le parece correcto que el aporte principal sea el diagnóstico del conjunto de datos
+y no el indicador en sí?}
+El trabajo responde su pregunta, pero lo que resultó más sólido y transferible fue el
+hallazgo del sesgo de anotación y la atribución de los límites del conteo. Quiero
+confirmar que ese encuadre es adecuado para la modalidad.
+
+\preg{¿Cómo debo presentar los resultados negativos?}
+Hay dos: la detección de vetas desde la imagen no es viable, y el conteo tiene un techo
+estructural. Están reportados como resultados con su medición. ¿Es el tratamiento que
+espera, o preferiría más peso en lo que sí funcionó?
+
+\preg{La validación humana tiene un solo observador. ¿Es suficiente o debo ampliarla?}
+Son \num{60} escenas con un observador. Está declarado como limitación. Ampliarla a varias
+personas daría intervalos de confianza, pero requiere tiempo de terceros.
+
+\preg{¿Incorporo al cuerpo el conteo híbrido (máscara + imagen)?}
+Corrige el techo del conteo y elimina el sesgo, pero la mejora en acuerdo con el juicio
+humano \textbf{no es estadísticamente demostrable} con \num{60} escenas (diferencia de
+$+0{,}10$ en kappa ponderado, intervalo de confianza $[-0{,}12;\ +0{,}31]$). Mi inclinación
+es dejarlo como línea futura y no en el cuerpo, para no tener que defender un resultado no
+concluyente.
+
+\preg{¿Amplío la justificación con el contexto operativo de las misiones?}
+El documento no explica hoy \emph{por qué importa} explotar automáticamente la información
+de terreno. Propongo dos o tres párrafos sobre el ciclo de comando de un rover —la latencia
+de la señal y la planificación diaria— para dar ese «para qué», sin prometer que el
+procedimiento opere en tiempo real, porque no puede.
+
+\preg{¿Debo extender el alcance al conjunto de Perseverance?}
+Su taxonomía geológica distingue \textbf{roca suelta}, presente en el \SI{63.8}{\percent} de
+sus escenas frente al \SI{13.9}{\percent} de roca grande en el subconjunto actual. Es la vía
+natural para sortear el techo del conteo, pero implica otro rover, otra cámara y otro sitio:
+sería un segundo subconjunto, no más datos para los resultados actuales. Mi inclinación es
+dejarlo como trabajo futuro.
+
+\preg{Cuestiones de forma}
+\begin{itemize}
+  \item Su nombre completo, para la portada.
+  \item ¿Debo activar las secciones opcionales de declaración y agradecimientos?
+  \item Fechas de entrega y de sustentación, y si desea revisar por capítulos.
+\end{itemize}
+
+\section{Lo que haría a continuación}
+
+\begin{enumerate}
+  \item Aplicar lo que resulte de esta reunión.
+  \item Ampliar la justificación con el contexto operativo (Pregunta~6).
+  \item Compilar la versión definitiva en Overleaf, con la bibliografía en APA 7.
+  \item Revisión final de redacción y coherencia de cifras.
+\end{enumerate}
+
+\end{document}

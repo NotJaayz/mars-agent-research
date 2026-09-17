@@ -119,3 +119,12 @@ defensa/*.log
 defensa/*.out
 defensa/*.toc
 defensa/guion_defensa.pdf
+
+# ===== Documento de reunión con la dirección =====
+# Se versiona la fuente; las figuras se copian de tesis/images/ y el PDF se regenera con:
+#   tectonic -k reunion/reunion_directora.tex
+reunion/*.aux
+reunion/*.log
+reunion/*.out
+reunion/*.png
+reunion/reunion_directora.pdf
