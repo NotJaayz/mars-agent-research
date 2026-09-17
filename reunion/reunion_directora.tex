@@ -63,19 +63,92 @@ documento} (Pregunta~1) y el \textbf{encuadre de los resultados}
 
 \section{Qué se hizo}
 
-\subsection{El procedimiento}
+\subsection{El procedimiento, paso a paso}
 
-Para cada máscara de AI4Mars se calculan dos indicadores: la \textbf{cobertura de roca
-visible} (proporción de píxeles de roca sobre los etiquetados) y el \textbf{número
-aproximado de rocas individuales}, mediante componentes conectadas, transformada de
-distancia y división de aguas, con filtros de área y forma. Todos los umbrales son
-explícitos y documentados. Corre en procesador convencional, sin entrenar ningún modelo.
+Para cada máscara se calculan dos indicadores. La \textbf{cobertura de roca visible} es
+directa: el cociente entre los píxeles de roca y los píxeles que la anotación etiquetó.
+El \textbf{conteo de rocas} es el problema difícil, porque la máscara no distingue
+instancias: si dos rocas se tocan, quedan registradas como una sola región conectada, y
+separarlas exige criterios geométricos. Son cinco etapas.
+
+\begin{enumerate}[leftmargin=1.8em]
+
+\item \textbf{Máscara binaria.} De los cinco valores posibles de la máscara se conserva
+  solo la clase \textit{roca grande}: queda una imagen de unos y ceros. Todo lo demás
+  —suelo, arena, lecho rocoso y los píxeles sin etiquetar— pasa a ser fondo.
+
+\item \textbf{Limpieza morfológica.} Se aplica una \emph{apertura} seguida de un
+  \emph{cierre}, ambas con una ventana de $3\times3$ píxeles. La apertura elimina motas
+  aisladas, producto de imprecisiones al trazar los polígonos de anotación; el cierre
+  rellena huecos pequeños dentro de una misma región. Sin este paso, cada mota contaría
+  como candidata a roca.
+
+\item \textbf{Transformada de distancia.} A cada píxel de roca se le asigna
+  \textbf{su distancia al borde más cercano}. Los centros de las regiones reciben valores
+  altos y los bordes, valores bajos. El resultado se lee como un relieve: cada roca es una
+  colina, y \emph{el punto donde dos rocas se tocan es un valle}, porque ahí el borde está
+  cerca por ambos lados. Ese valle es la clave de la etapa siguiente.
+
+\item \textbf{División de aguas.} Se sitúan semillas en las cimas de ese relieve y se
+  «inunda» desde ellas hasta que las regiones se encuentran. La frontera queda justo en el
+  valle, es decir, en el estrangulamiento donde un observador humano también separaría las
+  dos rocas. Las semillas se eligen por \textbf{prominencia}: solo se conserva un máximo si
+  su altura sobre el entorno supera un umbral. Esa decisión fue la calibración principal
+  del trabajo: sin ella, una losa extensa generaba decenas de semillas espurias —se
+  observó un caso con \num{142}— y quedaba fragmentada en rocas inexistentes.
+
+\item \textbf{Filtros de tamaño y forma.} Cada región resultante debe superar dos
+  criterios para contarse: un \textbf{área mínima} de \num{524} píxeles
+  (\SI{0.05}{\percent} de la imagen), que descarta motas, y una \textbf{relación de
+  aspecto} no mayor que 5, que descarta bandas muy alargadas —en la práctica, horizontes
+  trazados a mano y no bloques.
+
+\end{enumerate}
+
+\begin{caja}
+\noindent\textbf{Lo que hay que retener del método.} Los siete umbrales son
+\textbf{números explícitos y documentados}, no ajustes ocultos: cada uno se puede discutir
+y cambiar, y el documento registra qué efecto tiene. El procedimiento corre en procesador
+convencional, sin entrenar ningún modelo y sin conjunto de entrenamiento, y procesa las
+\num{16064} escenas en minutos. Esa transparencia es el argumento del método; no su
+sofisticación.
+
+\smallskip
+\noindent Y una consecuencia que conviene tener presente desde el principio:
+\textbf{el procedimiento no abre las imágenes}. Toda su información proviene de la máscara.
+Eso responde la pregunta de si harían falta mejores fotografías —no las usa— y a la vez
+impone el techo que documenta la sección~\ref{sec:techo-doc}.
+\end{caja}
+
+\begin{table}[H]
+\centering\small
+\begin{tabular}{llp{5.6cm}}
+\toprule
+\textbf{Parámetro} & \textbf{Valor} & \textbf{Qué ocurre si se cambia}\\
+\midrule
+Apertura y cierre & $3\times3$ & Mayor: se pierden rocas pequeñas. Menor: entran motas.\\
+Suavizado de la distancia & $\sigma = 3{,}0$ & Menor: el contorno irregular genera cimas
+  falsas.\\
+Prominencia de la semilla & $h = 1{,}0$ & Menor: sobresegmenta. Mayor: fusiona rocas
+  distintas.\\
+Área mínima & \num{524} px & Mayor: se descartan rocas reales pequeñas.\\
+Relación de aspecto & 5 & Mayor: entran bandas del horizonte como si fueran rocas.\\
+Conectividad & 8 vecinos & Con 4, dos rocas unidas en diagonal se separarían.\\
+\bottomrule
+\end{tabular}
+\caption{Los umbrales y su efecto. Ninguno está fijado dentro de la lógica de cálculo:
+  todos se pasan como argumentos con su valor por defecto documentado.}
+\end{table}
+
+La Figura~\ref{fig:pasoapaso} muestra las etapas sobre una escena real.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{Figura_11_procedimiento_paso_a_paso.png}
-  \caption{Procedimiento completo sobre una escena: imagen original, máscara de AI4Mars,
-    binaria depurada, transformada de distancia con las semillas, y resultado del conteo.}
+  \caption{Las cinco etapas sobre una escena: imagen original, máscara de AI4Mars, binaria
+    depurada, transformada de distancia con las semillas detectadas, y resultado del
+    conteo.}
+  \label{fig:pasoapaso}
 \end{figure}
 
 \subsection{Lo que se entrega}
@@ -85,7 +158,7 @@ explícitos y documentados. Corre en procesador convencional, sin entrenar ning�
     escenas.
   \item Código modular (12 módulos, 22 guiones de ejecución), con parámetros y versiones
     registradas.
-  \item 27 figuras y el documento completo en \LaTeX.
+  \item 22 figuras y el documento completo en \LaTeX.
   \item Como extensión: un sistema de seis reglas de aviso de terreno y una aplicación de
     escritorio de consulta.
 \end{itemize}
@@ -153,6 +226,7 @@ pertinente para esos trabajos y no solo para el mío.
 \end{caja}
 
 \subsection{Hallazgo 2: el techo del conteo es la taxonomía, no las imágenes}
+\label{sec:techo-doc}
 
 La explicación intuitiva del bajo desempeño del conteo sería que faltan imágenes mejores.
 Se descartó con tres mediciones:
