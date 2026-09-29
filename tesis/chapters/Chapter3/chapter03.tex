@@ -3,7 +3,17 @@
 
 \section{Enfoque y diseño}
 
-El estudio es \textbf{observacional, descriptivo y de corte transversal}. Observacional
+El estudio adopta un \textbf{enfoque metodológico cuantitativo}: todo el conocimiento que
+produce proviene de medidas numéricas derivadas de las máscaras, y las afirmaciones se
+sostienen en estadísticos calculados sobre ellas y no en interpretación de material
+cualitativo. Dentro de los tipos de investigación, corresponde a una investigación
+\textbf{descriptiva con componente aplicado}: descriptiva porque su propósito es
+caracterizar el terreno mediante indicadores y no explicar relaciones causales ni predecir;
+y con componente aplicado porque los indicadores se construyen para un uso concreto —la
+caracterización de escenas con fines de transitabilidad— y no como ejercicio teórico.
+
+Desde el punto de vista del diseño, el estudio es \textbf{observacional, descriptivo y de
+corte transversal}. Observacional
 porque no se interviene sobre el objeto de estudio: se analizan máscaras ya producidas,
 sin generar anotación nueva ni modificar las imágenes. Descriptivo porque el propósito es
 caracterizar el terreno mediante indicadores cuantitativos, no contrastar hipótesis
@@ -26,6 +36,13 @@ máscaras— pero impone un techo que el Capítulo~\ref{cap:resultados} cuantifi
 \section{Datos y fuentes de información}
 
 \subsection{Origen y versión}
+
+Las fuentes de información de este trabajo son \textbf{exclusivamente secundarias}: no se
+recoge dato primario alguno. Ni se toman imágenes nuevas —provienen de una misión
+espacial— ni se produce anotación propia: las máscaras las generaron terceros. La técnica
+de recolección es, en consecuencia, la \textbf{revisión y el procesamiento de un conjunto de
+datos documental preexistente}, seleccionado según los criterios que se detallan más
+adelante.
 
 Se emplea el conjunto AI4Mars en su versión 0.6 \citep{swan2022ai4marsdata}, descargada
 del repositorio público. El conjunto reúne imágenes de los rovers \textit{Spirit},
@@ -293,6 +310,109 @@ como por la generación de figuras, de modo que las figuras ilustran necesariame
 mismo cálculo que produce los resultados. El Anexo~\ref{app:material-complementario}
 describe la organización de los recursos.
 
+La reproducibilidad se sostiene además en \textbf{control de versiones}. Todo el material
+—código, guiones de ejecución, conjunto de resultados, figuras y la fuente de este
+documento— se mantiene en un repositorio Git de historial público, de modo que cada
+resultado puede rastrearse hasta el estado exacto del código que lo produjo. El conjunto de
+datos no se versiona, por su volumen: el código lo referencia mediante una variable de
+entorno configurable, y se descarga de la fuente original. Los parámetros no se fijan dentro
+de la lógica de cálculo sino que se pasan como argumentos con valores por defecto
+documentados, de manera que una reejecución con los mismos parámetros entrega
+necesariamente los mismos resultados; el procedimiento es determinista y no interviene
+ninguna fuente de aleatoriedad.
+
+\section{Operacionalización de objetivos}
+\label{sec:operacionalizacion}
+
+El Cuadro~\ref{tab:operacionalizacion} recoge la matriz de operacionalización, que hace
+explícita la correspondencia entre cada objetivo específico, la pregunta que responde, la
+técnica empleada, la fuente de información, el resultado esperado y el indicador con que se
+verifica. Su función es garantizar la trazabilidad del diseño: ninguna conclusión del
+Capítulo~\ref{cap:resultados} carece de un objetivo, una técnica y una métrica asociados.
+
+\begin{landscape}
+% Espacio simple y columnas ajustadas al ancho apaisado: con interlineado doble la
+% matriz ocupaba tres páginas y quedaba ilegible por el exceso de partición de palabras.
+\begin{spacing}{1}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}p{2.3cm}p{4.2cm}p{4.0cm}p{3.3cm}p{4.0cm}p{4.3cm}@{}}
+  \caption{Matriz de operacionalización de objetivos, técnicas e indicadores.}
+  \label{tab:operacionalizacion}\\
+  \toprule
+  \textbf{Objetivo} & \textbf{Pregunta} & \textbf{Técnica} & \textbf{Fuente} &
+  \textbf{Resultado esperado} & \textbf{Indicador / métrica} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Objetivo} & \textbf{Pregunta} & \textbf{Técnica} & \textbf{Fuente} &
+  \textbf{Resultado esperado} & \textbf{Indicador / métrica} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  \textbf{E1.} Estimar la cobertura de roca visible
+  & ¿Qué proporción del terreno clasificado de una escena es roca?
+  & Conteo de píxeles por clase sobre los píxeles etiquetados
+  & AI4Mars, máscaras MSL NavCam \textit{train} (secundaria)
+  & Indicador de cobertura para toda escena con algún píxel etiquetado
+  & \texttt{rock\_coverage\_pct} y \texttt{coverage\_total\_pct}; control del artefacto del
+    denominador mediante correlación con \texttt{frac\_valid} \\
+  \addlinespace
+
+  \textbf{E2.} Estimar el número de rocas individuales
+  & ¿Cuántos bloques discretos se distinguen en las zonas etiquetadas como roca grande?
+  & Morfología matemática, componentes conectadas, transformada de distancia y división de
+    aguas con máximos de prominencia
+  & Ídem, clase \textit{roca grande}
+  & Conteo por imagen y distribución tamaño--frecuencia
+  & \texttt{n\_rocks}, \texttt{n\_raw\_components}, \texttt{mean\_solidity}; acuerdo con
+    conteo humano (kappa de Cohen simple y ponderado) \\
+  \addlinespace
+
+  \textbf{E3.} Explorar la variación entre subconjuntos
+  & ¿Cómo cambian los indicadores según la composición del terreno y a lo largo del
+    recorrido?
+  & Estadística descriptiva, tipología de escenas por clase dominante, agregación por
+    tramos del reloj de nave
+  & Conjunto de resultados propio y metadatos del identificador de imagen
+  & Caracterización del terreno y perfil del recorrido
+  & \texttt{dominant\_class}, \texttt{scene\_type}, proporción de escenas con roca grande
+    por tramo; correlación entre los dos indicadores \\
+  \addlinespace
+
+  \textbf{E4.} Implementar recursos reproducibles
+  & ¿Puede otra persona repetir el análisis y obtener los mismos resultados?
+  & Modularización con parámetros explícitos, control de versiones, registro de versiones
+    de biblioteca
+  & Código propio
+  & Archivo tabular con un indicador por imagen, más código y guiones de ejecución
+  & \num{16064} filas × 24 columnas en \texttt{results.csv}; ejecución determinista con
+    parámetros documentados \\
+  \addlinespace
+
+  \textbf{E5.} Analizar, interpretar y delimitar
+  & ¿Qué patrones, casos atípicos y limitaciones presentan los indicadores obtenidos?
+  & Contraste con máscaras de experto, validación con conteo humano, diagnóstico de modos de
+    error y comparación con aprendizaje automático
+  & Máscaras de experto del propio conjunto (\num{322}); conteo humano propio (\num{60}
+    escenas)
+  & Cuantificación del sesgo de la anotación y atribución de los límites del conteo
+  & Diferencia de cobertura entre fuentes de etiqueta; kappa del conteo; IoU del
+    segmentador frente a ambas referencias \\
+
+\end{longtable}
+\end{spacing}
+\end{landscape}
+
+Dos lecturas de esta matriz conviene anticipar. La primera es que los indicadores de E1 y
+E2 se verifican con métricas de naturaleza distinta: la cobertura mediante un control
+interno de consistencia —no existe verdad de campo con la que compararla— y el conteo
+mediante acuerdo con un observador humano. La segunda es que E5 no produce un indicador
+propio sino que \textbf{mide la confianza atribuible} a los indicadores anteriores, y de ahí
+que sus métricas sean comparaciones entre fuentes y no medidas de terreno.
+
 \section{Estrategia de evaluación y validación}
 
 Un procedimiento descriptivo como este no admite una métrica de acierto única, porque no
@@ -365,3 +485,93 @@ conjunto de máscaras del que provienen y no constituyen estimaciones absolutas 
 abundancia de roca en el terreno marciano. Presentarlos como tales sería una
 sobreinterpretación del dato, y el documento evita hacerlo de forma explícita en cada
 resultado afectado.
+
+\section{Cronograma de trabajo}
+\label{sec:cronograma}
+
+El trabajo se planificó sobre quince semanas académicas. El
+Cuadro~\ref{tab:cronograma} resume las actividades previstas por semana.
+
+\begin{longtable}{@{}cp{12.4cm}@{}}
+  \caption{Cronograma de trabajo previsto para quince semanas.}
+  \label{tab:cronograma}\\
+  \toprule
+  \textbf{Sem.} & \textbf{Actividades previstas} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Sem.} & \textbf{Actividades previstas} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  1 & Revisión inicial de la literatura sobre conteo de objetos en imágenes,
+      segmentación semántica y métodos de división de aguas. Familiarización con la
+      documentación de AI4Mars y con el contexto de operación del rover. \\
+  2 & Instalación y prueba del entorno de trabajo: Python, bibliotecas de procesamiento de
+      imágenes y control de versiones. Descarga de un subconjunto pequeño para pruebas
+      rápidas y comprensión del formato. \\
+  3 & Selección del conjunto de imágenes y máscaras definitivo. Organización de los
+      directorios de datos y primeros guiones para leer y visualizar las máscaras de forma
+      consistente. \\
+  4 & Construcción de las dos máscaras binarias de trabajo: una para la cobertura —lecho
+      rocoso y roca grande— y otra solo para roca grande. Cálculo preliminar de la
+      cobertura por imagen, para verificar que los valores sean razonables. \\
+  5 & Implementación del módulo de componentes conectadas sobre la máscara de roca grande.
+      Cálculo de área y forma de cada componente y diseño de los filtros iniciales. \\
+  6 & Primeros experimentos de conteo usando solo componentes conectadas, sin división de
+      aguas. Análisis cualitativo de los casos en que varias rocas quedan unidas en una
+      sola región y el conteo resulta subestimado. \\
+  7 & Introducción de la transformada de distancia y de un esquema inicial de división de
+      aguas para separar rocas en contacto. Pruebas sobre unas pocas imágenes y
+      documentación de aciertos y errores. \\
+  8 & Ajuste de los parámetros de la división de aguas —suavizado previo, supresión de
+      máximos débiles— y observación de la sobresegmentación que aparece en ciertos
+      paisajes. Registro de casos problemáticos. \\
+  9 & Consolidación del procedimiento completo, desde la máscara original hasta el número
+      de rocas por imagen. Correcciones iterativas de parámetros a partir de los ejemplos
+      difíciles. \\
+  10 & Ejecución del procedimiento sobre el conjunto seleccionado. Revisión de resultados
+      atípicos, comparación visual con las imágenes originales y estadísticos descriptivos
+      de los indicadores. \\
+  11 & Análisis detallado de los resultados e identificación de patrones según el tipo de
+      terreno. Notas sobre las limitaciones del método y sobre los casos en que el conteo
+      falla con mayor frecuencia. \\
+  12 & Redacción de la metodología, con ejemplos gráficos del procedimiento y explicaciones
+      dirigidas a lectores no especialistas en visión por computador. \\
+  13 & Redacción de resultados y discusión. Integración de las observaciones sobre
+      sobresegmentación, sensibilidad a los parámetros y diferencias entre paisajes. \\
+  14 & Espacio de maniobra para una actividad opcional de validación con observadores
+      humanos —conteos aproximados por bandas— o, de no ser viable, para revisar los
+      experimentos y mejorar la presentación de figuras y tablas. \\
+  15 & Cierre: revisión completa del documento, verificación de que el código y los datos
+      se ejecutan de forma reproducible, armonización del estilo y preparación de la
+      versión final. \\
+\end{longtable}
+
+Las semanas 1 a 3 se dedican a preparar el terreno: revisar la literatura, dejar listo el
+entorno y familiarizarse con las imágenes y máscaras. Entre las semanas 4 y 9 se construye
+y ajusta de forma gradual el procedimiento, aceptando que algunos parámetros se afinan por
+iteración y no en un único intento. Las semanas 10 a 13 se concentran en aplicarlo sobre el
+conjunto elegido, analizar los resultados y plasmarlos en el documento. La semana 14 queda
+como margen de maniobra, y la 15 se reserva para el cierre y la verificación de
+reproducibilidad.
+
+\subsection*{Ejecución frente a lo planificado}
+
+El plan se cumplió en sus fases principales. Conviene, no obstante, consignar tres
+diferencias entre lo previsto y lo ejecutado, porque afectan al alcance de los resultados.
+
+\paragraph{La validación con observadores se realizó, y dos veces.} La semana 14 la
+contemplaba como actividad \emph{opcional}. Se llevó a cabo, y la primera ronda reveló
+defectos en el propio instrumento de medición que obligaron a rediseñarlo y repetirla; la
+subsección~\ref{sec:validacion-manual} documenta ambas rondas.
+
+\paragraph{Se añadió un contraste con aprendizaje automático.} No estaba previsto en el
+plan. Se incorporó al constatar que el procedimiento necesitaba una referencia externa
+frente a la cual situar su desempeño.
+
+\paragraph{Se añadió una extensión aplicada.} El sistema de avisos de terreno y la
+aplicación de consulta descritos en la subsección~\ref{sec:extension} surgieron de la
+ejecución y no figuraban en el cronograma inicial.
