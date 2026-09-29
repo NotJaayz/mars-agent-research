@@ -125,3 +125,10 @@ tesis_Delgado_para_directora.zip
 # no forman parte del trabajo entregable.
 /defensa/
 /reunion/
+
+# ===== Documento de divulgación =====
+# Se versiona la fuente; las figuras vienen de tesis/images vía \graphicspath.
+divulgacion/*.aux
+divulgacion/*.log
+divulgacion/*.out
+divulgacion/que_hace_esta_tesis.pdf

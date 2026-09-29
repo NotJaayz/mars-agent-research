@@ -1,0 +1,60 @@
+TRABAJO DE GRADO — Conteo de rocas visibles basado en las máscaras de AI4Mars
+Juan Pablo Delgado Castro
+Programa de Ciencia de Datos · Departamento de Matemáticas
+Universidad Externado de Colombia
+
+Opción de grado: Informe de investigación
+
+--------------------------------------------------------------------------
+QUÉ HAY EN ESTA CARPETA
+--------------------------------------------------------------------------
+
+1_RESUMEN_Y_PREGUNTAS.pdf        <-- EMPIECE POR AQUÍ (10 páginas)
+
+   Resumen completo del trabajo: en qué consiste, el procedimiento explicado
+   paso a paso con su formulación matemática y un ejemplo numérico resuelto,
+   los tres hallazgos principales con sus figuras, el contraste con
+   aprendizaje automático, la extensión aplicada, y las ocho decisiones que
+   necesito consultar.
+
+   Está pensado para entender la tesis sin tener que abrir nada más.
+
+2_tesis_completa_93pag.pdf
+
+   El documento de tesis completo, sobre la plantilla oficial del
+   Departamento. Cinco capítulos, anexo y 28 figuras.
+
+   Revisado contra los "Lineamientos generales para la formulación del
+   Proyecto de Grado": los once elementos (i-xi) están presentes, incluidos
+   el cronograma de trabajo (sección 3.7) y la matriz de operacionalización
+   de objetivos (sección 3.6).
+
+   NOTA: la bibliografía aparece en formato numérico porque esta copia se
+   compiló localmente. La versión definitiva se compilará en Overleaf, donde
+   sale en APA 7 como está configurada.
+
+3_resultados_16064_escenas.csv
+
+   El entregable principal del objetivo E4: una fila por imagen y 24
+   indicadores, para las 16 064 escenas del subconjunto de estudio.
+   Se abre con Excel o cualquier hoja de cálculo.
+
+--------------------------------------------------------------------------
+CÓDIGO
+--------------------------------------------------------------------------
+
+Todo el código, los guiones de ejecución y las figuras están en un
+repositorio público:
+
+    https://github.com/NotJaayz/mars-agent-research
+
+Incluye los 12 módulos de cálculo, los 23 guiones que reproducen cada
+resultado y figura del documento, la especificación del entorno y la fuente
+LaTeX de la tesis. El README explica el procedimiento completo paso a paso,
+con las figuras.
+
+El conjunto de datos AI4Mars (unos 16 GB) no se incluye por su tamaño; el
+código lo referencia por una ruta configurable y se descarga de la fuente
+original (https://doi.org/10.5281/zenodo.15995036).
+
+--------------------------------------------------------------------------
