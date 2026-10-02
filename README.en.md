@@ -560,7 +560,8 @@ make resultados
 make pruebas
 ```
 
-The trained model (~170 MB) is not versioned; its SHA-256 fingerprint is in
+The trained model (~170 MB) is not stored in git: download it from the published release
+[modelo-deeplab-v2](https://github.com/NotJaayz/mars-agent-research/releases/tag/modelo-deeplab-v2) and copy it to `outputs/`. Its SHA-256 fingerprint is in
 `outputs/segmentacion_metricas.json`. The document's numbers are never typed by hand:
 `scripts/generar_cifras.py` extracts them from `outputs/` and writes `tesis/cifras.tex`.
 

@@ -5,8 +5,8 @@
 #   make pruebas      pruebas unitarias de las reglas deterministas
 #
 # Requisitos: entorno de environment.yml y el conjunto AI4Mars en AI4MARS_ROOT
-# (ver README). El modelo entrenado (~170 MB) no se versiona; su SHA-256 queda en
-# outputs/segmentacion_metricas.json.
+# (ver README). El modelo entrenado (~170 MB) se descarga de la versión publicada
+# modelo-deeplab-v2 del repositorio; su SHA-256 queda en outputs/segmentacion_metricas.json.
 
 PY ?= python
 GOLD = $(shell $(PY) -c "import sys; sys.path.insert(0,'.'); from src import config; print(config.MSL_NCAM_LABELS_TRAIN.parent / 'test')")

@@ -564,7 +564,8 @@ make resultados
 make pruebas
 ```
 
-El modelo entrenado (~170 MB) no se versiona; su huella SHA-256 está en
+El modelo entrenado (~170 MB) no se versiona en git: se descarga de la versión publicada
+[modelo-deeplab-v2](https://github.com/NotJaayz/mars-agent-research/releases/tag/modelo-deeplab-v2) y se copia a `outputs/`. Su huella SHA-256 está en
 `outputs/segmentacion_metricas.json`. Las cifras del documento nunca se escriben a mano:
 `scripts/generar_cifras.py` las extrae de `outputs/` y las escribe en `tesis/cifras.tex`.
 
