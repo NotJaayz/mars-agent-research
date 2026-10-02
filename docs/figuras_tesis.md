@@ -20,7 +20,7 @@ documentar al menos cinco imágenes representativas.
 | 15 | `Figura_15_conteo_por_bandas.png` | Resultados, §3 |
 | 16 | `Figura_16_tamano_frecuencia.png` | Resultados, §3.1 |
 | 17 | `Figura_17_tipologia_escenas.png` | Resultados, §4 |
-| 18 | `Figura_18_variacion_recorrido.png` | Resultados, §5 |
+| 18 | `Figura_18_variacion_secuencia.png` | Resultados, §5 |
 | 19 | `Figura_19_validacion_experto.png` | Resultados, §6 |
 | 20 | `Figura_20_matriz_acuerdo.png` | Resultados, §7 |
 | 21 | `Figura_21_cobertura_modelo_vs_humano.png` | Resultados, §7 |
@@ -107,7 +107,7 @@ documentar al menos cinco imágenes representativas.
 > cuando la clase correspondiente supera el 50 %, y mixto cuando ninguna predomina. Casi la
 > mitad de las escenas resultan rocosas. Fuente: elaboración propia.
 
-![Figura_18_variacion_recorrido](../outputs/figures/tesis/Figura_18_variacion_recorrido.png)
+![Figura_18_variacion_secuencia](../outputs/figures/tesis/Figura_18_variacion_secuencia.png)
 
 **Figura 18.** *Cobertura de roca y presencia de roca grande a lo largo del recorrido.*
 

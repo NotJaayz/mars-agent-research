@@ -30,19 +30,16 @@ from . import mask_utils as mu
 
 
 # Parámetros por defecto del conteo. Documentados; modificables por imagen/escena.
-# Calibrados visualmente sobre 6 escenas MSL NavCam variadas (ver outputs/figures/calibracion):
-# peak_min_distance=15 + distance_sigma=3.0 es el compromiso que preserva las separaciones
-# reales de cúmulos de rocas y a la vez recorta los máximos espurios que sobresegmentaban los
-# bloques continuos grandes (con los valores previos 5/1.0 una sola losa generaba hasta 142
-# máximos). Para reducir aún más la sobresegmentación, subir ambos; para separar rocas más
-# pequeñas y pegadas, bajarlos.
+# Calibrados sobre seis escenas MSL NavCam (manifiestos/calibracion_escenas.csv); la
+# calibración completa se reconstruye con scripts/calibracion.py. Con la versión inicial
+# (separación mínima 5 px, sigma 1) una escena generaba 142 semillas; 15 px con sigma 3
+# recortaba los máximos espurios preservando las separaciones de los cúmulos.
 #
 # peak_h=1.0 añade supresión por prominencia (h-máxima) sobre la transformada de distancia:
-# descarta los máximos cuya altura sobre el entorno es menor que h, que son los que subdividen
-# una región continua. Se verificó que actúa de forma selectiva: sobre imágenes marcadas como
-# sospechosas (solidez media < 0,7 o más de quince rocas) reduce el conteo entre un 32 % y un
-# 44 %, mientras que en escenas normales (una a cinco rocas y regiones compactas) no altera
-# ningún conteo.
+# descarta los máximos cuya altura sobre el entorno es menor que h. Con h > 0,
+# peak_min_distance queda inactivo. La reconstrucción muestra que el cambio no es selectivo:
+# reduce el conteo en las escenas con indicios de sobresegmentación y también, en torno a un
+# 21 %, en el resto (outputs/calibracion_verificacion.json).
 DEFAULT_PARAMS: dict[str, Any] = {
     "open_size": 3,            # apertura morfológica (px); <=1 desactiva
     "close_size": 3,           # cierre morfológico (px); <=1 desactiva
@@ -115,10 +112,15 @@ def compute_stages(
         if len(coords):
             mask_peaks[tuple(coords.T)] = True
 
-    if not mask_peaks.any():
-        markers = label(clean, connectivity=p["connectivity"])
-    else:
-        markers = label(mask_peaks)
+    markers = label(mask_peaks)
+    # Una componente conectada sin ninguna semilla (región pequeña o casi plana tras el
+    # suavizado) se inunda como un único bloque, en lugar de perderse.
+    comps = label(clean, connectivity=p["connectivity"])
+    sin_semilla = np.setdiff1d(np.unique(comps[clean]), np.unique(comps[mask_peaks]))
+    if len(sin_semilla):
+        lut = np.zeros(int(comps.max()) + 1, dtype=markers.dtype)
+        lut[sin_semilla] = np.arange(1, len(sin_semilla) + 1) + markers.max()
+        markers = np.where(markers > 0, markers, lut[comps])
 
     labels_ws = watershed(-distance, markers, mask=clean)
 

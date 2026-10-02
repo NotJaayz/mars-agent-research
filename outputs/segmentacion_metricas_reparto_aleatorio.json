@@ -1,0 +1,113 @@
+{
+  "nota": "Modelo anterior, con reparto al azar por imagen (sustituido por el reparto por bloques temporales). Se conserva para comparar.",
+  "config": {
+    "n_train": 2000,
+    "n_val": 400,
+    "n_test": 400,
+    "epochs": 6,
+    "img_size": 512,
+    "batch": 4,
+    "lr": 0.0001,
+    "seed": 0,
+    "n_coverage": 200,
+    "device": "mps"
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "loss": 0.3945,
+      "iou_no_roca": 0.9274,
+      "iou_roca": 0.8991,
+      "miou": 0.9132,
+      "seconds": 727
+    },
+    {
+      "epoch": 2,
+      "loss": 0.244,
+      "iou_no_roca": 0.9581,
+      "iou_roca": 0.941,
+      "miou": 0.9496,
+      "seconds": 741
+    },
+    {
+      "epoch": 3,
+      "loss": 0.1885,
+      "iou_no_roca": 0.9097,
+      "iou_roca": 0.8739,
+      "miou": 0.8918,
+      "seconds": 783
+    },
+    {
+      "epoch": 4,
+      "loss": 0.1705,
+      "iou_no_roca": 0.9528,
+      "iou_roca": 0.934,
+      "miou": 0.9434,
+      "seconds": 780
+    },
+    {
+      "epoch": 5,
+      "loss": 0.1286,
+      "iou_no_roca": 0.9384,
+      "iou_roca": 0.9091,
+      "miou": 0.9238,
+      "seconds": 844
+    },
+    {
+      "epoch": 6,
+      "loss": 0.1219,
+      "iou_no_roca": 0.9489,
+      "iou_roca": 0.9263,
+      "miou": 0.9376,
+      "seconds": 1948
+    }
+  ],
+  "test": {
+    "iou_no_roca": 0.9549,
+    "iou_roca": 0.925,
+    "miou": 0.9399
+  },
+  "prueba_total": {
+    "n": 400,
+    "miou": 0.9399825528236674,
+    "r_cobertura": 0.9714224971364457,
+    "mae": 2.954550196802976,
+    "error_medio": -1.5062890669717515
+  },
+  "proximidad_prueba": {
+    "menos_de_60s": 75,
+    "menos_de_600s": 240,
+    "menos_de_3600s": 301,
+    "menos_de_88775s": 362
+  },
+  "por_tramo": {
+    "menos de 1 minuto": {
+      "n": 75,
+      "miou": 0.9371240851359779,
+      "r_cobertura": 0.9593883852691428,
+      "mae": 2.850418482529756,
+      "error_medio": -2.3645228159221525
+    },
+    "1 minuto a 1 hora": {
+      "n": 226,
+      "miou": 0.9476647127346409,
+      "r_cobertura": 0.9799308018037124,
+      "mae": 2.372254411221083,
+      "error_medio": -1.3340903229526706
+    },
+    "1 hora a 1 sol": {
+      "n": 61,
+      "miou": 0.8924407075032577,
+      "r_cobertura": 0.9281590059564937,
+      "mae": 5.843027012564007,
+      "error_medio": -2.2945065772351803
+    },
+    "más de 1 sol": {
+      "n": 38,
+      "miou": 0.9533868311134935,
+      "r_cobertura": 0.9960636429157813,
+      "mae": 1.9864354691865629,
+      "error_medio": 0.42876048958185276
+    }
+  }
+}

@@ -20,46 +20,27 @@ Sigue siendo procesamiento clásico: no entrena ningún modelo.
 
 RESULTADO MEDIDO (60 escenas con conteo humano)
 ----------------------------------------------
-Evaluado contra ``outputs/validacion_manual_v2``, con seis bandas y muestreo estratificado
-por área de la región. Configuración fija ``seed_h=0,008``, ``min_area_frac=0,0005``:
+Evaluado contra ``outputs/validacion_manual_v2`` con ``scripts/eval_metodos_imagen.py``
+(relieve «grad»), con el parámetro elegido por validación cruzada dejando una escena fuera
+y la diferencia con E2 contrastada por bootstrap, al 95 % y con corrección de Bonferroni:
 
-====================================  =========  =======  ==========
-método                                 acuerdo    kappa   ponderado
-====================================  =========  =======  ==========
-conteo basado en máscara (E2)             50 %     0,13       0,11
-híbrido                                   45 %     0,21       0,21
-====================================  =========  =======  ==========
+    kappa ponderado  E2 0,11  ·  híbrido 0,18
+    diferencia +0,06, IC 95 % [-0,14; +0,28], IC Bonferroni [-0,19; +0,33]
 
-**Lo que sí queda demostrado.** El híbrido corrige dos defectos estructurales de E2, y
-ambos se leen directamente en las distribuciones, sin depender de ningún estadístico:
+La evidencia NO permite concluir que el híbrido mejore el acuerdo con el observador: el
+intervalo incluye el cero. Además desplaza el error hacia la sobreestimación (9 escenas por
+debajo del observador y 24 por encima), porque también corta en la textura interna de las
+rocas. Es una prueba de concepto, no un indicador validado.
 
-- *Elimina el techo.* E2 no supera las nueve rocas en ninguna de las 60 escenas, de modo
-  que las bandas ``10-24``, ``25-49`` y ``50+`` quedan vacías aunque el observador situó
-  doce escenas en ellas. El híbrido las alcanza (máximo 127 rocas).
-- *Elimina el sesgo sistemático.* E2 queda por debajo del observador en 28 escenas y por
-  encima en 2. El híbrido reparte 16 por debajo y 17 por encima.
-- *Reproduce la forma de la distribución.* E2 acumula 51 de 60 escenas en la banda
-  ``1-3``, donde el observador situó 27; el híbrido sitúa 26.
+Configuración por defecto de este módulo (``DEFAULT_PARAMS``): ``seed_h=0,008``,
+``min_area_frac=0,0005``. Es la que usa ``scripts/make_hybrid_figure.py`` para la figura de
+la tesis. ``scripts/eval_hybrid.py`` documenta una exploración anterior sobre una rejilla de
+parámetros; su valor de validación cruzada (0,06) es la estimación honesta para esa
+rejilla, y las cifras obtenidas fijando la mejor combinación sobre las mismas 60 escenas son
+optimistas y no deben reportarse como resultado.
 
-**Lo que NO queda demostrado.** Que el acuerdo con el juicio humano sea mejor. La
-diferencia en kappa ponderado es de **+0,10 con intervalo de confianza del 95 % de
-[-0,12, +0,31]** (bootstrap, 4000 remuestreos); el intervalo contiene el cero. El híbrido
-gana en el 81 % de los remuestreos, frente al 67 % que daba la muestra piloto de 24
-escenas, pero la muestra sigue siendo insuficiente para concluir. Nótese además que el
-acuerdo *exacto* del híbrido es menor (45 % frente a 50 %): E2 acierta más veces por
-concentrarse en la banda más poblada, que es justamente lo que el kappa penaliza.
-
-La selección de parámetros es estable en lo que importa: las dos combinaciones que se
-reparten los pliegues de la validación cruzada dan ambas un kappa ponderado de 0,21
-aplicadas fijas a las 60 escenas. El valor de *leave-one-out* que reporta
-``scripts/eval_hybrid.py`` (0,06) mide el desempeño de un procedimiento que **reelige**
-parámetros en cada pliegue, que es inestable; no el de una configuración fija, que es como
-se usaría.
-
-**Límite de fondo.** Ninguna de las dos variantes puede contar lo que la anotación no
-delimita. En 36 de las 60 escenas la clase roca grande cubre menos del 20 % de la roca
-etiquetada (mediana 9,1 %), de modo que ambos métodos cuentan dentro de una fracción
-pequeña y arbitraria de la roca visible.
+Límite de fondo: ninguna variante puede contar lo que la anotación no delimita. En 36 de las
+60 escenas la clase roca grande cubre menos del 20 % de la roca etiquetada.
 
 """
 from __future__ import annotations
@@ -79,7 +60,7 @@ from .rock_count import _aspect_ratio
 # últimos se heredan del conteo basado en máscara para que ambos filtren igual.
 DEFAULT_PARAMS: dict[str, Any] = {
     "img_sigma": 2.0,        # suavizado de la imagen antes del gradiente (px)
-    "seed_h": 0.004,         # prominencia mínima de una semilla sobre el gradiente invertido
+    "seed_h": 0.008,         # prominencia mínima de una semilla sobre el gradiente invertido
     "seed_sigma": 1.0,       # suavizado del gradiente invertido antes de buscar semillas
     "min_area_frac": 0.0005, # área mínima de una roca (fracción del área de la imagen)
     "max_aspect_ratio": 5.0, # relación de aspecto máxima de la caja envolvente

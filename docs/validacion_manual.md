@@ -1,5 +1,10 @@
 # Validación manual por bandas (§8.9)
 
+> **Documento de trabajo anterior a la revisión de octubre de 2026.** Algunas cifras y conclusiones de
+> este archivo fueron corregidas después (población del conteo, análisis de dependencia, contraste
+> con las máscaras de experto, segmentador). Las versiones vigentes son las de la tesis (`tesis/`) y
+> el [README](../README.md).
+
 La metodología comprometía un contraste entre el conteo automático y un conteo manual
 aproximado. Este documento describe cómo realizarlo. Es la única parte del procedimiento
 que requiere intervención humana.

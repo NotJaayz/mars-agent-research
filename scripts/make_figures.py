@@ -20,6 +20,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src import poblaciones  # noqa: E402
+
 plt.rcParams.update({
     "figure.dpi": 120, "savefig.dpi": 120, "font.size": 11,
     "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True,
@@ -53,7 +57,7 @@ def fig_cobertura(df: pd.DataFrame, outdir: Path) -> None:
 
 
 def fig_conteo(df: pd.DataFrame, outdir: Path) -> None:
-    ok = df[df.quality_flag == "ok"]
+    ok = poblaciones.poblacion_e2(df)
     bands = [("1", (ok.n_rocks == 1).sum()),
              ("2–3", ((ok.n_rocks >= 2) & (ok.n_rocks <= 3)).sum()),
              ("4–9", ((ok.n_rocks >= 4) & (ok.n_rocks <= 9)).sum()),

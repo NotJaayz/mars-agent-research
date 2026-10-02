@@ -1,0 +1,73 @@
+{
+  "n_imagenes": 16064,
+  "por_nivel": {
+    "sin_prioridad": 14499,
+    "baja": 124,
+    "media": 1343,
+    "alta": 98
+  },
+  "por_regla": {
+    "bloques_angulosos": 68,
+    "bloque_dominante": 233,
+    "campo_bloques": 195,
+    "arena_predominante": 1174,
+    "terreno_rocoso": 6855,
+    "escena_no_evaluable": 463
+  },
+  "percentiles_umbral": [
+    {
+      "clave": "bloques_angulosos",
+      "variable": "pct_bigrock",
+      "umbral": 5.0,
+      "poblacion": "E2",
+      "n": 2193,
+      "percentil": 65.2530779753762,
+      "pct_supera": 34.74692202462381
+    },
+    {
+      "clave": "bloques_angulosos",
+      "variable": "mean_solidity",
+      "umbral": 0.85,
+      "poblacion": "E2",
+      "n": 1741,
+      "percentil": 13.095921883974725,
+      "pct_supera": 86.90407811602527
+    },
+    {
+      "clave": "bloque_dominante",
+      "variable": "largest_rock_pct",
+      "umbral": 15.0,
+      "poblacion": "E2",
+      "n": 2193,
+      "percentil": 89.37528499772002,
+      "pct_supera": 10.62471500227998
+    },
+    {
+      "clave": "campo_bloques",
+      "variable": "n_rocks",
+      "umbral": 5.0,
+      "poblacion": "E2",
+      "n": 2193,
+      "percentil": 94.52804377564979,
+      "pct_supera": 5.471956224350205
+    },
+    {
+      "clave": "arena_predominante",
+      "variable": "pct_sand",
+      "umbral": 70.0,
+      "poblacion": "E1",
+      "n": 15901,
+      "percentil": 92.61681655241809,
+      "pct_supera": 7.383183447581914
+    },
+    {
+      "clave": "terreno_rocoso",
+      "variable": "rock_coverage_pct",
+      "umbral": 80.0,
+      "poblacion": "E1",
+      "n": 15901,
+      "percentil": 56.88950380479215,
+      "pct_supera": 43.11049619520785
+    }
+  ]
+}

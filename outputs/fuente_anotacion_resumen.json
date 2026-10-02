@@ -1,0 +1,77 @@
+{
+  "n_colaborativa": 593,
+  "n_experto": 322,
+  "cob_etiqueta": {
+    "mediana_colab": 66.90752679527057,
+    "mediana_experto": 12.500322120606675,
+    "media_colab": 53.34971041501577,
+    "media_experto": 32.92290699108144,
+    "dif_mediana": 54.407204674663895,
+    "ic95_dif_mediana": [
+      40.2933808279269,
+      66.55784968212552
+    ],
+    "mann_whitney_p": 1.194866452316695e-10
+  },
+  "cob_modelo_val": {
+    "mediana_colab": 74.3321814210564,
+    "mediana_experto": 6.097947192029762,
+    "media_colab": 54.28055032248429,
+    "media_experto": 36.04368264029188,
+    "dif_mediana": 68.23423422902664,
+    "ic95_dif_mediana": [
+      50.02256822526051,
+      79.11836422446818
+    ],
+    "mann_whitney_p": 3.043905007975711e-07
+  },
+  "cob_modelo_reg": {
+    "mediana_colab": 72.46680754781421,
+    "mediana_experto": 5.794433232936452,
+    "media_colab": 54.361831271096065,
+    "media_experto": 36.138438116665604,
+    "dif_mediana": 66.67237431487776,
+    "ic95_dif_mediana": [
+      46.47546848713088,
+      76.54799506522222
+    ],
+    "mann_whitney_p": 1.0959021195715793e-07
+  },
+  "frac_reg": {
+    "mediana_colab": 0.8859400802075962,
+    "mediana_experto": 0.9227022005852316,
+    "media_colab": 0.8069925322839973,
+    "media_experto": 0.848250614376974,
+    "dif_mediana": -0.03676212037763538,
+    "ic95_dif_mediana": [
+      -0.058883280707415664,
+      -0.014179461867237153
+    ],
+    "mann_whitney_p": 2.3471794683445618e-05
+  },
+  "descomposicion": {
+    "total": 20.42680342393433,
+    "imagenes": 18.22339315443046,
+    "anotacion": 2.2034102695038693,
+    "pct_imagenes": 89.2131420478541,
+    "pct_anotacion": 10.786857952145889,
+    "ic95_imagenes": [
+      12.39680309241611,
+      23.806911175104354
+    ],
+    "ic95_anotacion": [
+      0.018672702345012875,
+      4.540775156590416
+    ]
+  },
+  "residuo_colaborativa": {
+    "media": -1.0121208560802986,
+    "mediana": 0.0,
+    "wilcoxon_p": 0.0036153464306482603
+  },
+  "residuo_experto": {
+    "media": -3.215531125584168,
+    "mediana": 0.0,
+    "wilcoxon_p": 3.971747444834557e-06
+  }
+}

@@ -21,7 +21,7 @@ from pathlib import Path
 # Permite ejecutar el script desde la raíz del repo sin instalar el paquete.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src import config, pipeline as pl  # noqa: E402
+from src import config, pipeline as pl, poblaciones  # noqa: E402
 
 
 def main() -> None:
@@ -31,6 +31,7 @@ def main() -> None:
     ap.add_argument("--out", default="outputs/results.csv")
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--no-progress", action="store_true")
+    ap.add_argument("--workers", type=int, default=1, help="procesos en paralelo")
     args = ap.parse_args()
 
     out = Path(args.out)
@@ -42,6 +43,7 @@ def main() -> None:
         images_dir=args.images,
         limit=args.limit,
         progress=not args.no_progress,
+        workers=args.workers,
     )
     dt = time.time() - t0
 
@@ -70,8 +72,9 @@ def main() -> None:
 
     print(f"\nOK: {len(df)} filas -> {out}  ({dt:.0f}s)")
     print("quality_flag:", df["quality_flag"].value_counts().to_dict())
+    r = poblaciones.resumen_e2(df)
     print(f"cobertura media={df['rock_coverage_pct'].mean():.2f}%  "
-          f"n_rocks total={int(df['n_rocks'].sum())}")
+          f"E2: {r['n_escenas']} escenas, {r['n_rocas']} rocas")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,10 @@
 # Informe de avance — Conteo de rocas visibles a partir de las máscaras de AI4Mars
 
+> **Documento de trabajo anterior a la revisión de octubre de 2026.** Algunas cifras y conclusiones de
+> este archivo fueron corregidas después (población del conteo, análisis de dependencia, contraste
+> con las máscaras de experto, segmentador). Las versiones vigentes son las de la tesis (`tesis/`) y
+> el [README](../README.md).
+
 - **Estudiante:** Juan Pablo Delgado Castro
 - **Programa:** Matemáticas — Ciencia de Datos, Universidad Externado de Colombia
 - **Fecha:** agosto de 2026

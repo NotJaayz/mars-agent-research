@@ -9,7 +9,7 @@
     /* Paleta institucional de la NASA: azul #0B3D91 y rojo #FC3D21 */
     --rust:#FC3D21; --rust-d:#0B3D91; --sand:#c7b299; --ink:#16181d;
     --muted:#5b6270; --line:#d8dde8; --bg:#f4f6fa; --card:#ffffff;
-    --alto:#FC3D21; --medio:#e08214; --bajo:#c9a227; --ok:#3d8b5f;
+    --alta:#FC3D21; --media:#e08214; --baja:#c9a227; --ok:#3d8b5f;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);
@@ -40,8 +40,8 @@
   .scroll{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
   .pill{display:inline-block;padding:2px 9px;border-radius:11px;font-size:11px;
         font-weight:600;color:#fff;white-space:nowrap}
-  .alto{background:var(--alto)} .medio{background:var(--medio)}
-  .bajo{background:var(--bajo)} .sin_alerta{background:var(--ok)}
+  .alta{background:var(--alta)} .media{background:var(--media)}
+  .baja{background:var(--baja)} .sin_prioridad{background:var(--ok)}
   .tag{display:inline-block;background:#eef1f7;border:1px solid var(--line);
        border-radius:5px;padding:1px 7px;margin:1px 3px 1px 0;font-size:11px}
   .filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
@@ -51,7 +51,7 @@
   .sev{font-size:11px;color:var(--muted)}
   footer{border-top:1px solid var(--line);margin-top:20px;padding-top:16px;
          color:var(--muted);font-size:12px}
-  .nota{background:#fff8f0;border-left:3px solid var(--medio);padding:10px 14px;
+  .nota{background:#fff8f0;border-left:3px solid var(--media);padding:10px 14px;
         border-radius:0 8px 8px 0;font-size:13px;margin-top:12px}
 </style>
 </head>
@@ -61,7 +61,7 @@
     <div class="logos" id="logos"></div>
     <div>
       <h1>Panel de análisis de terreno marciano</h1>
-      <div class="sub">Cobertura de roca, conteo de bloques y alertas de riesgo · Dataset AI4Mars</div>
+      <div class="sub">Cobertura de roca, conteo de bloques y reglas heurísticas de priorización · Dataset AI4Mars</div>
     </div>
   </div>
 </header>
@@ -74,11 +74,11 @@
   </section>
 
   <section>
-    <h2>Alertas de riesgo</h2>
+    <h2>Reglas heurísticas de priorización</h2>
     <p class="hint">Avisos operativos derivados de los indicadores. Cada regla declara su criterio y su justificación.</p>
     <div class="grid two">
-      <div class="card"><div class="chart-title">Escenas por nivel de riesgo</div><div id="c_niveles"></div></div>
-      <div class="card"><div class="chart-title">Alertas emitidas por tipo</div><div id="c_alertas"></div></div>
+      <div class="card"><div class="chart-title">Escenas por nivel de prioridad</div><div id="c_niveles"></div></div>
+      <div class="card"><div class="chart-title">Reglas de priorización activadas</div><div id="c_reglas"></div></div>
     </div>
     <div class="card" style="margin-top:16px">
       <div class="chart-title">Catálogo de reglas</div>
@@ -87,10 +87,10 @@
   </section>
 
   <section>
-    <h2>Escenas con alerta</h2>
-    <p class="hint">Filtra por nivel para revisar las escenas señaladas. Se muestran las 300 de mayor severidad.</p>
+    <h2>Escenas priorizadas</h2>
+    <p class="hint">Filtra por nivel de prioridad para revisar las escenas señaladas. Se muestran las 300 de mayor prioridad. Las reglas no están calibradas para la navegación.</p>
     <div class="filtros" id="filtros"></div>
-    <div class="scroll"><table id="t_alertas"></table></div>
+    <div class="scroll"><table id="t_priorizadas"></table></div>
   </section>
 
   <section>
@@ -99,7 +99,7 @@
       <div class="card"><div class="chart-title">Cobertura de roca visible (% de píxeles etiquetados)</div><div id="c_cobertura"></div></div>
       <div class="card"><div class="chart-title">Tipología de escenas</div><div id="c_escenas"></div></div>
       <div class="card"><div class="chart-title">Distribución tamaño–frecuencia de rocas</div><div id="c_tamanos"></div></div>
-      <div class="card"><div class="chart-title">Cobertura y alertas a lo largo del recorrido</div><div id="c_recorrido"></div></div>
+      <div class="card"><div class="chart-title">Cobertura y escenas priorizadas a lo largo de la secuencia de adquisición</div><div id="c_secuencia"></div></div>
     </div>
   </section>
 
@@ -121,7 +121,7 @@ const D = __DATOS__;
 const LOGO_EXT = "__LOGO_EXTERNADO__", LOGO_NASA = "__LOGO_NASA__";
 const $ = s => document.querySelector(s);
 const fmt = n => n.toLocaleString('es-ES');
-const NIV = {alto:'Alto', medio:'Medio', bajo:'Bajo', sin_alerta:'Sin alerta'};
+const NIV = {alta:'Alta', media:'Media', baja:'Baja', sin_prioridad:'Sin prioridad'};
 const TIT = Object.fromEntries(D.catalogo.map(r => [r.clave, r.titulo]));
 const ETIQ = k => NIV[k] || TIT[k] || k;
 
@@ -140,8 +140,8 @@ $('#kpis').innerHTML = [
   [fmt(D.kpi.imagenes), 'imágenes analizadas'],
   [fmt(D.kpi.con_roca), 'con roca visible'],
   [fmt(D.kpi.rocas), 'rocas individuales contadas'],
-  [fmt(D.kpi.con_alerta), 'escenas con alguna alerta'],
-  [fmt(D.kpi.alertas_altas), 'en nivel de riesgo alto'],
+  [fmt(D.kpi.priorizadas), 'escenas con alguna regla de prioridad'],
+  [fmt(D.kpi.prioridad_alta), 'en prioridad alta'],
 ].map(([n,l]) => `<div class="card kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
 
 /* --- gráficas SVG --- */
@@ -198,35 +198,35 @@ function lineas(sel, series){
     <text x="6" y="${py(0)+4}" font-size="10" fill="#999">0</text></svg>`;
 }
 
-const colorNivel = k => ({alto:'#FC3D21',medio:'#e08214',bajo:'#c9a227',sin_alerta:'#3d8b5f'}[k] || '#999');
+const colorNivel = k => ({alta:'#FC3D21',media:'#e08214',baja:'#c9a227',sin_prioridad:'#3d8b5f'}[k] || '#999');
 barras('#c_niveles', D.niveles, colorNivel, true);
-barras('#c_alertas', D.conteo_alertas, '#FC3D21', true);
+barras('#c_reglas', D.conteo_reglas, '#FC3D21', true);
 barras('#c_escenas', D.escenas, '#0B3D91', false);
 barras('#c_tamanos', D.tamanos, '#FC3D21', false);
 histograma('#c_cobertura', D.cobertura_hist.bins, D.cobertura_hist.vals, '#FC3D21');
-lineas('#c_recorrido', [
-  {nombre:'Cobertura mediana (%)', datos:D.recorrido.cobertura, color:'#FC3D21'},
-  {nombre:'Escenas con alerta (%)', datos:D.recorrido.alertas, color:'#0B3D91'},
+lineas('#c_secuencia', [
+  {nombre:'Cobertura mediana (%)', datos:D.secuencia.cobertura, color:'#FC3D21'},
+  {nombre:'Escenas priorizadas (%)', datos:D.secuencia.priorizadas, color:'#0B3D91'},
 ]);
 
 /* --- catálogo de reglas --- */
 $('#t_catalogo').innerHTML =
   '<thead><tr><th>Alerta</th><th>Criterio</th><th>Justificación</th></tr></thead><tbody>' +
   D.catalogo.map(r => `<tr>
-     <td><strong>${r.titulo}</strong><br><span class="sev">severidad ${r.severidad}/3</span></td>
+     <td><strong>${r.titulo}</strong><br><span class="sev">peso ${r.peso}/3</span></td>
      <td>${r.criterio}</td><td>${r.motivo}</td></tr>`).join('') + '</tbody>';
 
-/* --- tabla de escenas con alerta --- */
-let filtro = 'todos';
+/* --- tabla de escenas priorizadas --- */
+let filtro = 'todas';
 function pintarTabla(){
-  const filas = D.tabla.filter(r => filtro === 'todos' || r.nivel_riesgo === filtro);
-  $('#t_alertas').innerHTML =
+  const filas = D.tabla.filter(r => filtro === 'todas' || r.nivel_prioridad === filtro);
+  $('#t_priorizadas').innerHTML =
     '<thead><tr><th>Imagen</th><th>Nivel</th><th>Alertas</th><th>Cobertura</th>' +
     '<th>Rocas</th><th>Roca mayor</th><th>Escena</th></tr></thead><tbody>' +
     (filas.length ? filas.map(r => `<tr>
        <td style="font-family:ui-monospace,monospace;font-size:11px">${r.image_id}</td>
-       <td><span class="pill ${r.nivel_riesgo}">${NIV[r.nivel_riesgo]}</span></td>
-       <td>${String(r.alertas).split('|').filter(Boolean).map(a=>`<span class="tag">${TIT[a]||a}</span>`).join('')}</td>
+       <td><span class="pill ${r.nivel_prioridad}">${NIV[r.nivel_prioridad]}</span></td>
+       <td>${String(r.reglas_activadas).split('|').filter(Boolean).map(a=>`<span class="tag">${TIT[a]||a}</span>`).join('')}</td>
        <td>${Number(r.rock_coverage_pct).toFixed(0)} %</td>
        <td>${r.n_rocks}</td>
        <td>${Number(r.largest_rock_pct).toFixed(1)} %</td>
@@ -234,8 +234,8 @@ function pintarTabla(){
      : '<tr><td colspan="7" style="color:#888;padding:16px">Sin escenas en este nivel.</td></tr>') +
     '</tbody>';
 }
-$('#filtros').innerHTML = ['todos','alto','medio','bajo']
-  .map(n => `<button data-n="${n}" class="${n==='todos'?'on':''}">${n==='todos'?'Todos':NIV[n]}</button>`).join('');
+$('#filtros').innerHTML = ['todas','alta','media','baja']
+  .map(n => `<button data-n="${n}" class="${n==='todas'?'on':''}">${n==='todas'?'Todas':NIV[n]}</button>`).join('');
 $('#filtros').addEventListener('click', ev => {
   const b = ev.target.closest('button'); if(!b) return;
   filtro = b.dataset.n;

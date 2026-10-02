@@ -19,7 +19,7 @@ import pandas as pd
 import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from src import config, mask_utils as mu, sam_compare as sc  # noqa: E402
+from src import config, mask_utils as mu, sam_compare as sc, poblaciones  # noqa: E402
 
 BANDAS = ["0", "1-3", "4-9", "10+"]
 banda = lambda v: "0" if v == 0 else "1-3" if v <= 3 else "4-9" if v <= 9 else "10+"
@@ -34,7 +34,7 @@ def main() -> None:
 
     device = "mps" if torch.backends.mps.is_available() else "cpu"
     results = pd.read_csv("outputs/results.csv")
-    ok = results[results.quality_flag == "ok"]
+    ok = poblaciones.poblacion_e2(results)
     sample = ok.sample(n=min(args.n, len(ok)), random_state=args.seed)
 
     model = sc.load_fastsam(args.weights)

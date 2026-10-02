@@ -1,48 +1,44 @@
 \chapter*{Resumen}
 \addcontentsline{toc}{chapter}{Resumen}
 
-Las misiones de superficie en Marte han acumulado cientos de miles de imágenes de
-cámaras de navegación, y el conjunto AI4Mars aporta además máscaras de segmentación por
-píxel producidas por anotación colaborativa. Esas máscaras se han empleado casi
-exclusivamente para entrenar redes neuronales, de modo que la información cuantitativa
-que ya contienen permanece en buena medida sin explotar. Este trabajo pregunta qué
-indicadores de terreno pueden derivarse directamente de ellas sin entrenar ningún modelo.
+El conjunto de datos AI4Mars aporta máscaras de segmentación por píxel, producidas por anotación
+colaborativa, para decenas de miles de imágenes tomadas en la superficie de Marte. Esas máscaras
+se han empleado casi exclusivamente para entrenar redes neuronales. Este trabajo pregunta qué
+indicadores cuantitativos de cobertura y organización de la roca pueden derivarse de ellas de
+forma reproducible, y cuáles son sus límites de validez frente a diferencias en la anotación y
+al juicio humano.
 
-Se implementó un procedimiento reproducible de procesamiento clásico de imagen que, para
-cada máscara, calcula la cobertura de roca visible como cociente entre píxeles de roca y
-píxeles etiquetados, y estima el número de rocas individuales mediante componentes
-conectadas, transformada de distancia euclidiana y división de aguas guiada por máximos
-de prominencia, con filtros explícitos de área y forma. El procedimiento se ejecutó sobre
-las \num{16064} imágenes de la cámara de navegación del rover \textit{Curiosity} que
-disponen de máscara de entrenamiento.
+Se implementó un procedimiento de procesamiento clásico de imagen que calcula, para cada
+máscara, la cobertura de roca visible como cociente entre píxeles de roca y píxeles etiquetados,
+y estima el número de rocas individuales mediante componentes conectadas, transformada de
+distancia y división de aguas guiada por máximos de prominencia, con filtros explícitos de área
+y forma. Se aplicó a las \cNEscenas{} imágenes de la cámara de navegación del rover
+\textit{Curiosity} con máscara de entrenamiento.
 
-La cobertura resultó calculable en el \SI{67.3}{\percent} de las escenas, con una
-mediana del \SI{96.8}{\percent} sobre píxeles etiquetados, mientras que el conteo se
-aplicó a \num{2193} imágenes y arrojó \num{4204} rocas con una distribución
-tamaño--frecuencia decreciente. Los dos indicadores resultaron estadísticamente
-independientes ($r = 0{,}02$), lo que confirma que miden facetas distintas del terreno.
-La validación contra las \num{322} máscaras de experto incluidas en el propio conjunto
-reveló que la anotación colaborativa sobreestima la cobertura de forma sistemática —la
-mediana cae al \SI{46.1}{\percent}—, sesgo que se atribuye a la mayor saliencia visual de
-la roca frente al suelo y la arena. Un diagnóstico de los modos de error mostró que el
-techo del conteo no está en la resolución de las imágenes sino en la taxonomía de las
-etiquetas: la clase \textit{roca grande} aporta solo el \SI{2.5}{\percent} de la roca
-anotada y es aún más escasa en las máscaras de experto.
+La cobertura pudo calcularse en \cNCobCalc{} escenas (\cPctCobCalc); \cNCobPos{}
+(\cPctCobPos{} del total) presentaron cobertura mayor que cero, con una mediana del \cCobMedVal{}
+sobre píxeles etiquetados, y no se encontró evidencia de que sus valores altos se expliquen por
+la fracción de escena etiquetada. El conteo, aplicado a las \cFlagOk{} escenas aptas, arrojó
+\cNRocas{} rocas. Ambos indicadores presentan una asociación lineal prácticamente nula
+($r = \cDepCCPearson$), aunque medidas no lineales detectan una dependencia débil. Frente a las
+\cNGold{} máscaras de especialista del propio conjunto, la cobertura mediana cae al
+\cGoldCobMedPos; un segmentador entrenado, usado como instrumento común sobre ambas muestras,
+atribuye la mayor parte de esa diferencia a que las escenas de especialista son mucho menos
+rocosas, y \cDescAnot{} puntos porcentuales a la fuente de la anotación. Una evaluación
+exploratoria con un observador muestra que el conteo subestima de forma sistemática
+(kappa ponderado de \cVKappaPond): cuenta de forma reproducible las instancias geométricamente
+separables dentro de la clase roca grande, pero no el número de rocas visibles, porque esa clase
+cubre solo una parte de la roca y a menudo agrupa varios bloques en un polígono.
 
-El trabajo entrega un conjunto de resultados con veinticuatro indicadores por imagen, un
-diagnóstico cuantitativo de las limitaciones del conjunto de datos y una comparación con
-dos enfoques de aprendizaje automático que sitúa el desempeño del método clásico en
-contexto. Un contraste adicional del segmentador entrenado frente a las máscaras de
-experto muestra que, pese a haber aprendido de anotaciones sesgadas, estima la cobertura
-sin sesgo apreciable, lo que sugiere que el indicador podría calcularse sin anotación
-humana. Como extensión aplicada, los indicadores se tradujeron en seis reglas de aviso
-de riesgo de terreno con umbrales explícitos y justificados, y en una aplicación de
-escritorio que hace los resultados consultables. Se documenta además un resultado
-negativo: la detección de vetas minerales a partir de la imagen no resulta viable con este
-material, por razones instrumentales que se precisan.
+El resultado es, por tanto, negativo para el conteo: contar rocas individuales con estas
+máscaras no es sencillo. Es, en cambio, diagnóstico para el conjunto de datos, cuyas
+inconsistencias —escenas de especialista de composición muy distinta, criterios de anotación
+diferentes, una frontera ambigua entre roca grande y lecho rocoso incluso para los especialistas
+y una anotación parcial de los bloques— se documentan con evidencia cuantitativa. El trabajo
+entrega además un conjunto de resultados con veinticuatro indicadores por imagen y un diseño de
+evaluación que separa el efecto de la anotación del de las imágenes.
 
 \vspace{0.4cm}
 \noindent
 \textbf{Palabras clave:} Marte; AI4Mars; segmentación semántica; división de aguas;
-morfología matemática; cobertura de roca; distribución tamaño--frecuencia;
-anotación colaborativa.
+morfología matemática; cobertura de roca; anotación colaborativa; calidad de datos; validez de indicadores.

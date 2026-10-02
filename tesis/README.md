@@ -8,7 +8,8 @@ Departamento de Matemáticas** de la Universidad Externado de Colombia.
 La plantilla está pensada para **Overleaf**. Se sube la carpeta completa y se compila
 `main.tex` como archivo principal.
 
-En local, la bibliografía requiere Biber:
+En local, la bibliografía requiere Biber en una versión compatible con la de `biblatex`
+(por ejemplo, la de TeX Live 2025 con su propio Biber):
 
 ```
 pdflatex main.tex
@@ -17,13 +18,23 @@ pdflatex main.tex
 pdflatex main.tex
 ```
 
+Con `tectonic` (`make tesis BIBER_DIR=/ruta/a/biber` desde la raíz del repositorio), el
+`biblatex` 3.17 que trae tectonic exige exactamente Biber 2.17; con otra versión la
+bibliografía no se genera. Biber 2.17 está en el archivo histórico de TeX Live 2021
+(`tlnet-final/archive/biber.universal-darwin.tar.xz`). Es la compilación con la que se produce
+la versión definitiva, en APA 7.
+
+Todas las cifras del texto proceden de `cifras.tex` y `tabla_error_modelo.tex`, que genera
+`scripts/generar_cifras.py` a partir de `outputs/`. No deben editarse a mano.
+
 ## Estructura
 
 | Archivo | Contenido |
 |---|---|
 | `main.tex` | Preámbulo y orden de los capítulos. **No contiene texto del documento.** |
-| `config.tex` | Título, autor, tutor, año y modalidad de grado. |
-| `references.bib` | 33 entradas, estilo APA 7 vía `biblatex` + `biber`. |
+| `config.tex` | Título, autor, tutora (Juliana De Mier Medellin), año y modalidad de grado. |
+| `references.bib` | 64 entradas, generadas por `scripts/generar_bibliografia.py` desde los DOI de `referencias.json`; estilo APA 7 vía `biblatex` + `biber`. |
+| `cifras.tex`, `tabla_error_modelo.tex` | Cifras y tabla generadas por `scripts/generar_cifras.py`. |
 | `abbreviations.tex` | Abreviaturas y siglas. |
 | `glossary.tex` | Glosario. |
 | `chapters/Chapter1/` | Portada, resúmenes (es/en) e introducción. |
@@ -45,20 +56,18 @@ Conclusiones el Capítulo 5.
 Las instrucciones de la plantilla admiten incluir ese capítulo en un proyecto de
 investigación «si la investigación incluye el desarrollo e implementación de un artefacto
 sustantivo que justifique un capítulo independiente», pero **con autorización del tutor**.
-Si se obtiene esa autorización, basta cambiar la modalidad en `config.tex` y redactar
-`chapters/Chapter4/chapter04.tex`; el sistema de alertas de terreno y la aplicación de
-escritorio del proyecto serían el contenido natural de ese capítulo.
+Por indicación de la dirección, la extensión aplicada (reglas heurísticas de priorización y
+aplicación de consulta) no tiene capítulo propio: se documenta en el anexo.
 
-## Pendiente
+## Secciones opcionales
 
-- `\ThesisAdvisors` en `config.tex` dice `Por completar`: falta el nombre del tutor.
-- Las secciones opcionales de **declaración** y **agradecimientos** están comentadas, tal
-  como la plantilla indica cuando no se usan. Descomentar si el programa las exige.
+Las secciones opcionales de **declaración** y **agradecimientos** siguen las indicaciones de
+la plantilla; se activan o desactivan en `main.tex`.
 
 ## Nota sobre las figuras
 
-Las figuras del documento son **propias**, generadas por los guiones del proyecto
-(`scripts/make_thesis_figures.py` y `scripts/diagnose_errors.py`). Las Figuras 1 a 10 de
+Las figuras del documento son **propias** y se regeneran con `make figuras` desde la raíz
+del repositorio, que ejecuta los guiones correspondientes y las copia a `images/`. Las Figuras 1 a 10 de
 la propuesta eran ilustraciones tomadas de artículos publicados y no se reproducen aquí;
 en su lugar el Capítulo 2 describe esos estudios con su cita, y el Capítulo 3 incluye un
 diagrama de método original en TikZ.

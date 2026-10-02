@@ -1,0 +1,15 @@
+{
+  "n": 322,
+  "saltadas": [],
+  "iou_no_roca": 0.8888816762676299,
+  "iou_roca": 0.7832987702323732,
+  "miou": 0.8360902232500016,
+  "r_cobertura": 0.9240319019763448,
+  "error_medio": 3.120775649210444,
+  "error_mediano": 0.0,
+  "mae": 8.5478357398163,
+  "pct_sobreestima": 42.54658385093168,
+  "pct_subestima": 25.15527950310559,
+  "sha256_modelo": "ea767438f90218d2dd58829b6a234e8a0e41f344f0552da96bf297036934a104",
+  "epoca_modelo": 4
+}

@@ -20,7 +20,7 @@ import pandas as pd
 # Permite ejecutar el script desde la raíz del repo sin instalar el paquete.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src import config, mask_utils as mu, viz  # noqa: E402
+from src import config, mask_utils as mu, viz, poblaciones  # noqa: E402
 
 
 def _pick(df: pd.DataFrame, mask, exclude: set, sort_by: str, ascending: bool = False):
@@ -31,7 +31,7 @@ def _pick(df: pd.DataFrame, mask, exclude: set, sort_by: str, ascending: bool = 
 
 def select_representative(df: pd.DataFrame) -> list[tuple[str, str]]:
     """Devuelve [(image_id, título)] de escenas representativas para §12."""
-    ok = df[df.quality_flag == "ok"].copy()
+    ok = poblaciones.poblacion_e2(df).copy()
     chosen: list[tuple[str, str]] = []
     used: set = set()
 

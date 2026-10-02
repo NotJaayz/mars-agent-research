@@ -1,5 +1,10 @@
 # Resultados, discusión y limitaciones
 
+> **Documento de trabajo anterior a la revisión de octubre de 2026.** Algunas cifras y conclusiones de
+> este archivo fueron corregidas después (población del conteo, análisis de dependencia, contraste
+> con las máscaras de experto, segmentador). Las versiones vigentes son las de la tesis (`tesis/`) y
+> el [README](../README.md).
+
 **🌐 Idioma:** **Español** · [English](resultados_discusion.en.md)
 
 > Borrador de los capítulos de resultados y discusión, redactado a partir de la ejecución
@@ -174,7 +179,7 @@ puntuales de roca grande que alcanzan hasta el 40 % de las imágenes de un tramo
 > **Figura 18.** Cobertura y presencia de roca grande a lo largo del recorrido.
 >
 
-![Figura_18_variacion_recorrido](../outputs/figures/tesis/Figura_18_variacion_recorrido.png)
+![Figura_18_variacion_secuencia](../outputs/figures/tesis/Figura_18_variacion_secuencia.png)
 
 Esta lectura responde de forma directa a la pregunta planteada en la introducción sobre en
 qué tramos del trayecto se concentra la roca visible. Debe interpretarse como una

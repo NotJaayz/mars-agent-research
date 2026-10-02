@@ -1,0 +1,12 @@
+{
+  "image_id": "NLB_559866561EDR_F0660816NCAM00385M1",
+  "n_bloques": 351,
+  "fraccion_region": 0.9877529144287109,
+  "params": {
+    "img_sigma": 2.0,
+    "seed_h": 0.008,
+    "seed_sigma": 1.0,
+    "min_area_frac": 0.0005,
+    "max_aspect_ratio": 5.0
+  }
+}

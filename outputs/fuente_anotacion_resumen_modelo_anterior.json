@@ -1,0 +1,78 @@
+{
+ "n_colaborativa": 594,
+ "n_experto": 322,
+ "cob_etiqueta": {
+  "mediana_colab": 59.3389926034445,
+  "mediana_experto": 12.500322120606675,
+  "media_colab": 51.10775316045663,
+  "media_experto": 32.92290699108144,
+  "dif_mediana": 46.83867048283783,
+  "ic95_dif_mediana": [
+   31.43685364041656,
+   58.72459765004853
+  ],
+  "mann_whitney_p": 1.8377201394553946e-08
+ },
+ "cob_modelo_val": {
+  "mediana_colab": 48.0346353954794,
+  "mediana_experto": 3.9301726153190994,
+  "media_colab": 48.43594715115308,
+  "media_experto": 33.935320431327135,
+  "dif_mediana": 44.1044627801603,
+  "ic95_dif_mediana": [
+   29.50338231004896,
+   61.253405277352606
+  ],
+  "mann_whitney_p": 1.1584683029936451e-05
+ },
+ "cob_modelo_reg": {
+  "mediana_colab": 49.60804518410779,
+  "mediana_experto": 4.45763027306759,
+  "media_colab": 47.74501948508204,
+  "media_experto": 33.93366820105728,
+  "dif_mediana": 45.1504149110402,
+  "ic95_dif_mediana": [
+   27.716150444796,
+   58.756940065071376
+  ],
+  "mann_whitney_p": 1.2721956564861015e-05
+ },
+ "frac_reg": {
+  "mediana_colab": 0.882001273729278,
+  "mediana_experto": 0.9227022005852317,
+  "media_colab": 0.809325569571684,
+  "media_experto": 0.848250614376974,
+  "dif_mediana": -0.04070092685595372,
+  "ic95_dif_mediana": [
+   -0.06577193020938085,
+   -0.015652148946295224
+  ],
+  "mann_whitney_p": 1.4125591195149802e-05
+ },
+ "descomposicion": {
+  "total": 18.18484616937519,
+  "imagenes": 13.81135128402476,
+  "anotacion": 4.373494885350432,
+  "pct_imagenes": 75.94978343717987,
+  "pct_anotacion": 24.050216562820115,
+  "ic95_imagenes": [
+   8.290030084961394,
+   19.613635661023245
+  ],
+  "ic95_anotacion": [
+   2.1351390043718794,
+   6.467425109715444
+  ]
+ },
+ "residuo_colaborativa": {
+  "media": 3.3627336753745887,
+  "mediana": 0.0,
+  "wilcoxon_p": 9.582496053572321e-09
+ },
+ "residuo_experto": {
+  "media": -1.010761209975843,
+  "mediana": 0.0,
+  "wilcoxon_p": 0.011513554728322757
+ },
+ "nota": "Instrumento común con el modelo anterior (reparto al azar por imagen). Se conserva como análisis de sensibilidad al instrumento."
+}

@@ -31,9 +31,10 @@ interpretación de todo lo que sigue: \textbf{el procedimiento no lee las imáge
 la información que consume proviene de la máscara. Las imágenes se emplean únicamente
 para la inspección visual de las figuras y para fijar el identificador de cada escena.
 Esta elección responde a la pregunta de investigación —qué puede medirse sobre las
-máscaras— pero impone un techo que el Capítulo~\ref{cap:resultados} cuantifica.
+máscaras— pero impone un límite que el Capítulo~\ref{cap:resultados} cuantifica.
 
 \section{Datos y fuentes de información}
+\label{sec:datos}
 
 \subsection{Origen y versión}
 
@@ -60,9 +61,15 @@ provienen del mismo sensor, con la misma resolución y el mismo régimen radiom�
 modo que las comparaciones entre imágenes no arrastran diferencias de cámara.
 
 El emparejamiento entre imagen y máscara se realiza por coincidencia del nombre base. El
-directorio de imágenes contiene \num{18127} archivos y el de máscaras de entrenamiento
-\num{16064}; el análisis se aplica a las \num{16064} parejas completas, ya que sin máscara
+directorio de imágenes contiene \cNImagenes{} archivos y el de máscaras de entrenamiento
+\cNEscenas{}; el análisis se aplica a las \cNEscenas{} parejas completas, ya que sin máscara
 no hay dato de entrada.
+
+Para validar se emplean además las \cNGold{} máscaras de especialista del propio conjunto.
+Conviene advertir desde ahora que las máscaras de especialista \textbf{no recaen sobre las
+mismas imágenes} que las colaborativas: ambos conjuntos son disjuntos por construcción. Esta
+circunstancia condiciona cómo pueden compararse, y la Sección~\ref{sec:evaluacion} describe el
+diseño adoptado para hacerlo.
 
 \subsection{Codificación de las máscaras}
 
@@ -103,12 +110,29 @@ indicador de calidad de cada escena.
 
 \subsection{Criterios de inclusión}
 
-Se calcula la cobertura para toda máscara con al menos un píxel etiquetado. El conteo de
-rocas se aplica únicamente a las máscaras que contienen al menos un píxel de la clase
-roca grande, ya que es la única sobre la que el indicador está definido. Ninguna imagen se
-descarta del conjunto de resultados: las que no admiten un indicador reciben una bandera
-de calidad que lo documenta, de modo que el conjunto final describe también sus propias
-ausencias.
+Cada indicador se define sobre una población explícita, que se mantiene en todo el documento.
+Para que no puedan mezclarse poblaciones distintas, la elegibilidad no se deduce de la bandera
+de calidad sino que se registra en cuatro columnas del conjunto de resultados, cada una con una
+condición independiente: \texttt{has\_bigrock} (la máscara contiene roca grande),
+\texttt{is\_mostly\_null} (más del \SI{95}{\percent} de la imagen sin etiqueta),
+\texttt{is\_e1\_eligible} e \texttt{is\_e2\_eligible}. Un único módulo del código define, a
+partir de ellas, las dos poblaciones, y todas las tablas, figuras y cifras del documento se
+obtienen de ese módulo.
+
+\begin{itemize}
+  \item La \textbf{cobertura} (población de E1) se calcula para toda máscara con al menos un
+    píxel etiquetado.
+  \item El \textbf{conteo} (población de E2) se aplica a las escenas que contienen al menos un
+    píxel de roca grande y tienen menos del \SI{95}{\percent} de la imagen sin etiquetar, que
+    coinciden con las de bandera \texttt{ok}. Se excluyen las \cNNullBig{} escenas que contienen
+    roca grande pero están casi enteramente sin etiquetar, porque en ellas la región anotada es
+    una fracción ínfima de la escena y el conteo no es interpretable. El número de rocas se
+    calcula para todas las escenas, pero solo las elegibles entran en los resúmenes.
+\end{itemize}
+
+Ninguna imagen se descarta del conjunto de resultados: las que no admiten un indicador reciben
+una bandera de calidad que lo documenta, de modo que el conjunto final describe también sus
+propias ausencias.
 
 \section{Métodos y herramientas}
 
@@ -217,7 +241,10 @@ generen máximos espurios.
 
 \paragraph{Detección de semillas por prominencia.} Las semillas de la división de aguas se
 obtienen mediante la \textbf{transformada de máximos h}, que conserva únicamente los
-máximos cuya altura sobre el entorno supera un umbral $h = 1{,}0$ píxeles de distancia.
+máximos cuya altura sobre el entorno supera un umbral $h = 1{,}0$ píxeles de distancia. Se
+calcula mediante reconstrucción morfológica \citep{vincent1993reconstruction}. Cuando este
+criterio está activo, el parámetro alternativo de separación mínima entre máximos queda sin
+efecto en la implementación; por eso no figura entre los parámetros operativos.
 
 Este punto concentra la principal decisión de calibración del trabajo y conviene
 explicarlo. La alternativa habitual es detectar máximos locales imponiendo una separación
@@ -238,7 +265,9 @@ rocas y regiones compactas, no altera ningún conteo.
 \paragraph{División de aguas.} Se inunda el negativo de la transformada de distancia
 partiendo de las semillas, restringiendo el crecimiento a la máscara binaria
 \citep{vincent1991watersheds}. El resultado es una partición de la región de roca grande
-en subregiones disjuntas.
+en subregiones disjuntas. Una componente conectada que no recibe ninguna semilla —por ser
+pequeña o casi plana tras el suavizado— se trata como un único bloque, de modo que no se
+pierde del conteo.
 
 \paragraph{Filtrado por tamaño y forma.} Cada subregión debe superar dos criterios para
 contarse como roca: un \textbf{área mínima} del \SI{0.05}{\percent} del área de la imagen
@@ -271,10 +300,55 @@ está fijado dentro de la lógica de cálculo. La Tabla~\ref{tab:parametros} los
   \end{tabular}
 \end{table}
 
-La calibración se realizó por inspección visual sobre escenas de tipos de terreno
-distintos, comparando el resultado de la división de aguas con la imagen original, según
-el criterio de que un parámetro está bien ajustado cuando el corte reproduce la separación
-que un observador humano trazaría.
+\subsection{Calibración de los parámetros}
+\label{sec:calibracion}
+
+La calibración siguió el esquema muestra de calibración, parámetros congelados y muestra
+independiente de evaluación.
+
+\paragraph{Muestra de calibración.} Seis escenas de MSL NavCam elegidas para cubrir tipos de
+terreno distintos: rocas pequeñas dispersas, un cúmulo de bloques próximos, bloques grandes,
+una losa continua, un afloramiento de losas fracturadas y una banda alargada trazada sobre el
+horizonte. El Anexo~\ref{app:calibracion} las identifica.
+
+\paragraph{Alternativas consideradas.} Se partió de una separación mínima entre máximos de
+\SI{5}{\px} con suavizado $\sigma = 1$, que producía sobresegmentación severa —una sola escena
+generaba ciento cuarenta y dos semillas, la mayoría a lo largo de una banda alargada—. Se probaron separaciones de \num{15} y
+\num{20} píxeles con $\sigma = 3$; la primera preservaba las separaciones reales de los cúmulos
+y recortaba los máximos espurios, y la segunda empezaba a fusionar bloques distintos. Persistía
+una subdivisión residual de las losas continuas, que se resolvió sustituyendo la separación
+mínima por el criterio de prominencia con $h = 1$. La reconstrucción de ese cambio sobre la
+población de E2 muestra que \textbf{no fue selectivo}. En las escenas con indicios de
+sobresegmentación según la configuración anterior redujo el conteo total en un \cCalRedBaja{}
+(solidez media inferior a $0{,}7$, \cCalNBaja{} escenas) y en un \cCalRedMuchas{} (más de quince
+rocas, \cCalNMuchas{} escenas), pero también lo redujo en un \cCalRedNorm{} en las \cCalNormN{}
+escenas restantes, de las que solo \cCalNormSinCambio{} conservaron su conteo. Una verificación
+preliminar, hecha sobre unas pocas escenas, había sugerido que el criterio no alteraba las
+escenas normales; la reconstrucción completa no lo sostiene. El criterio de prominencia rebajó el
+conteo de forma general, lo que es coherente con el subconteo que revela la validación humana
+(Sección~\ref{sec:validacion-manual}).
+
+\paragraph{Reconstrucción.} Un guion del repositorio reconstruye la calibración a partir de un
+manifiesto versionado de las seis escenas: evalúa sobre ellas las cuatro configuraciones en el
+orden en que se probaron, registra semillas, componentes y rocas, repite la verificación anterior
+y comprueba que ninguna escena de calibración pertenece a la muestra de validación. Las cifras de
+este apartado proceden de ese guion.
+
+\paragraph{Criterio de elección.} Un parámetro se consideró ajustado cuando el corte reproducía
+la separación que un observador trazaría sobre la imagen original. El área mínima y la relación
+de aspecto se fijaron por su función —descartar motas de anotación y bandas del horizonte— y no
+se optimizaron.
+
+\paragraph{Congelación e independencia.} Los parámetros quedaron fijados el 31 de agosto de
+2026, como consta en el historial del repositorio, antes de recoger ninguna respuesta de la
+validación humana. Ninguna de las seis escenas de calibración forma parte de la muestra de
+validación definitiva.
+
+\paragraph{Sensibilidad.} Para comprobar que las conclusiones no dependen de ese ajuste, se
+recalculó el acuerdo con el observador variando los tres parámetros que más influyen en el
+conteo —$h \in \{0{,}5;\,1;\,2;\,3\}$, $\sigma \in \{1;\,3;\,5\}$ y un área mínima de
+\SI{0.025}{\percent}, \SI{0.05}{\percent} o \SI{0.1}{\percent}—, \cSenN{} combinaciones en
+total. La Sección~\ref{sec:validacion-manual} presenta el resultado.
 
 \subsection{Herramientas y reproducibilidad}
 
@@ -287,7 +361,8 @@ empleadas.
 
 \begin{table}[H]
   \centering
-  \caption{Versiones de las bibliotecas utilizadas.}
+  \caption[Versiones de las bibliotecas utilizadas]{Versiones de las bibliotecas utilizadas en la
+    ejecución final. El repositorio incluye el registro completo, paquete por paquete.}
   \label{tab:versiones}
   \begin{tabular}{ll}
     \toprule
@@ -299,9 +374,17 @@ empleadas.
     scikit-image  & 0.26.0 \\
     pandas        & 3.0.5 \\
     Pillow        & 12.3.0 \\
+    Matplotlib    & 3.11.1 \\
+    scikit-learn  & 1.9.0 \\
+    PyTorch / torchvision & 2.13.0 / 0.28.0 \\
+    Ultralytics (FastSAM) & 8.4.137 \\
     \bottomrule
   \end{tabular}
 \end{table}
+
+El procedimiento completo tarda unos treinta y dos minutos en un núcleo de procesador. Su
+determinismo se verificó empíricamente: una reejecución íntegra sobre las \cNEscenas{}
+escenas reprodujo de forma idéntica todas las columnas del conjunto de resultados.
 
 El código se organiza en módulos de responsabilidad única, con funciones que reciben
 arreglos y devuelven arreglos o números, sin efectos secundarios. Una única función
@@ -318,8 +401,20 @@ datos no se versiona, por su volumen: el código lo referencia mediante una vari
 entorno configurable, y se descarga de la fuente original. Los parámetros no se fijan dentro
 de la lógica de cálculo sino que se pasan como argumentos con valores por defecto
 documentados, de manera que una reejecución con los mismos parámetros entrega
-necesariamente los mismos resultados; el procedimiento es determinista y no interviene
-ninguna fuente de aleatoriedad.
+necesariamente los mismos resultados; el procedimiento clásico es determinista y no interviene
+ninguna fuente de aleatoriedad. Los análisis que sí la emplean —remuestreos, permutaciones,
+repartos del segmentador— fijan su semilla.
+
+Tres elementos completan la reproducibilidad. El \textbf{entorno} se declara con las versiones
+de la ejecución final, incluidas las bibliotecas de aprendizaje profundo, y se acompaña del
+registro exacto de todos los paquetes instalados. Un \textbf{único comando} regenera en orden
+los resultados, las evaluaciones, las figuras y todas las cifras de este documento, que no se
+escriben a mano: un guion las extrae de los archivos de resultados y las inserta en el texto.
+Y \cPruebasN{} \textbf{pruebas automáticas} verifican las reglas deterministas en que descansan
+los indicadores —que los píxeles sin etiqueta quedan fuera del denominador, que solo la roca
+grande entra en el conteo, que una máscara vacía no tiene cobertura, que una escena casi vacía
+no entra en el resumen del conteo, que dos bloques unidos por un estrangulamiento se separan y
+que los filtros de área y forma descartan de forma controlada—.
 
 \section{Operacionalización de objetivos}
 \label{sec:operacionalizacion}
@@ -336,7 +431,7 @@ Capítulo~\ref{cap:resultados} carece de un objetivo, una técnica y una métric
 \begin{spacing}{1}
 \small
 \setlength{\tabcolsep}{4pt}
-\begin{longtable}{@{}p{2.3cm}p{4.2cm}p{4.0cm}p{3.3cm}p{4.0cm}p{4.3cm}@{}}
+\begin{longtable}{@{}p{2.3cm}p{3.9cm}p{4.0cm}p{3.3cm}p{4.0cm}p{3.9cm}@{}}
   \caption{Matriz de operacionalización de objetivos, técnicas e indicadores.}
   \label{tab:operacionalizacion}\\
   \toprule
@@ -353,16 +448,16 @@ Capítulo~\ref{cap:resultados} carece de un objetivo, una técnica y una métric
   \endfoot
 
   \textbf{E1.} Estimar la cobertura de roca visible
-  & ¿Qué proporción del terreno clasificado de una escena es roca?
+  & ¿Qué proporción del terreno clasificado de una escena es roca? (H1)
   & Conteo de píxeles por clase sobre los píxeles etiquetados
   & AI4Mars, máscaras MSL NavCam \textit{train} (secundaria)
   & Indicador de cobertura para toda escena con algún píxel etiquetado
-  & \texttt{rock\_coverage\_pct} y \texttt{coverage\_total\_pct}; control del artefacto del
-    denominador mediante correlación con \texttt{frac\_valid} \\
+  & \texttt{rock\_coverage\_pct} y \texttt{coverage\_total\_pct}; dependencia con
+    \texttt{frac\_valid} (Pearson, Spearman, correlación de distancia, información mutua) \\
   \addlinespace
 
   \textbf{E2.} Estimar el número de rocas individuales
-  & ¿Cuántos bloques discretos se distinguen en las zonas etiquetadas como roca grande?
+  & ¿Cuántos bloques discretos se distinguen en las zonas etiquetadas como roca grande? (H2)
   & Morfología matemática, componentes conectadas, transformada de distancia y división de
     aguas con máximos de prominencia
   & Ídem, clase \textit{roca grande}
@@ -371,15 +466,15 @@ Capítulo~\ref{cap:resultados} carece de un objetivo, una técnica y una métric
     conteo humano (kappa de Cohen simple y ponderado) \\
   \addlinespace
 
-  \textbf{E3.} Explorar la variación entre subconjuntos
-  & ¿Cómo cambian los indicadores según la composición del terreno y a lo largo del
-    recorrido?
+  \textbf{E3.} Caracterizar la composición y la variación
+  & ¿Cómo cambian los indicadores según la composición del terreno y a lo largo de la
+    secuencia de adquisición? ¿Aportan información distinta? (H4)
   & Estadística descriptiva, tipología de escenas por clase dominante, agregación por
     tramos del reloj de nave
   & Conjunto de resultados propio y metadatos del identificador de imagen
-  & Caracterización del terreno y perfil del recorrido
+  & Caracterización del terreno y perfil a lo largo de la secuencia
   & \texttt{dominant\_class}, \texttt{scene\_type}, proporción de escenas con roca grande
-    por tramo; correlación entre los dos indicadores \\
+    por tramo de \texttt{sclk}; dependencia y $\eta^2$ entre los dos indicadores \\
   \addlinespace
 
   \textbf{E4.} Implementar recursos reproducibles
@@ -388,18 +483,17 @@ Capítulo~\ref{cap:resultados} carece de un objetivo, una técnica y una métric
     de biblioteca
   & Código propio
   & Archivo tabular con un indicador por imagen, más código y guiones de ejecución
-  & \num{16064} filas × 24 columnas en \texttt{results.csv}; ejecución determinista con
-    parámetros documentados \\
+  & \cNEscenas{} filas × 28 columnas en \texttt{results.csv}; reejecución íntegra idéntica \\
   \addlinespace
 
-  \textbf{E5.} Analizar, interpretar y delimitar
-  & ¿Qué patrones, casos atípicos y limitaciones presentan los indicadores obtenidos?
+  \textbf{E5.} Establecer los límites de validez
+  & ¿Dependen los indicadores de la fuente de anotación? ¿Reproducen el juicio humano? (H2, H3)
   & Contraste con máscaras de experto, validación con conteo humano, diagnóstico de modos de
     error y comparación con aprendizaje automático
-  & Máscaras de experto del propio conjunto (\num{322}); conteo humano propio (\num{60}
-    escenas)
-  & Cuantificación del sesgo de la anotación y atribución de los límites del conteo
-  & Diferencia de cobertura entre fuentes de etiqueta; kappa del conteo; IoU del
+  & Máscaras de experto del propio conjunto (\cNGold); máscaras de rover y distancia;
+    conteo de un observador (\cVN{} escenas)
+  & Separación de los efectos de imagen y de anotación; atribución de los límites del conteo
+  & Descomposición con instrumento común; kappa del conteo con IC; IoU y error con signo del
     segmentador frente a ambas referencias \\
 
 \end{longtable}
@@ -414,58 +508,147 @@ propio sino que \textbf{mide la confianza atribuible} a los indicadores anterior
 que sus métricas sean comparaciones entre fuentes y no medidas de terreno.
 
 \section{Estrategia de evaluación y validación}
+\label{sec:evaluacion}
 
-Un procedimiento descriptivo como este no admite una métrica de acierto única, porque no
-existe verdad de campo sobre el número de rocas de una escena. La validación se abordó por
-tanto en cinco frentes complementarios.
+Un procedimiento descriptivo como este no admite una métrica de acierto única, porque no existe
+verdad de campo sobre la cantidad de roca ni sobre el número de rocas de una escena. La
+evaluación se organiza en seis frentes, cada uno vinculado a una de las hipótesis de la
+Sección~\ref{sec:hipotesis}. Todos los contrastes estadísticos emplean intervalos de confianza
+por remuestreo \textit{bootstrap} \citep{efron1979bootstrap} y, cuando se trata de detectar
+dependencia, valores $p$ por permutación: se barajan los valores de una variable para romper
+cualquier relación con la otra y se compara el estadístico observado con esa distribución nula.
 
-\paragraph{Verificación de la codificación.} Comprobación triple de la correspondencia
-entre valores y clases, descrita más arriba. Es la validación más elemental y la más
-crítica, porque un error en este punto no produce fallos visibles.
+\paragraph{1. Verificación de la codificación.} Comprobación triple de la correspondencia entre
+valores y clases, descrita en la Sección~\ref{sec:datos}. Es la validación más elemental y la
+más crítica, porque un error en este punto no produce fallos visibles.
 
-\paragraph{Control del artefacto del denominador.} Contraste explícito entre la cobertura
-y la fracción de escena etiquetada, para descartar que las coberturas altas sean un
-efecto de la fórmula de la ecuación~\eqref{eq:cobertura} y no del terreno.
+\paragraph{2. Control del denominador (H1).} Si la cobertura dependiera de cuánto se etiquetó,
+las escenas escasamente etiquetadas tendrían coberturas espurias. Se contrasta la relación entre
+cobertura y fracción etiquetada con medidas de dependencia progresivamente más generales, se
+describe la cobertura por tramos de fracción etiquetada y se repite el análisis con la cobertura
+sobre la imagen completa como prueba de sensibilidad.
 
-\paragraph{Contraste con etiquetas de experto.} El conjunto incluye \num{322} máscaras
-anotadas por especialistas con acuerdo del \SI{100}{\percent}, en tres niveles de
-exigencia según el número mínimo de anotadores coincidentes. Se ejecutó sobre ellas el
-mismo procedimiento, \textbf{sin modificar ningún parámetro}, y se compararon los
-indicadores resultantes con los obtenidos de las máscaras colaborativas. Este contraste no
-mide el acierto del procedimiento sino la calidad del dato de entrada, y resultó ser la
-fuente del hallazgo más relevante del trabajo.
+\paragraph{3. Dependencia entre indicadores (H4).} Un coeficiente de correlación de Pearson
+próximo a cero solo indica ausencia de asociación \textit{lineal}; no demuestra independencia.
+Por eso la relación entre cobertura y conteo se mide con un conjunto de estadísticos que
+capturan formas de dependencia cada vez más generales: Pearson para la asociación lineal,
+Spearman y Kendall para la monótona, la \textbf{correlación de distancia}
+\citep{szekely2007dcor} —que vale cero si y solo si las variables son independientes— y la
+\textbf{información mutua}, estimada por vecinos próximos \citep{kraskov2004mi}. Se añade una
+prueba chi-cuadrado sobre la tabla de contingencia por tramos y la \textbf{razón de correlación}
+$\eta^2$, que mide qué fracción de la varianza de un indicador explica el otro sin suponer
+ninguna forma funcional. La implementación propia de la correlación de distancia se verificó
+antes de usarla sobre casos de respuesta conocida, entre ellos una relación cuadrática que
+Pearson no detecta.
 
-\paragraph{Contraste con conteo humano.} Sobre una muestra de \num{60} escenas con roca
+\paragraph{4. Contraste entre fuentes de anotación (H3).} Las máscaras colaborativas y las de
+especialista cubren imágenes \textbf{distintas}. Una diferencia entre sus coberturas puede
+deberse, por tanto, a que cada grupo anote de forma distinta o a que las dos muestras contengan
+terreno distinto, y con las etiquetas solas ambos efectos no pueden separarse. Para separarlos se
+introduce un \textbf{instrumento común}: el segmentador entrenado, que es una función fija de la
+imagen, se aplica a la \textbf{región anotable} de cada escena —todo lo que no es el cuerpo del
+rover ni está a más de \SI{30}{\metre}, según las máscaras de rover y de distancia que distribuye
+el propio conjunto—, idéntica con independencia de quién anotó. La diferencia de cobertura entre
+muestras se descompone entonces en una parte atribuible a las imágenes —la que el instrumento
+reproduce sin pasar por ninguna anotación— y un residuo atribuible a la anotación. La comparación
+directa de las distribuciones se contrasta con la prueba de Mann-Whitney y con intervalos para la
+diferencia de medianas. La muestra colaborativa se toma al azar entre las imágenes que el
+segmentador no vio al entrenar.
+
+\paragraph{5. Contraste con conteo humano (H2).} Sobre una muestra de \cVN{} escenas con roca
 grande se recogió un conteo manual por bandas —cero, una a tres, cuatro a nueve, diez a
-veinticuatro, veinticinco a cuarenta y nueve, cincuenta o más— y se comparó con el
-automático mediante el coeficiente kappa de Cohen, en su versión simple y ponderada, esta
-última apropiada porque las bandas son ordinales. El material se presentó con
-identificadores neutros y en orden barajado, resaltando en cada imagen la región etiquetada
-como roca grande, de modo que persona y procedimiento respondieran a la misma pregunta:
-cuántas rocas se distinguen \textbf{dentro de esa región}. Preguntar por la escena completa
-habría mezclado dos cuestiones distintas —si la anotación es completa y si el procedimiento
-la subdivide bien—. El resultado automático no apareció en el material consultado al
-responder. Una ronda piloto previa, de \num{24} escenas y cuatro bandas, sirvió para
-detectar y corregir defectos del instrumento antes de recoger los datos definitivos; la
-subsección~\ref{sec:validacion-manual} los detalla.
+veinticuatro, veinticinco a cuarenta y nueve, cincuenta o más— y se comparó con el automático
+mediante el coeficiente kappa de Cohen \citep{cohen1960kappa} y su versión ponderada
+\citep{cohen1968weighted}, apropiada porque las bandas son ordinales, interpretados según la
+escala habitual de \citet{landis1977}. En cada imagen se resaltó la región anotada como roca
+grande y se preguntó cuántas rocas se distinguen \textbf{dentro de esa región}: preguntar por
+la escena completa habría mezclado dos cuestiones distintas, si la anotación es completa y si el
+procedimiento la subdivide bien. Las imágenes se presentaron con identificadores neutros, en
+orden barajado y sin el resultado automático. La muestra se estratificó por área de la región
+anotada, no por la banda del procedimiento, para no condicionarla al método evaluado. Una ronda
+piloto previa, de \num{24} escenas y cuatro bandas, sirvió para detectar y corregir defectos del
+instrumento antes de recoger los datos definitivos. La validación la realizó \textbf{un único
+observador}, de modo que no permite separar el desacuerdo atribuible al procedimiento de la
+variabilidad propia de la tarea; se presenta como una \textbf{evaluación exploratoria} y no como
+una medición de exactitud.
 
-\paragraph{Comparación con aprendizaje automático.} Como referencia externa se contrastó
-el procedimiento con dos enfoques de aprendizaje profundo ejecutados en equipo local: un
-modelo fundacional de segmentación aplicado sin entrenamiento específico
-\citep{kirillov2023sam, zhao2023fastsam} y un segmentador entrenado por aprendizaje por
-transferencia sobre las propias máscaras \citep{chen2017deeplab}. El propósito no es
-competir con ellos, sino situar el desempeño del método clásico y separar las limitaciones
-atribuibles al procedimiento de las atribuibles a los datos.
+\paragraph{6. Comparación con aprendizaje automático.} Como referencia externa se emplearon dos
+enfoques de aprendizaje profundo. El primero es un modelo fundacional de segmentación
+\citep{kirillov2023sam} en su variante rápida \citep{zhao2023fastsam}, aplicado sin
+entrenamiento específico a \cSamN{} escenas y restringido a la región de roca. El segundo es un
+segmentador binario roca/no-roca, cuya configuración completa recoge la
+Tabla~\ref{tab:deeplab-config} para que el experimento sea reproducible.
+
+\begin{spacing}{1}
+\small
+\begin{longtable}{p{4.0cm}p{10.0cm}}
+  \caption[Configuración del segmentador entrenado]{Configuración del segmentador entrenado.}
+  \label{tab:deeplab-config}\\
+  \toprule
+  \textbf{Elemento} & \textbf{Valor} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Elemento} & \textbf{Valor} \\
+  \midrule
+  \endhead
+    Arquitectura & DeepLabV3 con red troncal ResNet-50 \citep{chen2017deeplab}, con cabeza
+      auxiliar \\
+    Pesos iniciales & Preentrenados de \texttt{torchvision} (\texttt{DEFAULT}); ambas cabezas se
+      sustituyen por capas de dos clases \\
+    Clases & Roca (lecho rocoso y roca grande) y no-roca; los píxeles sin etiqueta se ignoran \\
+    Población elegible & Máscaras colaborativas con bandera \texttt{ok}, \texttt{no\_bigrock} o
+      \texttt{no\_rock} y fracción etiquetada $\geq 0{,}20$: \cSegElegibles{} escenas. El umbral
+      de fracción excluye \cSegExcluidas{} escenas de esas banderas, en las que la pérdida se
+      calcularía sobre muy pocos píxeles. Las máscaras de especialista no intervienen \\
+    Reparto & Por \textbf{bloques temporales}: las escenas elegibles se ordenan por reloj de nave
+      y se dividen en 30 bloques consecutivos de igual tamaño (unos \cSegSolesBloque{} soles cada
+      uno), asignados al azar a entrenamiento (20), validación (5) y prueba (5). Se descartan de
+      validación y prueba las escenas a menos de un sol de otra partición (\cSegMargen{}) \\
+    Muestras & Equilibradas entre escenas con roca (cobertura $> 1$\,\%) y sin roca:
+      \cSegTrain{} de entrenamiento, \cSegVal{} de validación y \cSegTest{} de prueba. La prueba
+      se repite sobre las \cSegNatN{} escenas elegibles de los bloques de prueba, con su
+      distribución natural, y sobre las \cSegExcN{} de esos bloques que excluyó el umbral de
+      fracción \\
+    Función de pérdida & Entropía cruzada con los píxeles sin etiqueta excluidos, más
+      $0{,}4$ veces la de la cabeza auxiliar; sin pesos de clase \\
+    Optimizador & Adam, tasa de aprendizaje \cSegLR{} constante, sin planificador \\
+    Lote y resolución & \cSegLote{} imágenes de \cSegLado{} $\times$ \cSegLado{} píxeles \\
+    Aumentación de datos & Ninguna; solo redimensionado y normalización \\
+    Épocas y punto de control & \cSegEpocas{} épocas fijas; se conserva el modelo de la época con
+      \textbf{mayor mIoU de validación} (la \cSegEpocaElegida). La regla se fijó antes de
+      entrenar y la prueba se evaluó una sola vez, con ese modelo \\
+    Decisión & Clase de mayor puntuación por píxel \\
+    Semilla & 0 para el reparto y para PyTorch \\
+    Distribución de clases & Roca \cSplitRocaTrain, \cSplitRocaVal{} y \cSplitRocaTest{} de los
+      píxeles etiquetados en cada muestra; sin etiqueta, \cSplitIgnTrain, \cSplitIgnVal{} y
+      \cSplitIgnTest{} del total \\
+    Trazabilidad & Manifiesto con el bloque y la partición de cada escena; huella SHA-256 del
+      modelo evaluado (\texttt{\cSegHash}) \\
+    \bottomrule
+\end{longtable}
+\end{spacing}
+
+El reparto por bloques responde al riesgo de \textbf{fuga de información}: las imágenes del rover
+se adquieren en secuencias, y dos tomas separadas por segundos pueden ser casi idénticas, de modo
+que un reparto al azar por imagen deja imágenes casi iguales a ambos lados. Con el margen de un
+sol, ninguna imagen de prueba está a menos de \cSegDistMin{} soles de una de entrenamiento. La
+evaluación distingue además la muestra equilibrada, que mide el desempeño sobre una mezcla
+artificial de escenas con y sin roca, de la distribución natural de los bloques de prueba, que
+es la que cabe esperar sobre el corpus. El acuerdo con las etiquetas se mide con la intersección
+sobre la unión y, para la cobertura, con el error con signo, su intervalo de confianza y los
+límites de acuerdo de \citet{bland1986}. El modelo se evalúa también contra las máscaras de
+especialista, que no intervinieron en su entrenamiento ni en su validación.
 
 A estos frentes se añadió, tras observar comportamientos anómalos en el conteo, un
-\textbf{diagnóstico sistemático de los modos de error}, que atribuye cada tipo de fallo a
-su causa —la etiqueta, los umbrales o el algoritmo— y se reporta en el
-Capítulo~\ref{cap:resultados}.
+\textbf{diagnóstico sistemático de los modos de error}, que atribuye cada tipo de fallo a su
+causa —la etiqueta, los umbrales o el algoritmo—.
 
 \section{Consideraciones éticas y de gestión de datos}
 
-El trabajo no involucra sujetos humanos ni datos personales, de modo que no requiere
-aprobación de un comité de ética. Hay, sin embargo, tres consideraciones pertinentes.
+El trabajo no involucra datos personales ni sujetos de investigación: la única participación
+humana es el conteo por bandas que realizó el propio autor, sobre imágenes públicas. No requiere,
+por tanto, aprobación de un comité de ética. Hay, sin embargo, tres consideraciones pertinentes.
 
 \paragraph{Procedencia y licencia.} Las imágenes son productos públicos de la NASA
 obtenidos del Planetary Data System \citep{nasapds2024}, y las máscaras se distribuyen
@@ -475,16 +658,17 @@ redistribuye con el material del proyecto: el código lo referencia por una ruta
 configurable, de modo que cualquier persona lo descargue de la fuente original.
 
 \paragraph{Reconocimiento del trabajo de anotación.} Las máscaras existen gracias al
-esfuerzo de miles de voluntarios. Un trabajo que analiza críticamente la calidad de esa
-anotación —como hace este— tiene la obligación de precisar el alcance de su crítica: el
-sesgo que se documenta en el Capítulo~\ref{cap:resultados} es un efecto estructural del
-diseño de la tarea de anotación, no una deficiencia atribuible a quienes la realizaron.
+esfuerzo de miles de voluntarios. Un trabajo que examina esa anotación tiene la obligación de
+precisar el alcance de sus conclusiones: las diferencias que se documentan en el
+Capítulo~\ref{cap:resultados} se refieren a propiedades del conjunto de datos y del diseño de
+la tarea de anotación —qué clases existen, cómo se agrega el consenso, qué imágenes integran
+cada partición—, no a una deficiencia atribuible a quienes la realizaron.
 
 \paragraph{Alcance de las afirmaciones.} Los indicadores derivados son relativos al
 conjunto de máscaras del que provienen y no constituyen estimaciones absolutas de la
-abundancia de roca en el terreno marciano. Presentarlos como tales sería una
-sobreinterpretación del dato, y el documento evita hacerlo de forma explícita en cada
-resultado afectado.
+abundancia de roca en el terreno marciano. Tampoco están validados para apoyar decisiones de
+navegación. Presentarlos como tales sería una sobreinterpretación del dato, y el documento
+evita hacerlo de forma explícita en cada resultado afectado.
 
 \section{Cronograma de trabajo}
 \label{sec:cronograma}
@@ -560,18 +744,21 @@ reproducibilidad.
 
 \subsection*{Ejecución frente a lo planificado}
 
-El plan se cumplió en sus fases principales. Conviene, no obstante, consignar tres
-diferencias entre lo previsto y lo ejecutado, porque afectan al alcance de los resultados.
+El plan se cumplió en sus fases principales. Conviene, no obstante, consignar las diferencias
+entre lo previsto y lo ejecutado, porque afectan al alcance de los resultados.
 
-\paragraph{La validación con observadores se realizó, y dos veces.} La semana 14 la
-contemplaba como actividad \emph{opcional}. Se llevó a cabo, y la primera ronda reveló
-defectos en el propio instrumento de medición que obligaron a rediseñarlo y repetirla; la
-subsección~\ref{sec:validacion-manual} documenta ambas rondas.
+\paragraph{La pregunta se precisó.} El anteproyecto preguntaba cómo cuantificar los dos
+indicadores. Al contrastarlos con las máscaras de especialista y con el conteo humano se hizo
+evidente que la cuestión decisiva era hasta dónde informan sobre el terreno, y la pregunta se
+amplió para incluir sus límites de validez. La hipótesis H3 se incorporó en ese momento.
 
-\paragraph{Se añadió un contraste con aprendizaje automático.} No estaba previsto en el
-plan. Se incorporó al constatar que el procedimiento necesitaba una referencia externa
-frente a la cual situar su desempeño.
+\paragraph{La validación con observadores se realizó, con un observador.} La semana 14 la
+contemplaba como actividad opcional. Se llevó a cabo, y la primera ronda reveló defectos en el
+propio instrumento que obligaron a rediseñarlo y repetirla. Se realizó con un único observador,
+lo que la limita a una evaluación exploratoria.
 
-\paragraph{Se añadió una extensión aplicada.} El sistema de avisos de terreno y la
-aplicación de consulta descritos en la subsección~\ref{sec:extension} surgieron de la
-ejecución y no figuraban en el cronograma inicial.
+\paragraph{Se añadieron dos frentes no previstos.} El contraste con aprendizaje automático se
+incorporó al constatar que el procedimiento necesitaba una referencia externa, y resultó
+decisivo para separar el efecto de la anotación del de las imágenes. Las reglas heurísticas de
+priorización y la aplicación de consulta descritas en el Anexo~\ref{app:extension} surgieron
+de la ejecución y no figuraban en el cronograma.

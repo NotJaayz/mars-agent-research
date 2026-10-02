@@ -3,7 +3,7 @@
 
 Genera en ``outputs/figures/analisis/``:
   5. Validación: composición de clases y cobertura, train (crowdsourced) vs experto.
-  6. Análisis temporal: cobertura y presencia de roca a lo largo del recorrido
+  6. Análisis temporal: cobertura y presencia de roca a lo largo de la secuencia de adquisición
      (orden por reloj de nave, sclk, extraído del nombre de imagen).
 
 Uso:  python scripts/make_analysis.py
@@ -19,6 +19,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from src import poblaciones  # noqa: E402
 
 plt.rcParams.update({
     "figure.dpi": 120, "savefig.dpi": 120, "font.size": 11,
@@ -77,26 +81,26 @@ def fig_temporal(outdir: Path, n_bins: int = 40) -> None:
     df["sclk"] = df.image_id.str.extract(SCLK_RE)[0].astype(float)
     df = df.dropna(subset=["sclk"]).sort_values("sclk").reset_index(drop=True)
 
-    # Binado por cuantiles del recorrido (cada bin = igual nº de imágenes)
+    # Binado por cuantiles del reloj de nave (cada bin = igual nº de imágenes)
     df["bin"] = pd.qcut(df.sclk, q=n_bins, labels=False, duplicates="drop")
     g = df.groupby("bin")
     cov_med = g.rock_coverage_pct.median()
     frac_rock = g.apply(lambda x: (x.n_bigrock > 0).mean() * 100, include_groups=False)
     sclk_mid = g.sclk.median()
-    x = (sclk_mid - sclk_mid.min()) / (sclk_mid.max() - sclk_mid.min()) * 100  # 0-100% recorrido
+    x = (sclk_mid - sclk_mid.min()) / (sclk_mid.max() - sclk_mid.min()) * 100  # 0-100 % de la secuencia de adquisición
 
     fig, ax = plt.subplots(2, 1, figsize=(12, 7), sharex=True)
     ax[0].plot(x, cov_med, "-o", color=ROCK, ms=4)
     ax[0].fill_between(x, cov_med, alpha=0.15, color=ROCK)
-    ax[0].set(title="Cobertura de roca a lo largo del recorrido de Curiosity (MSL NavCam)",
+    ax[0].set(title="Cobertura de roca a lo largo de la secuencia de adquisición (MSL NavCam)",
               ylabel="cobertura mediana\n(% válidos)")
     ax[1].plot(x, frac_rock, "-s", color=BLUE, ms=4)
     ax[1].fill_between(x, frac_rock, alpha=0.15, color=BLUE)
-    ax[1].set(title="Presencia de roca grande a lo largo del recorrido",
+    ax[1].set(title="Presencia de roca grande a lo largo de la secuencia de adquisición",
               ylabel="% de imágenes\ncon big rock",
-              xlabel="progreso temporal del recorrido (0 = inicio, 100 = final)  ·  orden por reloj de nave")
+              xlabel="posición relativa en la secuencia de adquisición (0 = inicio, 100 = final) · reloj de nave")
     fig.tight_layout()
-    fig.savefig(outdir / "06_temporal_recorrido.png", bbox_inches="tight")
+    fig.savefig(outdir / "06_temporal_secuencia.png", bbox_inches="tight")
     plt.close(fig)
 
 
@@ -121,7 +125,7 @@ def fig_scene_types(outdir: Path) -> None:
 
 def fig_size_freq(outdir: Path) -> None:
     df = pd.read_csv("outputs/results.csv")
-    ok = df[df.quality_flag == "ok"]
+    ok = poblaciones.poblacion_e2(df)
     s, m, l = int(ok.n_small.sum()), int(ok.n_medium.sum()), int(ok.n_large.sum())
     labels = ["pequeña\n(<0.5%)", "mediana\n(0.5–2%)", "grande\n(≥2%)"]
     vals = [s, m, l]

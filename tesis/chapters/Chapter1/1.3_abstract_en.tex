@@ -1,44 +1,45 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Mars surface missions have accumulated hundreds of thousands of navigation-camera images,
-and the AI4Mars dataset additionally provides pixel-level segmentation masks produced by
-crowdsourced annotation. These masks have been used almost exclusively to train neural
-networks, so the quantitative information they already encode remains largely untapped.
-This work asks which terrain indicators can be derived directly from them without
-training any model.
+% Separadores decimales y de millares en inglés dentro de este resumen.
+% \decimalpoint (babel-spanish) evita que el punto decimal se convierta en coma en modo matemático.
+{\decimalpoint\sisetup{output-decimal-marker={.}, group-separator={,}}
 
-A reproducible classical image-processing procedure was implemented. For each mask it
-computes visible rock coverage as the ratio of rock pixels to labelled pixels, and
-estimates the number of individual rocks through connected components, the Euclidean
-distance transform and a watershed guided by prominence maxima, with explicit area and
-shape filters. The procedure was run over the \num{16064} images from the
-\textit{Curiosity} rover navigation camera that have a training mask available.
+The AI4Mars dataset provides pixel-level segmentation masks, produced by crowdsourced
+annotation, for tens of thousands of images taken on the surface of Mars. These masks have been
+used almost exclusively to train neural networks. This work asks which quantitative indicators of
+rock coverage and organisation can be derived from them reproducibly, and what the limits of
+their validity are with respect to differences in annotation and to human judgement.
 
-Coverage proved computable for \SI{67.3}{\percent} of the scenes, with a median of
-\SI{96.8}{\percent} over labelled pixels, while the count applied to \num{2193} images
-and yielded \num{4204} rocks with a decreasing size--frequency distribution. The two
-indicators turned out to be statistically independent ($r = 0.02$), confirming that they
-measure distinct facets of the terrain. Validation against the \num{322} expert masks
-included in the dataset itself revealed that crowdsourced annotation systematically
-overestimates coverage —the median drops to \SI{46.1}{\percent}— a bias attributed to the
-greater visual salience of rock compared with soil and sand. An error-mode diagnosis
-showed that the ceiling on counting lies not in image resolution but in label taxonomy:
-the \textit{big rock} class contributes only \SI{2.5}{\percent} of annotated rock and is
-even scarcer in the expert masks.
+A classical image-processing procedure was implemented. For each mask it computes visible rock
+coverage as the ratio of rock pixels to labelled pixels, and estimates the number of individual
+rocks through connected components, the distance transform and a watershed guided by prominence
+maxima, with explicit area and shape filters. It was applied to the \cNEscenas{} images from the
+\textit{Curiosity} rover navigation camera that have a training mask.
 
-The work delivers a results set with twenty-four per-image indicators, a quantitative
-diagnosis of the dataset's limitations, and a comparison against two machine-learning
-approaches that places the classical method's performance in context. As an applied
-An additional test of the trained segmenter against expert masks shows that, despite
-having learnt from biased annotations, it estimates coverage without appreciable bias,
-suggesting the indicator could be computed without human annotation. As an applied
-extension, the indicators were translated into six terrain-risk alert rules with explicit,
-justified thresholds, and into a desktop application that makes the results consultable. A
-negative result is also documented: detecting mineral veins from the imagery is not
-feasible with this material, for instrumental reasons that are specified.
+Coverage could be computed for \cNCobCalc{} scenes (\cPctCobCalc); \cNCobPos{} (\cPctCobPos{}
+of the total) had coverage greater than zero, with a median of \cCobMedVal{} over labelled
+pixels, and no evidence was found that high values are explained by the labelled fraction of the
+scene. The count, applied to the \cFlagOk{} eligible scenes, yielded \cNRocas{} rocks. The two
+indicators show practically no linear association ($r = \cDepCCPearson$), although non-linear
+measures detect a weak dependence. Against the \cNGold{} expert masks included in the dataset,
+median coverage drops to \cGoldCobMedPos; a trained segmenter, used as a common instrument on
+both samples, attributes most of that difference to the expert scenes being far less rocky, and
+\cDescAnot{} percentage points to the annotation source. An exploratory evaluation with one
+observer shows that the count systematically underestimates (weighted kappa \cVKappaPond): it
+reproducibly counts the geometrically separable instances within the big-rock class, but not the
+number of visible rocks, because that class covers only part of the rock and often groups
+several blocks into a single polygon.
+
+The result is therefore negative for counting: counting individual rocks from these masks is not
+straightforward. It is, instead, diagnostic for the dataset, whose inconsistencies —expert scenes
+of very different composition, differing annotation criteria, a boundary between big rock and
+bedrock that is ambiguous even for experts, and partial annotation of blocks— are documented with
+quantitative evidence. The work also delivers a results set with twenty-four per-image indicators
+and an evaluation design that separates the effect of annotation from that of the images.
 
 \vspace{0.4cm}
 \noindent
-\textbf{Keywords:} Mars; AI4Mars; semantic segmentation; watershed; mathematical
-morphology; rock coverage; size--frequency distribution; crowdsourced annotation.
+\textbf{Keywords:} Mars; AI4Mars; semantic segmentation; watershed; mathematical morphology;
+rock coverage; crowdsourced annotation; data quality; indicator validity.
+}

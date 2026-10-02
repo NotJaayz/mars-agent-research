@@ -8,7 +8,7 @@ procesamiento clásico de imagen y sin entrenar ningún modelo.
 
 > **Autor:** Juan Pablo Delgado Castro
 > **Programa:** Ciencia de Datos · Departamento de Matemáticas · Universidad Externado de Colombia
-> **Estado:** procedimiento ejecutado sobre 16 064 escenas · documento de tesis redactado (87 páginas)
+> **Estado:** procedimiento ejecutado sobre 16 064 escenas · documento de tesis revisado tras las correcciones de la dirección
 
 ---
 
@@ -26,16 +26,28 @@ y cómo está organizada — sin entrenar nada, con cada umbral a la vista y en 
 
 ## Pregunta de investigación
 
-> ¿Cómo cuantificar, a partir de las máscaras etiquetadas de AI4Mars, la cobertura de roca
-> visible y el número aproximado de rocas individuales por imagen, mediante un flujo de
-> procesamiento de imágenes con parámetros explícitos y resultados reproducibles?
+> ¿Qué indicadores cuantitativos de cobertura y organización de la roca pueden derivarse de
+> forma reproducible de las máscaras de AI4Mars, y cuáles son sus límites de validez frente a
+> diferencias en la anotación y al juicio humano?
 
-La pregunta tiene dos mitades de dificultad muy distinta. Medir cobertura es contar píxeles
-con un denominador bien elegido. Contar rocas exige resolver un problema de segmentación de
-instancias sobre una máscara **que no distingue instancias**: cuando dos rocas se tocan,
-quedan registradas como una sola región conectada.
+La pregunta reúne dos propósitos. El **constructivo**: derivar indicadores con parámetros
+explícitos. El **crítico**: delimitar hasta dónde informan sobre el terreno y no sobre la forma
+en que se anotó. Medir cobertura es contar píxeles con un denominador bien elegido. Contar rocas
+exige resolver un problema de segmentación de instancias sobre una máscara **que no distingue
+instancias**: cuando dos rocas se tocan, quedan registradas como una sola región conectada.
 
-El trabajo aborda las dos y reporta con igual detalle dónde cada una funciona y dónde no.
+La pregunta se precisó durante la ejecución: el anteproyecto preguntaba solo *cómo*
+cuantificar; la parte de los límites de validez se incorporó a la vista de lo que reveló la
+validación, y la tesis lo documenta.
+
+### Hipótesis de trabajo
+
+| | Hipótesis | Resultado |
+|---|---|---|
+| **H1** | La cobertura se deriva de forma reproducible y no está determinada por la fracción de escena etiquetada | Se sostiene, con dependencia residual débil |
+| **H2** | El conteo aproxima el número de rocas que un observador distingue en la región anotada, sin sesgo en una dirección | Se rechaza (evaluación exploratoria, un observador) |
+| **H3** | Los indicadores no dependen de la fuente de la anotación | Se rechaza: hay efecto de la fuente, mucho menor que la diferencia bruta |
+| **H4** | Cobertura y conteo aportan información distinta | Se sostiene: información distinta, **no** independencia estadística |
 
 ---
 
@@ -92,7 +104,7 @@ C = 100 · |R| / |V|
 **Ejemplo.** Una imagen de 100 píxeles, de los que 45 recibieron etiqueta y 30 son roca:
 `C = 100 · 30/45 = 66,7 %`. Nótese que el denominador es **lo etiquetado**, no la imagen:
 sobre la imagen completa serían 30 %. Ambas medidas se reportan, y de esa diferencia surge
-el [Hallazgo 1](#hallazgo-1-la-anotación-colaborativa-sobreestima-la-roca).
+el [control del denominador](#cobertura-de-roca-visible-e1).
 
 ### Conteo de rocas individuales (E2)
 
@@ -180,17 +192,18 @@ valor por defecto documentado.
 | Conectividad | 8 vecinos | Con 4, dos rocas unidas en diagonal se separarían |
 
 > **La calibración principal.** El criterio de prominencia sustituyó a la detección de
-> máximos por separación mínima. Con el criterio anterior, una losa extensa etiquetada como
-> *big rock* generaba decenas de semillas espurias —se observó un caso con **142**— y
-> quedaba fragmentada en rocas inexistentes. Se verificó que el criterio nuevo actúa de
-> forma **selectiva**: sobre escenas sospechosas reduce el conteo entre un 32 % y un 44 %,
-> mientras que en escenas normales no altera ningún conteo.
+> máximos por separación mínima. Con el criterio inicial, una escena llegaba a generar **142**
+> semillas, la mayoría sobre una banda alargada. `scripts/calibracion.py` reconstruye la
+> calibración desde un manifiesto de seis escenas y muestra que el cambio **no fue
+> selectivo**: redujo el conteo un 21 % en las escenas con solidez baja, un 41 % en las de más
+> de quince rocas y también un 21 % en el resto. Rebajó el conteo de forma general, lo que es
+> coherente con el subconteo que reveló la validación humana.
 
 ---
 
 ## 3. Resultados
 
-### Composición del conjunto
+### Poblaciones de análisis
 
 Cada imagen recibe una bandera de calidad que documenta su aptitud para cada indicador.
 
@@ -202,27 +215,44 @@ Cada imagen recibe una bandera de calidad que documenta su aptitud para cada ind
 | `mostly_null` | Más del 95 % sin etiqueta | 300 | 1,9 |
 | `empty` | Sin ningún píxel etiquetado | 163 | 1,0 |
 
-### Cobertura de roca visible (E1) — funciona
+- **Cobertura (E1):** las 15 901 escenas con algún píxel etiquetado (todas menos `empty`).
+- **Conteo (E2):** las **2 193 escenas `ok`**. Se excluyen las 33 escenas `mostly_null` que
+  tienen algún píxel de roca grande (aportarían 63 rocas): con más del 95 % de la escena sin
+  etiqueta, la región es un fragmento aislado, y ahí se concentran los artefactos de anotación.
 
-De las 16 064 escenas, **10 817 (67,3 %)** contienen algún píxel de roca. Sobre ellas, la
-cobertura tiene una mediana del **96,8 %** sobre píxeles etiquetados y del **42,0 %** sobre
-la imagen completa. La distribución es marcadamente **bimodal**.
+### Cobertura de roca visible (E1)
+
+La cobertura pudo calcularse en **15 901 de las 16 064 escenas (99,0 %)**; **10 817 escenas
+(67,3 % del total)** presentaron cobertura de roca mayor que cero. Entre estas últimas, la
+mediana de cobertura sobre píxeles etiquetados fue **96,8 %** (42,0 % sobre la imagen
+completa). La distribución es marcadamente **bimodal**.
 
 ![Distribución de la cobertura](outputs/figures/tesis/Figura_13_distribucion_cobertura.png)
 
-**El control que había que hacer.** Si la fórmula fuera el problema, las escenas *poco*
-etiquetadas tendrían cobertura *alta*, porque el denominador sería pequeño. Se contrastó
-explícitamente:
+**Control del denominador.** Si las escenas poco etiquetadas conservaran sobre todo la roca,
+tendrían coberturas altas por construcción.
 
 ![Cobertura frente a fracción etiquetada](outputs/figures/tesis/Figura_14_cobertura_vs_fraccion_etiquetada.png)
 
-La correlación es de **r = −0,02**: prácticamente nula. Las coberturas altas corresponden a
-escenas genuinamente dominadas por lecho rocoso, no a un artefacto del denominador.
+No se observó una asociación lineal global entre la cobertura y la fracción etiquetada
+(**r = −0,020**, IC 95 % [−0,037; −0,004]); con 15 901 escenas la asociación es detectable,
+pero explica menos de una milésima de la varianza. La correlación de distancia (0,062) detecta
+una dependencia no lineal débil. Por tramos de fracción etiquetada, la cobertura mediana **no**
+sigue el patrón que produciría el artefacto (no es máxima en las escenas menos etiquetadas):
 
-### Conteo de rocas (E2) — tiene un techo
+| Fracción etiquetada | Escenas | Cobertura mediana (sobre lo etiquetado) | (sobre la imagen) |
+|---|---:|---:|---:|
+| hasta 0,25 | 1 895 | 48,2 % | 3,4 % |
+| 0,25 – 0,50 | 4 249 | 59,2 % | 22,0 % |
+| 0,50 – 0,75 | 5 680 | 69,3 % | 42,8 % |
+| más de 0,75 | 4 077 | 32,6 % | 26,6 % |
 
-Aplicado a las 2 193 escenas con roca grande, arroja **4 204 rocas**, con mediana de 1 por
-imagen y máximo de 20.
+Las conclusiones se mantienen con la cobertura sobre la imagen completa (correlación de rangos
+entre ambas versiones: 0,90).
+
+### Conteo de rocas (E2)
+
+Sobre las 2 193 escenas `ok`: **4 142 rocas**, mediana de 1 por imagen, máximo de 20.
 
 | Rocas por imagen | Imágenes | % |
 |---|---:|---:|
@@ -234,324 +264,280 @@ imagen y máximo de 20.
 
 ![Conteo por bandas](outputs/figures/tesis/Figura_15_conteo_por_bandas.png)
 
-La distribución tamaño–frecuencia es **decreciente** —predominan las rocas pequeñas—, lo que
-coincide cualitativamente con los estudios de abundancia de rocas en sitios de aterrizaje.
-La comparación es de forma, no de magnitud: los tamaños son relativos al campo de visión y
-no métricos.
+Distribución tamaño–frecuencia **decreciente** (1 806 pequeñas, 1 317 medianas, 1 019
+grandes), coherente en forma —no en magnitud: los tamaños son relativos al campo de visión—
+con los estudios de abundancia de rocas.
 
 ![Distribución tamaño-frecuencia](outputs/figures/tesis/Figura_16_tamano_frecuencia.png)
 
-### Composición del terreno y recorrido (E3)
+### Relación entre cobertura y conteo (H4)
+
+Pearson próximo a cero solo excluye la asociación *lineal*; no demuestra independencia. Por eso
+se midió con estadísticos progresivamente más generales (2 193 escenas):
+
+| Medida | Detecta | Valor | p |
+|---|---|---:|---:|
+| Pearson r | lineal | +0,022 [−0,015; +0,059] | 0,286 |
+| Spearman ρ | monótona | +0,020 [−0,019; +0,060] | 0,351 |
+| Correlación de distancia | cualquiera | 0,074 | 0,002 |
+| Información mutua | cualquiera | 0,123 bits (nula 0,023) | 0,005 |
+
+**Asociación lineal prácticamente nula, pero no independencia**: hay una dependencia débil con
+forma de **U invertida** —pocas rocas cuando la cobertura es muy baja (en parte por
+construcción, porque la roca grande está en el numerador de la cobertura), máximo entre el 10 %
+y el 50 %, y menos rocas en los afloramientos continuos de cobertura total—. Los deciles de
+cobertura explican el **5,6 %** de la varianza del conteo. Los dos indicadores aportan
+información distinta; no son independientes.
+
+### Composición del terreno y secuencia de adquisición (E3)
 
 Composición media: **lecho rocoso 49,8 %, suelo 36,4 %, arena 12,5 %, roca grande 1,3 %**.
 
 ![Tipología de escenas](outputs/figures/tesis/Figura_17_tipologia_escenas.png)
 
-Ordenando las escenas por el reloj de nave de su identificador se observa una **alternancia
-clara** entre tramos rocosos y tramos de suelo o arena, con concentraciones puntuales de
-roca grande que alcanzan el 40 % de las imágenes de un tramo.
+El orden temporal sale del **reloj de nave** (columna `sclk`), extraído del identificador de
+cada imagen. Ordenadas así, las escenas alternan entre segmentos rocosos y de suelo o arena.
+Es una variación **en la secuencia de adquisición, no en el espacio**: el rover puede tomar
+muchas imágenes desde un mismo lugar, y el conjunto no incluye la posición de cada toma.
 
-![Variación a lo largo del recorrido](outputs/figures/tesis/Figura_18_variacion_recorrido.png)
-
-### Los dos indicadores son independientes
-
-Su correlación es de **r = 0,02**. No es un detalle: significa que miden facetas distintas
-del terreno y **ninguno sustituye al otro**. Un afloramiento continuo produce cobertura
-máxima y conteo nulo; un campo de bloques dispersos, lo contrario.
+![Variación a lo largo de la secuencia de adquisición](outputs/figures/tesis/Figura_18_variacion_secuencia.png)
 
 ---
 
-## 4. Hallazgos
+## 4. Contraste con las máscaras de experto (H3)
 
-Los tres resultados que el trabajo considera su aporte principal no estaban previstos en la
-pregunta: surgieron de validar el procedimiento.
-
-### Hallazgo 1: la anotación colaborativa sobreestima la roca
-
-El dataset incluye 322 máscaras de especialistas. Se ejecutó sobre ellas **el mismo código,
-sin cambiar ningún parámetro**.
+El dataset incluye 322 máscaras de especialistas, sobre **imágenes distintas** de las de
+entrenamiento. Con el mismo código y los mismos parámetros:
 
 | Indicador | Colaborativas | Experto |
 |---|:---:|:---:|
-| Cobertura mediana | 96,8 % | **46,1 %** |
-| Escenas con cobertura del 100 % | 41 % | **8 %** |
-| Píxeles de suelo y arena | 50 % | **69 %** |
-| Píxeles de lecho rocoso | 49 % | 31 % |
+| Cobertura mediana (escenas con roca) | 96,8 % | 46,1 % |
+| Escenas con cobertura del 100 % | 41 % | 8 % |
+| Fracción de escena etiquetada (mediana) | 0,58 | 0,59 |
 
-![Validación con experto](outputs/figures/tesis/Figura_19_validacion_experto.png)
+![Cobertura según la fuente](outputs/figures/tesis/Figura_19_validacion_experto.png)
 
-**El mecanismo.** Es un sesgo de saliencia en la tarea de anotación. La roca es visualmente
-prominente y fácil de delimitar; el suelo y la arena son superficies extensas y homogéneas
-cuya delimitación resulta tediosa. Al exigirse acuerdo entre anotadores, los píxeles de
-suelo y arena sin consenso quedan **sin etiqueta y desaparecen del denominador**, lo que
-eleva la fracción de roca. La tercera fila de la tabla lo confirma: los expertos no
-encontraron más roca, encontraron **más suelo**.
+**La diferencia no puede atribuirse sin más a la anotación**: las dos fuentes cubren imágenes
+distintas, y AI4Mars no distribuye máscara colaborativa para las imágenes de experto. Para
+separar los efectos se usó un **instrumento común**: el segmentador entrenado (una función fija
+de la imagen) aplicado a la región anotable de 593 escenas colaborativas no usadas en su
+entrenamiento ni en su validación y de las 322 de experto.
 
-**Precisión importante.** El procedimiento de cálculo *no* está sesgado: aplicado a las
-máscaras de experto entrega valores plausibles. El sesgo reside en los datos de entrada, y
-las etiquetas de los píxeles que sí se pintaron son correctas. El sesgo vive en la fórmula
-de agregación, no en el contenido de las etiquetas.
+![Instrumento común](outputs/figures/tesis/Figura_30_instrumento_comun.png)
 
-> **Por qué esto trasciende el trabajo.** Toda la línea de investigación que emplea AI4Mars
-> evalúa sus modelos por el acuerdo con estas máscaras. Documentar que sobreestiman la roca,
-> y cuantificar cuánto, es información pertinente para esos trabajos y no solo para este.
+| Descomposición de la diferencia de medias | p.p. | IC 95 % |
+|---|---:|---|
+| Diferencia total según la etiqueta | +20,4 | |
+| Atribuible a las **imágenes** | **+18,2 (89 %)** | [+12,4; +23,8] |
+| Atribuible a la **anotación** | **+2,2 (11 %)** | [+0,0; +4,5] |
 
-### Hallazgo 2: el techo del conteo es la taxonomía, no las imágenes
+1. **El conjunto de máscaras de experto está compuesto por escenas mucho menos rocosas**: medido
+   por el mismo instrumento, su cobertura mediana es del 5,8 % frente al 72,5 %. Es una
+   propiedad del dataset pertinente para cualquiera que evalúe contra ese conjunto.
+2. La componente de anotación es pequeña y positiva, y su magnitud depende del instrumento y de
+   la muestra: +3,2 [+1,0; +5,4] si la muestra colaborativa se toma solo de los bloques de
+   prueba, y +4,4 [+2,1; +6,5] con el modelo anterior. Es **compatible** con la hipótesis de un
+   sesgo de saliencia, pero el diseño no permite identificar causalmente ese mecanismo.
+3. El mecanismo de un denominador reducido por suelo sin etiquetar **no encuentra apoyo**: la
+   fracción etiquetada es igual en ambas fuentes (p = 0,24).
 
-La explicación intuitiva del bajo desempeño del conteo sería que faltan imágenes mejores. Se
-descartó con tres mediciones:
-
-1. **El procedimiento no abre las imágenes**: toda su información proviene de la máscara. Y
-   las imágenes ya son de resolución completa, con la máscara del mismo tamaño: no hay
-   pérdida por remuestreo.
-2. En **13 838 escenas (86,1 %)** la máscara no tiene *ningún* píxel de roca grande. De la
-   roca etiquetada en el conjunto, el lecho rocoso aporta el **97,5 %** y la roca grande solo
-   el **2,5 %** — y E2 cuenta únicamente esta última.
-3. Las máscaras de experto tienen **menos** roca grande, no más: del 16,5 % de escenas al
-   1,6 % según se endurece el criterio de acuerdo.
-
-Esta figura lo muestra sin necesidad de explicación: una escena repleta de bloques
-individuales evidentes, etiquetada en su totalidad como **una sola región de lecho rocoso**.
-El conteo devuelve cero. La imagen es excelente; la etiqueta es el límite.
-
-![Roca visible etiquetada como lecho rocoso](tesis/images/diag_bedrock_no_contado.png)
-
-### Hallazgo 3: la anotación no es exhaustiva
-
-La validación con conteo humano lo reveló. En **36 de 60 escenas**, la clase roca grande
-cubre **menos del 20 %** de la roca etiquetada, con una mediana del **9,1 %**: la anotación
-marca *algunas* rocas, no todas.
-
-De aquí se sigue una precisión sobre qué mide el indicador: **no estima el número de rocas de
-una escena**, sino el de bloques dentro de la fracción que el anotador decidió delimitar como
-roca grande. Ambas cantidades pueden diferir en un orden de magnitud, e incluso un
-procedimiento perfecto sobre estas máscaras seguiría contando solo lo delimitado.
+Como el instrumento se entrenó con etiquetas colaborativas, tiende a ver más roca que el experto
+(lo sobreestima en +3,1 puntos de media), así que la componente de anotación está probablemente
+subestimada.
 
 ---
 
-## 5. Validación con conteo humano
+## 5. Validación con conteo humano (H2) — evaluación exploratoria
 
-Se realizó en dos rondas. En cada escena se resalta la región anotada como roca grande y se
-pregunta cuántas rocas se distinguen **dentro de esa región** — acotar la pregunta es lo que
-permite atribuir el desacuerdo. El material se presenta con identificadores neutros, en orden
-barajado, y el resultado automático no aparece en ningún momento.
-
-**La ronda piloto (24 escenas) resultó defectuosa y se rehízo.** Su banda superior era
-abierta en «10 o más», de modo que un procedimiento que contara 84 rocas donde el observador
-distinguía una decena puntuaba como **acierto exacto**: la escala favorecía a los métodos que
-sobreestiman. Se corrigieron además tres defectos: escenas cuya región anotada era
-imperceptible, un relleno opaco que tapaba la textura necesaria para contar, y un muestreo
-estratificado por la banda del propio algoritmo, que condicionaba la muestra al método
-evaluado.
-
-### Resultado (60 escenas, seis bandas)
+Un único observador contó, por bandas, las rocas que distingue **dentro de la región anotada**
+como roca grande en 60 escenas (identificadores neutros, orden barajado, resultado automático
+oculto). Los parámetros estaban congelados antes de la primera respuesta y ninguna escena de
+calibración está en la muestra. Una ronda piloto de 24 escenas sirvió para corregir defectos
+del instrumento (su banda abierta «10 o más» favorecía a los métodos que sobreestiman).
 
 | Medida | Valor |
 |---|---:|
 | Acuerdo exacto de banda | 50 % |
-| Kappa de Cohen | 0,13 |
-| Kappa ponderado | 0,11 |
-| Escenas por debajo / por encima del observador | **28 / 2** |
-
-El 50 % de acuerdo engaña: **26 de las 30 coincidencias** caen en una sola banda.
+| Kappa de Cohen | 0,13 [0,00; 0,27] |
+| Kappa ponderado | 0,11 [0,01; 0,22] |
+| Escenas por debajo / por encima del observador | **28 / 2** (prueba de signos p < 0,001) |
 
 ![Matriz de acuerdo](outputs/figures/tesis/Figura_26_validacion_manual_v2.png)
 
-**El rasgo decisivo son las tres columnas vacías.** En ninguna de las 60 escenas el
-procedimiento devuelve más de nueve rocas, mientras el observador identificó diez o más en
-doce y veinticinco o más en cinco. No es un sesgo recalibrable mediante umbrales: es un
-**techo estructural**.
+Con los parámetros fijados, el procedimiento nunca pasa de 9 rocas; el observador vio 10 o más
+en 12 escenas. **No es un artefacto de la calibración**: en las 36 combinaciones de prominencia,
+suavizado y área mínima ensayadas, el procedimiento queda por debajo del observador en entre
+23 y 29 escenas.
 
-### Por qué: el mecanismo, visto
+**Por qué.** Dos causas, ninguna corregible con umbrales:
+
+- **La anotación no es exhaustiva**: en 36 de 60 escenas la roca grande es menos del 20 % de la
+  roca etiquetada (mediana 9,1 %); el resto se anotó como lecho rocoso.
+- **Hay regiones sin información geométrica para separar instancias**: la división de aguas
+  solo corta donde la región se estrangula. Un polígono que envuelve un campo de bloques
+  contiguos no tiene dónde cortar.
 
 ![Mecanismo del subconteo](outputs/figures/tesis/Figura_28_mecanismo_subconteo.png)
 
-Arriba, la anotación traza cada bloque por separado: hay regiones distintas con
-estrangulamientos claros y el corte funciona (9 rocas, el observador dijo 4–9). Abajo, un
-único polígono trazado holgadamente sobre un campo de roca estratificada: la transformada de
-distancia forma **una sola meseta** y, por muchas rocas que contenga, no hay por dónde
-cortar (3 rocas, el observador dijo 25–49).
+> **Alcance del indicador.** El procedimiento produce un conteo reproducible de las instancias
+> geométricamente separables dentro de la clase *big rock*, pero ese conteo no puede
+> interpretarse como estimación válida del número total de rocas visibles en la escena. La
+> evaluación exploratoria con un observador sugiere un subconteo sistemático. Con un solo
+> observador no se puede separar el desacuerdo algoritmo–persona de la variabilidad entre
+> personas; su confirmación exige al menos dos observadores independientes.
 
-Este resultado **corrige la expectativa con la que se calibró el procedimiento**. La
-preocupación era la sobresegmentación, y contra ella se introdujo el criterio de prominencia.
-El sesgo real va en sentido contrario.
+**El límite está en la representación semántica.** El lecho rocoso aporta el 97,5 % de la roca
+etiquetada y la roca grande el 2,5 %. Sobre las **mismas** 322 imágenes, la proporción de
+escenas con roca grande cae del 16,5 % al 1,6 % al endurecer el acuerdo entre especialistas:
+la frontera entre ambas clases es ambigua también para ellos. La evidencia indica que la
+principal limitación del conteo de instancias proviene de la representación semántica y de la
+granularidad de las etiquetas, más que de una falta de resolución evidente de las imágenes
+(intervienen también consenso, perspectiva, escala, oclusión y parametrización).
+
+![Roca visible etiquetada como lecho rocoso](tesis/images/diag_bedrock_no_contado.png)
+
+### Exploración: usar la imagen dentro de la región
+
+Se compararon cuatro relieves derivados de la imagen (gradiente fino, gradiente grueso,
+sombras por *top-hat* negro y combinación), con el mismo protocolo y el parámetro elegido por
+validación cruzada dejando una escena fuera:
+
+| Relieve | κ ponderado | Diferencia con E2 | IC 95 % | IC Bonferroni |
+|---|---:|---:|---|---|
+| Gradiente fino | 0,18 | +0,06 | [−0,14; +0,28] | [−0,19; +0,33] |
+| Gradiente grueso | 0,08 | −0,03 | [−0,20; +0,13] | [−0,24; +0,17] |
+| Sombras | 0,37 | +0,26 | [+0,03; +0,47] | [−0,03; +0,53] |
+| Combinado | 0,27 | +0,15 | [−0,05; +0,36] | [−0,11; +0,41] |
+
+**Ninguno mejora a E2 de forma demostrable** una vez corregido el número de métodos probados,
+y todos desplazan el error hacia la sobreestimación. El enfoque híbrido queda como **prueba de
+concepto** y trabajo futuro.
 
 ---
 
 ## 6. Comparación con aprendizaje automático
 
-### Modelo general, sin entrenamiento específico
+**Modelo general sin entrenamiento específico (FastSAM)**, 50 escenas restringido a la región de
+roca: acuerdo por bandas del 52 % con el conteo clásico, correlación de rangos 0,45.
 
-Un modelo fundacional de segmentación (FastSAM) aplicado a 50 escenas, restringido a la
-región de roca. El acuerdo con el conteo clásico es del **52 %** por bandas, con correlación
-de rangos de 0,45 y error absoluto medio de 2,6 rocas. Tiende a subdividir una misma roca
-según su textura interna y a no detectar bloques de bajo contraste.
+**Segmentador DeepLabV3 (ResNet-50)** entrenado con las máscaras colaborativas (roca / no-roca;
+Adam, lr 1e-4, lote 4, 512 px, 6 épocas; sin aumentación; semilla 0). Diseño fijado antes de
+entrenar:
 
-![Matriz de acuerdo con el modelo general](outputs/figures/tesis/Figura_20_matriz_acuerdo.png)
+- **Población:** escenas con fracción etiquetada ≥ 0,20 (14 490; se excluyen 1 111).
+- **Reparto por bloques temporales:** 30 bloques consecutivos de reloj de nave (~75 soles cada
+  uno) asignados al azar a entrenamiento, validación y prueba, con un margen de un sol: ninguna
+  imagen de prueba está a menos de un sol de una de entrenamiento. El manifiesto
+  `outputs/split_deeplab_manifiesto.csv` registra el bloque y la partición de cada escena.
+- **Punto de control:** el de mejor mIoU de validación (época 4, 0,957); la prueba se evalúa una
+  sola vez.
 
-### Modelo entrenado con las propias máscaras
-
-Un segmentador **DeepLabV3** por aprendizaje por transferencia, que distingue roca de no-roca
-leyendo la imagen **sin máscara humana**. Entrenado con 2 000 imágenes, 400 de validación y
-400 de prueba, seis épocas a 512 px, con aceleración por GPU integrada.
-
-Alcanza **IoU medio de 0,940** y su cobertura correlaciona **0,950** con la humana.
+| Prueba | n | IoU medio | Correlación de la cobertura | Error absoluto medio |
+|---|---:|---:|---:|---:|
+| Muestra equilibrada | 400 | 0,940 | 0,971 | 3,5 |
+| Distribución natural de los bloques de prueba | 2 323 | 0,932 | 0,971 | 3,7 |
+| Excluidas por fracción etiquetada < 0,20 | 178 | 0,815 | 0,869 | 10,4 |
 
 ![Cobertura del modelo frente a la humana](outputs/figures/tesis/Figura_21_cobertura_modelo_vs_humano.png)
 
-### Una hipótesis que hubo que poner a prueba
+**Fuga de información.** Una versión anterior, con reparto al azar por imagen, tenía 75 imágenes
+de prueba a menos de un minuto de una de entrenamiento y daba un IoU medio de 0,940 y una
+correlación de 0,971: prácticamente lo mismo que el reparto por bloques. Aquella proximidad no
+inflaba el desempeño.
 
-Esa cifra **no puede leerse como acierto**: el modelo se entrenó con máscaras colaborativas y
-se evaluó contra máscaras colaborativas, de modo que mide cuánto se parece a la anotación de
-la que aprendió. Y como esa anotación sobreestima la roca, lo esperable era que hubiera
-aprendido el sesgo junto con la señal.
+**Frente al experto** (IoU medio 0,836; correlación 0,924):
 
-> **La prueba.** Si heredó el sesgo, al evaluarlo contra las 322 máscaras de experto debería
-> **sobreestimar** la cobertura de forma sistemática.
->
-> **El resultado.** No sobreestima. La mediana del error es de **+0,0 puntos porcentuales**,
-> con un 37 % de escenas por encima y un 30 % por debajo. *Hipótesis descartada.*
-
-| Medida | Contra colaborativas | Contra experto |
+| Error de cobertura (modelo − etiqueta) | Colaborativa (593) | Experto (322) |
 |---|:---:|:---:|
-| IoU medio | 0,940 | 0,843 |
-| Correlación de la cobertura | 0,950 | 0,927 |
-| Error absoluto medio | 4,3 p.p. | 7,5 p.p. |
-| Mediana del error (sesgo) | — | **+0,0 p.p.** |
+| Error medio, IC 95 % | +0,93 [−0,08; +1,90] | +3,12 [+1,36; +4,95] |
+| Error absoluto medio | 4,3 | 8,5 |
+| Límites de acuerdo (Bland–Altman) | [−23,3; +25,2] | [−29,3; +35,6] |
+| Escenas con error > 10 p.p. | 11,1 % | 28,0 % |
 
-![Modelo frente a experto](outputs/figures/tesis/Figura_27_modelo_vs_experto.png)
+![Bland–Altman](outputs/figures/tesis/Figura_29_bland_altman.png)
 
-**Por qué no lo heredó.** Encaja con el mecanismo del sesgo: opera por el *denominador* —el
-suelo sin etiquetar que sale del cálculo— y no por error de clase en los píxeles que sí se
-etiquetan. Como el entrenamiento excluye los píxeles sin etiqueta de la función de pérdida,
-el modelo aprendió apariencia de roca a partir de píxeles correctamente etiquetados.
-
-**Reservas declaradas.** Estima **cobertura, no conteo**: no separa bloques y no sustituye a
-E2. Y es fiable **en agregado, no escena por escena**: el 23 % de las escenas supera los diez
-puntos de error y cinco superan los cincuenta.
-
-**Lo que abre.** El procedimiento clásico necesita una máscara humana, que no existe cuando
-las imágenes llegan a la Tierra. El segmentador lee la imagen directamente. Que estime la
-cobertura sin sesgo frente a una referencia de experto sugiere que el indicador definido y
-auditado aquí podría calcularse **sin anotación humana en el bucle**.
+El modelo reproduce en promedio la anotación de la que aprendió, pero **sobreestima frente al
+experto** unos tres puntos, la dirección esperable si heredó su criterio. Los errores
+individuales son grandes y dependen del tramo, de modo que sirve para describir conjuntos de
+escenas y no para valorar una escena concreta. Estima cobertura, no conteo.
 
 ---
 
-## 7. Extensión aplicada
+## 7. Extensión aplicada (anexo de la tesis)
 
-### Sistema de avisos de terreno
+**Reglas heurísticas de priorización.** Seis reglas con umbral explícito ordenan escenas para revisión: 98 en prioridad
+alta, 1 343 media, 124 baja. Las reglas de conteo solo se evalúan sobre la población de E2, y
+el percentil que representa cada umbral lo calcula el guion. **No están calibradas para la navegación**: sin escala métrica, un
+porcentaje de píxeles no permite inferir altura de un bloque, transitabilidad, daño a las
+ruedas ni probabilidad de atrapamiento.
 
-Los indicadores se traducen en seis reglas, cada una con su umbral, su severidad y su
-justificación. Los umbrales se fijaron sobre **percentiles de la distribución observada**, no
-de forma arbitraria.
-
-| Aviso | Umbral | Sev. | Motivación |
-|---|---|:---:|---|
-| Daño en ruedas | roca grande > 5 % y solidez < 0,85 | 3 | Bloques con contornos angulosos: la condición asociada al desgaste documentado en *Curiosity* |
-| Obstáculo mayor | roca mayor > 15 % | 3 | Un bloque que domina la escena puede superar la altura franqueable |
-| Atrapamiento en arena | arena > 70 % | 3 | La arena suelta compromete la tracción; es el modo de fallo que inmovilizó a *Spirit* |
-| Campo de bloques | 5 o más rocas | 2 | Muchos bloques reducen las trayectorias viables |
-| Terreno rocoso | cobertura > 80 % | 1 | Informativa: buena tracción, superficie irregular |
-| Escena poco evaluable | > 95 % sin etiquetar | 1 | Señala que la ausencia de avisos no es ausencia de riesgo |
-
-De las 16 064 escenas: **104 de riesgo alto**, 1 359 medio, 124 bajo, y 14 477 sin aviso
-operativo.
-
-![Distribución de avisos](outputs/figures/tesis/Figura_24_alertas_terreno.png)
-
-> Los avisos **heredan las limitaciones de los indicadores** de los que derivan, incluido el
-> sesgo de anotación. No son una valoración de transitabilidad validada contra incidentes
-> reales —no existe tal registro para este subconjunto— sino una priorización de escenas cuyo
-> criterio queda explícito y es por tanto auditable.
-
-### Aplicación de consulta
-
-Aplicación de escritorio en Python que hace consultable el conjunto de resultados sin
-programar, con cuatro vistas: resumen descriptivo, distribución de avisos, explorador que
-muestra por escena la imagen, la anotación y las rocas detectadas, y una vista de rasgos
-geológicos. Las figuras se generan a partir de los mismos archivos que respaldan el
-documento.
+**Aplicación de consulta.** Aplicación de escritorio que hace consultable el conjunto de
+resultados sin programar (resumen, priorización, explorador de escenas, geología).
 
 ```bash
 python app.py
 ```
 
----
-
-## 8. Exploración: detección de vetas (resultado negativo)
-
-Las vetas de sulfato de calcio son depósitos precipitados por circulación de agua y el rasgo
-de mayor interés científico presente en las anotaciones. La escala de navegación no las
-etiqueta, así que la única vía sería detectarlas desde la imagen. **Se ensayó y no es
-viable.**
-
-El método aplicó un filtro de crestas de Meijering sobre la región de lecho rocoso —analiza
-los autovalores del Hessiano para realzar estructuras curvilíneas finas, y se usa en
-angiografía; una veta es geométricamente el mismo tipo de objeto—, más una variante
-ponderada por el cociente azul/rojo.
-
-| Medida | Sin color | Con color |
-|---|:---:|:---:|
-| Precisión media | 0,261 | 0,267 |
-| Recall medio | 0,067 | 0,041 |
-| Mejora sobre la tasa base | 9,1× | 10,2× |
-| Escenas sin ningún acierto | 11 de 24 | 12 de 24 |
-
-![Exploración de vetas](outputs/figures/tesis/Figura_25_exploracion_vetas.png)
-
-**Hay señal pero el detector es inutilizable**: nueve veces mejor que el azar no es ruido,
-pero recupera menos del 7 % de los píxeles de veta y falla por completo en casi la mitad de
-las escenas.
-
-**La hipótesis del color quedó refutada por medición propia.** El cociente azul/rojo en las
-zonas claras del lecho rocoso resultó ser apenas **1,025 veces** el del conjunto de la roca,
-con dirección inconsistente entre escenas. El polvo rojizo recubre también las vetas, y las
-imágenes del conjunto son archivos comprimidos con balance de blancos aplicado, no productos
-radiométricos calibrados. Añádase que NavCam es un instrumento de navegación: las vetas del
-cráter Gale se caracterizaron con MAHLI, ChemCam y MastCam.
-
-Se documenta para que el ensayo no se repita sin conocer sus límites.
+**Exploración de vetas** (resultado negativo, en anexo): un filtro de crestas mejora nueve veces
+la tasa base pero recupera menos del 7 % de los píxeles de veta; el color no aporta.
 
 ---
 
 ## 9. Estructura del repositorio
 
 ```
-├── src/                         módulos de cálculo (12)
+├── src/                         módulos de cálculo
 │   ├── config.py                rutas del dataset y codificación NAV
 │   ├── mask_utils.py            lectura de máscaras y binarización
 │   ├── coverage.py              cobertura de roca visible (E1)
 │   ├── rock_count.py            conteo con división de aguas (E2)
+│   ├── poblaciones.py           definición única de las poblaciones de E1 y E2
 │   ├── rock_count_hybrid.py     exploración: máscara + gradiente de imagen
 │   ├── features.py              composición y geometría de rocas
 │   ├── pipeline.py              orquestación: una fila de resultados por imagen
-│   ├── alerts.py                sistema de avisos de terreno
+│   ├── priorizacion.py          reglas heurísticas de priorización
 │   ├── segmentation.py          segmentador DeepLabV3
 │   ├── sam_compare.py           comparación con modelo fundacional
 │   └── viz.py                   visualización de máscaras y etapas
 │
-├── scripts/                     guiones de ejecución (23)
+├── scripts/                     guiones de ejecución
 │   ├── run_pipeline.py          procesa el subconjunto → results.csv
+│   ├── calibracion.py           reconstruye la calibración del conteo
+│   ├── sensibilidad_parametros.py  36 combinaciones de h, σ y área mínima
+│   ├── analisis_dependencia.py  Pearson, Spearman, correlación de distancia, información mutua
+│   ├── eval_validation.py       acuerdo con el observador: kappa simple y ponderado
+│   ├── eval_metodos_imagen.py   relieves de imagen con validación cruzada y Bonferroni
+│   ├── train_segmentation.py    entrena el DeepLabV3 con reparto por bloques temporales
+│   ├── eval_model_expert.py     segmentador frente a las máscaras de experto (por escena)
+│   ├── eval_fuga_temporal.py    distancia en reloj de nave entre prueba y entrenamiento
+│   ├── eval_fuente_anotacion.py instrumento común: imágenes frente a anotación
+│   ├── eval_modelo_detalle.py   error con signo, bootstrap y Bland–Altman del segmentador
+│   ├── compare_sam.py           comparación con FastSAM
+│   ├── run_priorizacion.py      aplica las reglas de priorización
 │   ├── make_thesis_figures.py   figuras del documento
 │   ├── make_mechanism_figure.py figura del mecanismo del subconteo
+│   ├── make_extension_figures.py  figuras de la priorización y de las vetas
+│   ├── make_hybrid_figure.py    figura de la prueba de concepto híbrida
+│   ├── diagnose_errors.py       paneles por modo de fallo
+│   ├── explore_vein_detection.py  exploración de vetas
 │   ├── make_validation_kit2.py  prepara la validación humana
 │   ├── responder_validacion.py  interfaz para responderla
-│   ├── eval_validation.py       acuerdo, kappa simple y ponderado
-│   ├── eval_hybrid.py           contraste del conteo híbrido
-│   ├── eval_model_expert.py     contraste del segmentador con experto
-│   ├── train_segmentation.py    entrena el DeepLabV3
-│   ├── run_alerts.py            evalúa las reglas de aviso
-│   ├── diagnose_errors.py       paneles por modo de fallo
-│   └── explore_vein_detection.py  exploración de vetas
+│   ├── generar_cifras.py        todas las cifras de la tesis → tesis/cifras.tex
+│   └── generar_bibliografia.py  bibliografía desde Crossref/DataCite → tesis/references.bib
 │
+├── tests/                       pruebas de las reglas deterministas
+├── manifiestos/                 escenas de calibración
 ├── tesis/                       documento en LaTeX (plantilla institucional)
-├── docs/                        documentación de apoyo (11 archivos)
+├── docs/                        documentación de trabajo anterior
 ├── outputs/
-│   ├── results.csv              24 indicadores × 16 064 escenas
+│   ├── results.csv              24 indicadores + 4 columnas de elegibilidad × 16 064 escenas
+│   ├── split_deeplab_manifiesto.csv  bloque y partición de cada escena en el segmentador
 │   ├── figures/tesis/           figuras del documento
 │   └── validacion_manual_v2/    respuestas de la validación humana
+├── Makefile                     reproducción completa, en orden
 ├── app.py                       aplicación de escritorio
-└── environment.yml              entorno conda
+├── environment.yml              entorno con las versiones de la ejecución final
+└── requirements-lock.txt        registro exacto de todos los paquetes
 ```
 
 ---
@@ -559,7 +545,7 @@ Se documenta para que el ensayo no se repita sin conocer sus límites.
 ## 10. Reproducir
 
 ```bash
-# 1. Entorno
+# 1. Entorno (versiones de la ejecución final; registro exacto en requirements-lock.txt)
 conda env create -f environment.yml
 conda activate tesis-marte
 
@@ -567,22 +553,20 @@ conda activate tesis-marte
 #    Descargar de https://doi.org/10.5281/zenodo.15995036 e indicar la ruta:
 export AI4MARS_ROOT=/ruta/a/ai4mars-dataset-merged-0.6
 
-# 3. Procedimiento principal → outputs/results.csv
-python scripts/run_pipeline.py
+# 3. Todo, en orden: pruebas, resultados, calibración, análisis, validación, segmentador,
+#    evaluaciones, figuras, cifras de la tesis y documento
+make todo
 
-# 4. Figuras del documento
-python scripts/make_thesis_figures.py
-python scripts/make_mechanism_figure.py
+# Sin reentrenar el segmentador (~2 h), reutilizando el modelo ya entrenado:
+make resultados
 
-# 5. Validación humana
-python scripts/eval_validation.py --dir outputs/validacion_manual_v2
-
-# 6. Avisos de terreno
-python scripts/run_alerts.py
+# Solo las pruebas
+make pruebas
 ```
 
-Versiones registradas: Python 3.13, NumPy 2.5.1, SciPy 1.18.0, scikit-image 0.26.0,
-pandas 3.0.5, Pillow 12.3.0.
+El modelo entrenado (~170 MB) no se versiona; su huella SHA-256 está en
+`outputs/segmentacion_metricas.json`. Las cifras del documento nunca se escriben a mano:
+`scripts/generar_cifras.py` las extrae de `outputs/` y las escribe en `tesis/cifras.tex`.
 
 ---
 
@@ -594,16 +578,15 @@ ni usa datos de elevación.
 
 **Limitaciones declaradas:**
 
-- **Las coberturas son relativas al conjunto colaborativo**, no estimaciones absolutas de la
-  abundancia de roca en el terreno. Para comparar escenas del mismo conjunto la utilidad se
-  mantiene, porque el sesgo actúa en la misma dirección en todas.
-- **Sin escala métrica.** Los tamaños son relativos al campo de visión. La cámara es un par
-  estéreo, así que la vía existe, pero el subconjunto disponible es casi enteramente
-  monocular (16 027 imágenes del ojo izquierdo frente a 37 del derecho).
-- **La validación humana empleó un solo observador**, de modo que no permite separar el
-  desacuerdo atribuible al procedimiento del inherente a la tarea.
-- **El conteo no reproduce el juicio humano** con fidelidad suficiente para leerse como el
-  número de rocas de una escena.
+- **Las coberturas describen el terreno tal como lo registra la anotación colaborativa**; con
+  máscaras de especialista serían algo menores. Sirven para comparar escenas del mismo
+  conjunto.
+- **Sin escala métrica.** Los tamaños son relativos al campo de visión; el subconjunto es casi
+  enteramente monocular (16 027 imágenes del ojo izquierdo frente a 37 del derecho).
+- **Un solo observador** en la validación del conteo: las conclusiones sobre H2 son
+  exploratorias.
+- **El conteo** mide instancias geométricamente separables en la clase *big rock*, no el número
+  de rocas visibles.
 
 ---
 
@@ -614,5 +597,6 @@ y Ono, M. (2021). *AI4Mars: A Dataset for Terrain-Aware Autonomous Driving on Ma
 IEEE/CVF CVPR Workshops. Imágenes: NASA/JPL-Caltech.
 
 Las máscaras existen gracias al trabajo de miles de voluntarios del proyecto AI4Mars en
-Zooniverse. El sesgo que este trabajo documenta es un efecto estructural del diseño de la
-tarea de anotación, **no una deficiencia atribuible a quienes la realizaron**.
+Zooniverse. Las diferencias entre fuentes de anotación que este trabajo documenta son
+propiedades del diseño del conjunto y de la tarea, **no una deficiencia atribuible a quienes
+la realizaron**.

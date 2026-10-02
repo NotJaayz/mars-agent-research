@@ -3,12 +3,12 @@
 
 \section{Esquema del conjunto de resultados}
 
-El archivo tabular de resultados contiene una fila por imagen y veinticuatro columnas,
-organizadas en cinco grupos. La Tabla~\ref{tab:esquema} las describe.
+El archivo tabular de resultados contiene una fila por imagen y veintiocho columnas,
+organizadas en seis grupos. La Tabla~\ref{tab:esquema} las describe.
 
 \begin{table}[H]
   \centering
-  \small
+  \footnotesize
   \caption{Esquema del conjunto de resultados.}
   \label{tab:esquema}
   \begin{tabular}{llp{6.0cm}}
@@ -19,7 +19,7 @@ organizadas en cinco grupos. La Tabla~\ref{tab:esquema} las describe.
                    & \texttt{rover}       & Misión de procedencia. \\
                    & \texttt{camera}      & Cámara de procedencia. \\
                    & \texttt{eye}         & Ojo del par estéreo (L o R). \\
-                   & \texttt{sol}         & Día marciano, si está disponible. \\
+                   & \texttt{sclk}        & Reloj de nave (orden de adquisición). \\
     \midrule
     Cobertura (E1) & \texttt{rock\_coverage\_pct}  & Roca sobre píxeles etiquetados. \\
                    & \texttt{coverage\_total\_pct} & Roca sobre la imagen completa. \\
@@ -43,6 +43,39 @@ organizadas en cinco grupos. La Tabla~\ref{tab:esquema} las describe.
     \midrule
     Calidad        & \texttt{mean\_solidity} & Solidez media de las regiones aceptadas. \\
                    & \texttt{quality\_flag}  & Bandera de aptitud de la escena. \\
+    \midrule
+    Elegibilidad   & \texttt{has\_bigrock}     & Contiene algún píxel de roca grande. \\
+                   & \texttt{is\_mostly\_null} & Más del \SI{95}{\percent} sin etiqueta. \\
+                   & \texttt{is\_e1\_eligible} & Entra en la población de la cobertura. \\
+                   & \texttt{is\_e2\_eligible} & Entra en la población del conteo. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Escenas de calibración}
+\label{app:calibracion}
+
+La Tabla~\ref{tab:calibracion} identifica las seis escenas sobre las que se calibraron los
+parámetros del conteo (Sección~\ref{sec:calibracion}). Ninguna forma parte de la muestra de
+la validación definitiva; una coincide con la ronda piloto, que no se emplea en los
+resultados.
+
+\begin{table}[H]
+  \centering
+  \caption{Escenas de la muestra de calibración.}
+  \label{tab:calibracion}
+  \footnotesize
+  \begin{tabular}{lp{7.0cm}}
+    \toprule
+    \textbf{Identificador} & \textbf{Contenido de la escena} \\
+    \midrule
+    \texttt{NLA\_402380795EDR\_F0043416NCAM00441M1} & rocas pequeñas dispersas junto a una duna \\
+    \texttt{NLB\_449076057EDR\_F0300786NCAM00256M1} & losa en primer plano y banda alargada sobre
+      el horizonte \\
+    \texttt{NLB\_490189058EDR\_F0482200NCAM00281M1} & bloques grandes en terreno mixto \\
+    \texttt{NLB\_492131488EDR\_F0482794NCAM00292M1} & losa continua \\
+    \texttt{NLB\_530660369EDR\_F0582394NCAM05113M1} & afloramiento de losas fracturadas \\
+    \texttt{NLB\_582762251EDR\_F0710066NCAM00271M1} & cúmulo de bloques próximos \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -82,9 +115,10 @@ distintos, y sirven de complemento a la Figura~\ref{fig:paso-a-paso}.
 
 \section{Modos de error descartados por los filtros}
 
-Las dos figuras siguientes documentan los casos que el
+Las dos primeras figuras siguientes documentan los casos que la
 Tabla~\ref{tab:diagnostico} atribuye a los umbrales del procedimiento, y respaldan la
-afirmación de que en esas escenas los filtros aciertan.
+afirmación de que en esas escenas los filtros cumplen su función. La tercera documenta el
+patrón de anotación en contorno hueco.
 
 \begin{figure}[H]
   \centering
@@ -113,61 +147,185 @@ afirmación de que en esas escenas los filtros aciertan.
   \label{fig:diag-sobreseg}
 \end{figure}
 
-\section{Documentación técnica de la extensión aplicada}
+\section{Extensión aplicada: reglas heurísticas de priorización y aplicación}
 \label{app:extension}
 
-Esta sección documenta los componentes descritos en la
-subsección~\ref{sec:extension}.
+Esta sección documenta la extensión aplicada que resume la subsección~\ref{sec:extension}.
+No forma parte de la respuesta a la pregunta de investigación y se incluye como demostración
+de uso de los indicadores.
 
-\subsection*{Capa de avisos}
+\subsection*{Reglas heurísticas de priorización}
 
-Se implementa como un módulo independiente que opera sobre el archivo de resultados y le
-añade cuatro columnas: las claves de los avisos activados, su número, la severidad máxima
-y el nivel de riesgo resultante. Cada regla se declara como un objeto con su clave, su
-título legible, su severidad, la condición —una función sobre la fila de resultados—, el
-criterio en texto y su motivación. Esa estructura permite añadir, retirar o reajustar
-reglas sin tocar la lógica de evaluación, y garantiza que todo umbral quede acompañado de
-su justificación en el mismo lugar del código.
+Se definieron seis reglas, cada una con un umbral explícito, una población sobre la que se
+evalúa y la razón que la motiva (Tabla~\ref{tab:reglas}). Las reglas basadas en el conteo y en
+la geometría de las rocas solo se evalúan sobre la población de E2, y las basadas en la
+cobertura o la composición, sobre la de E1; así una escena casi vacía no puede activar, por
+ejemplo, la regla del bloque dominante por un artefacto de anotación. Las reglas \textbf{no
+están calibradas para la navegación}: sin escala métrica, un porcentaje de píxeles no permite
+inferir la altura de un bloque, la transitabilidad del terreno, el daño a las ruedas ni la
+probabilidad de atrapamiento. La motivación de cada regla indica qué condición del terreno
+inspira el umbral, no que la regla la detecte.
 
-La evaluación no reprocesa máscaras: recorre el archivo de resultados, de modo que
-recalcular los avisos sobre las \num{16064} escenas es inmediato. Las salidas son la tabla
-completa con las columnas añadidas, un catálogo de las reglas con sus umbrales y un
-resumen agregado por nivel y por tipo de aviso.
+Los umbrales son valores redondos, no percentiles. El percentil que cada uno representa en su
+población lo calcula el guion de la extensión y queda registrado en su catálogo: el
+\SI{5}{\percent} de roca grande corresponde al percentil \cPercBig{} de la población de E2; la
+solidez de $0{,}85$, al \cPercSol; el \SI{15}{\percent} de roca mayor, al \cPercMayor; las cinco
+rocas, al \cPercCampo; el \SI{70}{\percent} de arena, al percentil \cPercArena{} de la población
+de E1, y el \SI{80}{\percent} de cobertura, al \cPercRocoso{} —un umbral nada extremo: lo supera
+el \cRocosoSupera{} de las escenas con cobertura definida, por lo que esa regla es solo
+informativa—.
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption[Reglas heurísticas de priorización]{Reglas heurísticas de priorización, con su
+    umbral, la población sobre la que se evalúan, su peso y la condición del terreno que las
+    inspira. El peso distingue las reglas que elevan la prioridad (2 y 3) de las meramente
+    informativas (1).}
+  \label{tab:reglas}
+  \begin{tabular}{p{2.9cm}p{3.1cm}ccp{5.0cm}}
+    \toprule
+    \textbf{Regla} & \textbf{Umbral} & \textbf{Pobl.} & \textbf{Peso} & \textbf{Condición que la inspira} \\
+    \midrule
+    Bloques angulosos abundantes & roca grande \textgreater\ \SI{5}{\percent} y solidez
+      \textless\ 0,85 & E2 & 3 & Abundancia de bloques de contorno irregular; inspirada en el
+      desgaste de las ruedas de \textit{Curiosity} \citep{jpl2017wheels}. \\
+    Bloque dominante en la escena & roca mayor \textgreater\ \SI{15}{\percent} & E2 & 3 & Un
+      bloque que ocupa buena parte de la escena; sin escala no se conoce su altura. \\
+    Arena predominante & arena \textgreater\ \SI{70}{\percent} & E1 & 3 & Inspirada en el modo
+      de fallo que inmovilizó a \textit{Spirit}; no mide propiedades del suelo. \\
+    Campo denso de bloques & 5 o más rocas & E2 & 2 & Muchos bloques discretos en la escena. \\
+    Terreno mayoritariamente rocoso & cobertura \textgreater\ \SI{80}{\percent} & E1 & 1 &
+      Informativa: predominio de roca expuesta. \\
+    Escena poco evaluable & más del \SI{95}{\percent} sin etiquetar & todas & 1 & Señala que la
+      ausencia de otras reglas no debe leerse como ausencia de condiciones relevantes. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+La prioridad de una escena se determina solo con las reglas de peso dos o tres. Es
+\textbf{alta} cuando concurren al menos dos de ellas y alguna es de peso tres, \textbf{media}
+cuando hay una sola de peso tres, y \textbf{baja} cuando únicamente se activa la regla de peso
+dos. La Figura~\ref{fig:alertas} presenta el resultado sobre el subconjunto completo:
+\cPrioAlta{} escenas de prioridad alta, \cPrioMedia{} de media y \cPrioBaja{} de baja; las
+\cPrioSin{} restantes no activan ninguna regla de prioridad. La categoría baja es estrecha por
+construcción, porque solo se alcanza cuando se activa en exclusiva la única regla de peso dos.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_24_priorizacion.png}
+  \caption[Escenas por nivel de prioridad]{Escenas por nivel de prioridad, en escala
+    logarítmica, y número de escenas que activa cada regla.}
+  \label{fig:alertas}
+\end{figure}
+
+La regla más frecuente es la informativa de terreno rocoso, con \cReglaRocoso{} escenas. Entre
+las que elevan la prioridad, la de arena predominante se activa en \cReglaArena{} escenas, la
+de bloque dominante en \cReglaMayor, la de campo denso de bloques en \cReglaCampo{} y la de
+bloques angulosos, la más restrictiva, en \cReglaAngulosos. Las reglas heredan las
+limitaciones de los indicadores de los que derivan, incluida la dependencia de la fuente de
+anotación (Sección~\ref{sec:experto}) y el subconteo del conteo
+(Sección~\ref{sec:validacion-manual}).
+
+\subsection*{Implementación de las reglas}
+
+Se implementan como un módulo independiente que opera sobre el archivo de resultados y le
+añade cuatro columnas: las claves de las reglas activadas, su número, el peso máximo y el nivel
+de prioridad resultante. Cada regla se declara como un objeto con su clave, su título legible,
+su peso, la población sobre la que se evalúa, la condición —una función sobre la fila de
+resultados—, el criterio en texto y su motivación. Esa estructura permite añadir, retirar o reajustar reglas sin tocar la lógica de
+evaluación, y garantiza que todo umbral quede acompañado de su justificación en el mismo lugar
+del código. La evaluación no reprocesa máscaras, de modo que recalcular las reglas sobre las
+\cNEscenas{} escenas es inmediato.
 
 \subsection*{Aplicación de consulta}
 
-Aplicación de escritorio en Python construida sobre una biblioteca de componentes gráficos
-modernos, con la paleta institucional de la agencia responsable del conjunto de datos. La
-ventana se organiza en una barra lateral de navegación y cuatro vistas:
+Para que el conjunto de resultados sea consultable sin conocimientos de programación se
+desarrolló una aplicación de escritorio en Python, organizada en una barra lateral de
+navegación y cuatro vistas:
 
 \begin{description}
   \item[Resumen] Estadísticos descriptivos del subconjunto y composición del terreno.
-  \item[Avisos] Distribución por nivel de riesgo y por tipo de regla, con el detalle del
-    criterio que motivó cada aviso.
-  \item[Explorador] Para la escena seleccionada, la imagen original, la anotación del
-    terreno y las rocas detectadas por el procedimiento, en paneles contiguos.
-  \item[Geología] Presencia de los rasgos de la taxonomía extendida en el conjunto de la
-    misión posterior, incluidas las vetas.
+  \item[Priorización] Distribución por nivel de prioridad y por regla, con el criterio que
+    motivó cada activación.
+  \item[Explorador] Para la escena seleccionada, la imagen original, la anotación del terreno
+    y las rocas detectadas por el procedimiento, en paneles contiguos.
+  \item[Geología] Presencia de los rasgos de la taxonomía geológica extendida en el conjunto de
+    la misión posterior, incluidas las vetas.
 \end{description}
 
 Las figuras se generan en el momento a partir de los mismos archivos de resultados que
-respaldan este documento, de modo que la aplicación no mantiene una copia propia de los
-datos y cualquier reejecución del procedimiento se refleja en ella sin pasos adicionales.
+respaldan este documento, de modo que la aplicación no mantiene una copia propia de los datos
+y cualquier reejecución del procedimiento se refleja en ella sin pasos adicionales.
 
-\subsection*{Exploración de rasgos geológicos}
+\section{Exploración complementaria: detección de vetas}
+\label{app:vetas}
 
-El conjunto de datos incluye, para la misión posterior a la estudiada, una taxonomía
-geológica más detallada que la escala de navegación: distingue subtipos de lecho rocoso,
-roca suelta, guijarros y vetas. Se recorrieron sus \num{8497} máscaras registrando la
-presencia y extensión de cada rasgo. Las vetas aparecen en \num{294} escenas, el
-\SI{3.5}{\percent}, de las cuales \num{150} presentan una geometría compatible con una
-veta genuina —alargada y de área reducida— y \num{69} resultan dudosas.
+Esta exploración no responde a la pregunta de investigación y se recoge aquí para que no se
+repita sin conocer sus límites.
 
-Ese recorrido tiene un interés que excede la exploración de vetas y se recoge entre las
-recomendaciones del Capítulo~\ref{cap:conclusiones}: la clase de \textit{roca suelta} de
-esa taxonomía aparece en una proporción muy superior a la de \textit{roca grande} en la
-escala de navegación, lo que la convierte en la vía natural para sortear el techo del
-conteo documentado en la subsección~\ref{sec:diagnostico}.
+\subsection*{Rasgos de la taxonomía geológica extendida}
+
+El conjunto de datos incluye, para la misión posterior a la estudiada, una taxonomía geológica
+más detallada que la escala de navegación: distingue subtipos de lecho rocoso, roca suelta,
+guijarros y vetas. Se recorrieron sus \num{8497} máscaras registrando la presencia y extensión
+de cada rasgo. Las vetas aparecen en \num{294} escenas, el \SI{3.5}{\percent}, de las cuales
+\num{150} presentan una geometría compatible con una veta genuina —alargada y de área
+reducida— y \num{69} resultan dudosas. La clase de roca suelta de esa taxonomía aparece en una
+proporción muy superior a la de roca grande en la escala de navegación, lo que motiva la línea
+futura del Capítulo~\ref{cap:conclusiones}.
+
+\subsection*{Detector y resultado}
+
+Las vetas de sulfato de calcio son depósitos precipitados por circulación de agua. La escala de
+navegación no las etiqueta, de modo que la única vía para inventariarlas en las imágenes de
+\textit{Curiosity} sería detectarlas a partir de la propia imagen. El procedimiento ensayado
+aplicó un filtro de crestas de Meijering sobre la región de lecho rocoso: ese filtro analiza los
+autovalores del hessiano para realzar estructuras curvilíneas finas, y una veta es
+geométricamente ese tipo de objeto. Se ensayó además una variante que pondera la respuesta por
+el cociente azul/rojo, bajo la hipótesis de que el sulfato, blanquecino, resultaría menos
+rojizo que el polvo marciano. La evaluación se hizo sobre \cVetaN{} escenas del conjunto
+extendido cuya anotación de veta se consideró plausible, midiendo la precisión frente a la tasa
+base (Tabla~\ref{tab:vetas}, Figura~\ref{fig:vetas}).
+
+\begin{table}[H]
+  \centering
+  \caption{Desempeño del detector de vetas sobre las escenas anotadas.}
+  \label{tab:vetas}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Medida} & \textbf{Sin color} & \textbf{Con color} \\
+    \midrule
+    Precisión media               & \cVetaPrec  & \cVetaPrecC \\
+    Exhaustividad media           & \cVetaRec   & \cVetaRecC \\
+    Mejora sobre la tasa base     & \cVetaMejora$\times$ & \cVetaMejoraC$\times$ \\
+    Escenas sin ningún acierto    & \cVetaFallos{} de \cVetaN & \cVetaFallosC{} de \cVetaN \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_25_exploracion_vetas.png}
+  \caption[Desempeño del detector de vetas]{Mejora sobre la tasa base por escena, ordenada de
+    mayor a menor, y precisión frente a exhaustividad en las dos variantes.}
+  \label{fig:vetas}
+\end{figure}
+
+El resultado fue negativo: hay señal, pero el detector no es utilizable. Una mejora de nueve
+veces sobre la tasa base no es ruido; sin embargo recupera menos del \SI{7}{\percent} de los
+píxeles de veta y falla por completo en casi la mitad de las escenas. La variante con color no
+aporta: la precisión apenas cambia, la exhaustividad empeora y los fallos aumentan.
+
+La hipótesis del color se refutó con una medición propia. Sobre imágenes de la cámara de mástil
+de \textit{Curiosity}, el cociente azul/rojo en las zonas claras del lecho rocoso resultó ser
+apenas $1{,}025$ veces el del conjunto de la roca, y con dirección inconsistente entre escenas.
+El polvo rojizo recubre también las vetas y borra el contraste espectral, y las imágenes del
+conjunto son archivos comprimidos con balance de blancos aplicado, no productos radiométricos
+calibrados. A ello se añade que la cámara del subconjunto es un instrumento de navegación: las
+vetas del cráter Gale se caracterizaron con la lupa de mano \citep{edgett2012mahli} y la cámara
+de mástil \citep{bell2017mastcam}. Perseguir esta línea exigiría datos espectrales calibrados,
+que no forman parte de AI4Mars.
 
 \section{Recursos reproducibles}
 
@@ -176,24 +334,38 @@ Los recursos que respaldan el trabajo se organizan como sigue.
 \begin{description}
 
   \item[Módulos de cálculo] Implementan la lectura de máscaras, el cálculo de cobertura,
-    el conteo de rocas, los descriptores de composición y geometría, y la orquestación
-    que produce una fila de resultados por imagen. Las funciones reciben arreglos y
-    devuelven arreglos o números, sin efectos secundarios, y todos los umbrales se pasan
-    como argumentos con valores por defecto documentados.
+    el conteo de rocas, los descriptores de composición y geometría, la definición única de
+    las poblaciones de E1 y E2, y la orquestación que produce una fila de resultados por
+    imagen. Las funciones reciben arreglos y devuelven arreglos o números, sin efectos
+    secundarios, y todos los umbrales se pasan como argumentos con valores por defecto
+    documentados.
 
-  \item[Guiones de ejecución] Automatizan el recorrido del subconjunto, la generación de
-    las figuras del documento, el diagnóstico de los modos de error y las comparaciones
-    con los métodos de aprendizaje automático.
+  \item[Guiones de ejecución] Automatizan el recorrido del subconjunto, la calibración, los
+    análisis estadísticos, el entrenamiento y la evaluación del segmentador, la generación de
+    las figuras, el diagnóstico de los modos de error, las comparaciones con aprendizaje
+    automático y la extracción de todas las cifras de este documento.
 
-  \item[Conjunto de resultados] Archivo tabular con los veinticuatro indicadores para las
-    \num{16064} escenas, según el esquema de la Tabla~\ref{tab:esquema}.
+  \item[Comando único] Un archivo \texttt{Makefile} ejecuta los guiones en orden y regenera
+    resultados, evaluaciones, figuras, cifras y documento.
 
-  \item[Especificación del entorno] Archivo de definición del entorno con las
-    dependencias, complementado por el registro de versiones exactas del
-    Tabla~\ref{tab:versiones}.
+  \item[Pruebas] \cPruebasN{} pruebas automáticas sobre máscaras sintéticas verifican las
+    reglas deterministas del procedimiento.
+
+  \item[Manifiestos] Escenas de calibración, reparto del segmentador por bloques temporales
+    —con el bloque y la partición de cada escena— y respuestas de la validación humana.
+
+  \item[Conjunto de resultados] Archivo tabular con los veinticuatro indicadores y las cuatro
+    columnas de elegibilidad para las \cNEscenas{} escenas, según el esquema de la
+    Tabla~\ref{tab:esquema}, y los resultados equivalentes para las máscaras de especialista.
+
+  \item[Especificación del entorno] Archivo de definición del entorno con las versiones de la
+    ejecución final (Tabla~\ref{tab:versiones}), complementado por el registro exacto de todos
+    los paquetes instalados.
 
 \end{description}
 
-El conjunto de datos AI4Mars no se distribuye con estos recursos, dado su volumen. El
-código lo referencia mediante una ruta configurable, de modo que debe descargarse de la
-fuente original \citep{swan2022ai4marsdata}.
+El conjunto de datos AI4Mars no se distribuye con estos recursos, dado su volumen. El código
+lo referencia mediante una ruta configurable, de modo que debe descargarse de la fuente
+original \citep{swan2022ai4marsdata}. Tampoco se versiona el modelo entrenado, por su tamaño;
+su huella SHA-256 queda registrada junto a sus métricas, de modo que puede verificarse que un
+archivo de pesos es exactamente el evaluado.

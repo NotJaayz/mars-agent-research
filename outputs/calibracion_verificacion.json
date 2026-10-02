@@ -1,0 +1,19 @@
+{
+  "n_e2": 2193,
+  "solidez_baja": {
+    "n": 20,
+    "reduccion_pct": 21.212121212121215
+  },
+  "mas_de_15": {
+    "n": 6,
+    "reduccion_pct": 40.90909090909091
+  },
+  "normales": {
+    "n": 2167,
+    "sin_cambio": 1519,
+    "reduccion_pct": 21.44657746751988
+  },
+  "semillas_A_max": 142,
+  "solapamiento_validacion": 0,
+  "solapamiento_piloto": 1
+}

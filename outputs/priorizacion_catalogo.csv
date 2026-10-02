@@ -1,0 +1,7 @@
+clave,titulo,peso,poblacion,criterio,motivo,percentiles
+bloques_angulosos,Bloques angulosos abundantes,3,E2,roca grande > 5 % del área etiquetada y solidez media < 0.85,Inspirada en el desgaste de las ruedas de Curiosity sobre roca angulosa. Combina abundancia de roca grande con contornos irregulares; no mide angulosidad física.,pct_bigrock 5: percentil 65 en E2; mean_solidity 0.85: percentil 13 en E2
+bloque_dominante,Bloque dominante en la escena,3,E2,la roca mayor ocupa > 15 % del área etiquetada,Un bloque que ocupa buena parte de la escena podría requerir revisión de la ruta; sin escala métrica no se conoce su altura.,largest_rock_pct 15: percentil 89 en E2
+campo_bloques,Campo denso de bloques,2,E2,5 o más rocas individuales contadas,Muchos bloques discretos en la escena.,n_rocks 5: percentil 95 en E2
+arena_predominante,Arena predominante,3,E1,arena > 70 % del área etiquetada,Inspirada en el modo de fallo que inmovilizó a Spirit en arena suelta; no mide propiedades mecánicas del suelo.,pct_sand 70: percentil 93 en E1
+terreno_rocoso,Terreno mayoritariamente rocoso,1,E1,cobertura de roca > 80 % de los píxeles etiquetados,Informativa: predominio de roca expuesta. No es un umbral extremo en este corpus.,rock_coverage_pct 80: percentil 57 en E1
+escena_no_evaluable,Escena poco evaluable,1,todas,más del 95 % de la escena sin etiquetar,La anotación disponible no basta para valorar la escena; se señala para que no se interprete la ausencia de otras reglas como ausencia de condiciones relevantes.,

@@ -1,5 +1,10 @@
 # Correcciones a aplicar al documento de la propuesta
 
+> **Documento de trabajo anterior a la revisión de octubre de 2026.** Algunas cifras y conclusiones de
+> este archivo fueron corregidas después (población del conteo, análisis de dependencia, contraste
+> con las máscaras de experto, segmentador). Las versiones vigentes son las de la tesis (`tesis/`) y
+> el [README](../README.md).
+
 Documento de trabajo interno: lista de cambios concretos que deben aplicarse al texto de
 la propuesta (`Mars_Final_Delgado.pdf`, 61 pp) para alinearlo con lo verificado durante la
 implementación. Para cada punto se cita el **texto original** y se propone el **texto de

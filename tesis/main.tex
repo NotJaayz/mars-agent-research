@@ -10,6 +10,10 @@
 % Datos generales y modalidad del proyecto
 \input{config}
 
+% Cifras del documento, generadas a partir de los resultados con
+% scripts/generar_cifras.py. No se escriben números a mano en el texto.
+\input{cifras}
+
 % Codificación e idioma
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -35,6 +39,8 @@
 \usepackage{booktabs,longtable,adjustbox}
 % La matriz de operacionalización requiere una página apaisada.
 \usepackage{pdflscape}
+% Listas con márgenes ajustables (hipótesis de estudio).
+\usepackage{enumitem}
 \usepackage{caption,subcaption}
 \usepackage{float}
 \usepackage[section]{placeins}
@@ -42,6 +48,7 @@
 % El separador de miles requiere dobles llaves: con {.} siunitx v3 lo descarta y
 % usa la coma por defecto, incorrecta en español.
 \sisetup{output-decimal-marker={,},group-separator={{.}}}
+\DeclareSIUnit{\px}{px}
 
 % Diagramas
 \usepackage{tikz}
@@ -182,6 +189,6 @@
 \clearpage
 \chapter*{Referencias}
 \addcontentsline{toc}{chapter}{Referencias}
-\printbibliography[heading=none]
+{\sloppy\printbibliography[heading=none]}
 
 \end{document}

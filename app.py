@@ -2,7 +2,7 @@
 """Panel de análisis de terreno marciano — aplicación de escritorio.
 
 Producto final del trabajo: interfaz gráfica que reúne los indicadores por imagen, el
-sistema de alertas de riesgo y un explorador de escenas, sin necesidad de ejecutar código
+reglas heurísticas de priorización y un explorador de escenas, sin necesidad de ejecutar código
 ni de conocer el detalle del procedimiento.
 
 Se ejecuta con:
@@ -39,8 +39,8 @@ TARJETA = "#171d29"
 BORDE = "#252d3d"
 TEXTO = "#e8eaf0"
 TENUE = "#98a1b3"
-NIVEL_COLOR = {"alto": ROJO, "medio": "#e8963c", "bajo": "#d4b13f", "sin_alerta": "#4aa06b"}
-NIVEL_TXT = {"alto": "Alto", "medio": "Medio", "bajo": "Bajo", "sin_alerta": "Sin alerta"}
+NIVEL_COLOR = {"alta": ROJO, "media": "#e8963c", "baja": "#d4b13f", "sin_prioridad": "#4aa06b"}
+NIVEL_TXT = {"alta": "Alta", "media": "Media", "baja": "Baja", "sin_prioridad": "Sin prioridad"}
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
@@ -87,18 +87,18 @@ class Panel(ctk.CTk):
     # ---------------------------------------------------------------- datos
     def _cargar_datos(self) -> None:
         import pandas as pd
-        ruta = RAIZ / "outputs" / "alertas.csv"
+        ruta = RAIZ / "outputs" / "priorizacion.csv"
         if not ruta.exists():
             messagebox.showerror(
                 "Faltan datos",
-                "No se encontró outputs/alertas.csv.\n\nGenera los resultados antes:\n"
-                "    python scripts/run_pipeline.py\n    python scripts/run_alerts.py")
+                "No se encontró outputs/priorizacion.csv.\n\nGenera los resultados antes:\n"
+                "    python scripts/run_pipeline.py\n    python scripts/run_priorizacion.py")
             self.destroy(); sys.exit(1)
         self.df = pd.read_csv(ruta)
-        self.df["alertas"] = self.df.alertas.fillna("")
+        self.df["reglas_activadas"] = self.df.reglas_activadas.fillna("")
 
-        from src import alerts
-        self.catalogo = alerts.catalogo()
+        from src import priorizacion
+        self.catalogo = priorizacion.catalogo()
         self.titulos = dict(zip(self.catalogo.clave, self.catalogo.titulo))
 
         geo = RAIZ / "outputs" / "geologia_m2020.csv"
@@ -143,7 +143,7 @@ class Panel(ctk.CTk):
                      font=ctk.CTkFont(size=11)).pack(pady=(0, 22))
 
         self._botones = {}
-        for clave, texto in [("resumen", "Resumen"), ("alertas", "Alertas"),
+        for clave, texto in [("resumen", "Resumen"), ("alertas", "Priorización"),
                              ("explorador", "Explorador de escenas"),
                              ("geologia", "Geología")]:
             b = ctk.CTkButton(lat, text=texto, anchor="w", height=40, corner_radius=8,
@@ -227,8 +227,8 @@ class Panel(ctk.CTk):
         for val, et in [(_miles(len(df)), "imágenes analizadas"),
                         (_miles(len(rb)), "con roca visible"),
                         (_miles(int(df.n_rocks.sum())), "rocas contadas"),
-                        (_miles(int((df.nivel_riesgo != "sin_alerta").sum())), "con alguna alerta"),
-                        (str(int((df.nivel_riesgo == "alto").sum())), "en riesgo alto")]:
+                        (_miles(int((df.nivel_prioridad != "sin_prioridad").sum())), "con alguna regla de prioridad"),
+                        (str(int((df.nivel_prioridad == "alta").sum())), "en prioridad alta")]:
             self._kpi(fila, val, et).pack(side="left", expand=True, fill="both", padx=4)
 
         fig, ax = self._figura(12.6, 3.4, 1, 3)
@@ -247,21 +247,22 @@ class Panel(ctk.CTk):
 
     def _vista_alertas(self):
         v = ctk.CTkScrollableFrame(self.contenido, fg_color=FONDO)
-        self._titulo(v, "Alertas de riesgo",
-                     "Avisos operativos derivados de los indicadores. Cada regla declara el "
-                     "umbral que la activa y el motivo que la justifica, de modo que el "
-                     "criterio pueda discutirse y ajustarse.")
+        self._titulo(v, "Reglas de priorización",
+                     "Reglas heurísticas para ordenar escenas para revisión; no están "
+                     "calibradas para la navegación. Cada regla declara el umbral que la "
+                     "activa y el motivo que la inspira, de modo que el criterio pueda "
+                     "discutirse y ajustarse.")
         df = self.df
         fig, ax = self._figura(12.6, 4.4, 1, 2)
-        niv = df.nivel_riesgo.value_counts()
+        niv = df.nivel_prioridad.value_counts()
         ax[0].barh([NIVEL_TXT.get(k, k) for k in niv.index][::-1], niv.values[::-1],
                    color=[NIVEL_COLOR.get(k, AZUL_CLARO) for k in niv.index][::-1])
-        ax[0].set_title("Escenas por nivel de riesgo")
-        cnt = {self.titulos.get(c, c): int(df.alertas.str.contains(c).sum())
+        ax[0].set_title("Escenas por nivel de prioridad")
+        cnt = {self.titulos.get(c, c): int(df.reglas_activadas.str.contains(c).sum())
                for c in self.catalogo.clave}
         cnt = dict(sorted(cnt.items(), key=lambda x: x[1]))
         ax[1].barh(list(cnt), list(cnt.values()), color=ROJO, alpha=.9)
-        ax[1].set_title("Alertas emitidas por tipo")
+        ax[1].set_title("Reglas activadas por tipo")
         fig.tight_layout()
         self._lienzo(v, fig).pack(fill="x", pady=(0, 14))
 
@@ -274,8 +275,8 @@ class Panel(ctk.CTk):
             cab = ctk.CTkFrame(t, fg_color="transparent"); cab.pack(fill="x", padx=16, pady=(11, 0))
             ctk.CTkLabel(cab, text=r.titulo, text_color=AZUL_CLARO,
                          font=ctk.CTkFont(size=13, weight="bold")).pack(side="left")
-            col = {3: ROJO, 2: "#e8963c", 1: TENUE}[r.severidad]
-            ctk.CTkLabel(cab, text=f" severidad {r.severidad}/3 ", fg_color=col,
+            col = {3: ROJO, 2: "#e8963c", 1: TENUE}[r.peso]
+            ctk.CTkLabel(cab, text=f" peso {r.peso}/3 ", fg_color=col,
                          text_color="#ffffff", corner_radius=6,
                          font=ctk.CTkFont(size=10, weight="bold")).pack(side="right")
             ctk.CTkLabel(t, text=f"Criterio: {r.criterio}", text_color=TEXTO,
@@ -293,13 +294,13 @@ class Panel(ctk.CTk):
                      "anotación del terreno y las rocas detectadas.")
 
         barra = ctk.CTkFrame(v, fg_color=FONDO); barra.pack(fill="x", pady=(0, 10))
-        self.filtro = ctk.StringVar(value="alto")
+        self.filtro = ctk.StringVar(value="alta")
         seg = ctk.CTkSegmentedButton(
-            barra, values=["Alto", "Medio", "Bajo", "Todos"],
+            barra, values=["Alta", "Media", "Baja", "Todas"],
             command=self._cambiar_filtro, fg_color=TARJETA, selected_color=AZUL,
             selected_hover_color=AZUL_CLARO, unselected_color=TARJETA,
             text_color=TEXTO, font=ctk.CTkFont(size=12))
-        seg.set("Alto"); seg.pack(side="left")
+        seg.set("Alta"); seg.pack(side="left")
         self.contador = ctk.CTkLabel(barra, text="", text_color=TENUE,
                                      font=ctk.CTkFont(size=11))
         self.contador.pack(side="left", padx=14)
@@ -329,20 +330,20 @@ class Panel(ctk.CTk):
         return v
 
     def _cambiar_filtro(self, valor: str) -> None:
-        self.filtro.set({"Alto": "alto", "Medio": "medio", "Bajo": "bajo",
-                         "Todos": "todos"}[valor])
+        self.filtro.set({"Alta": "alta", "Media": "media", "Baja": "baja",
+                         "Todas": "todas"}[valor])
         self._llenar_lista()
 
     def _llenar_lista(self) -> None:
         self.tabla.delete(*self.tabla.get_children())
-        d = self.df[self.df.nivel_riesgo != "sin_alerta"]
-        if self.filtro.get() != "todos":
-            d = d[d.nivel_riesgo == self.filtro.get()]
+        d = self.df[self.df.nivel_prioridad != "sin_prioridad"]
+        if self.filtro.get() != "todas":
+            d = d[d.nivel_prioridad == self.filtro.get()]
         total = len(d)
-        d = d.sort_values("n_alertas", ascending=False).head(400)
+        d = d.sort_values("n_reglas", ascending=False).head(400)
         for _, r in d.iterrows():
-            self.tabla.insert("", "end", tags=(r.nivel_riesgo,),
-                              values=(r.image_id, NIVEL_TXT[r.nivel_riesgo], r.n_alertas))
+            self.tabla.insert("", "end", tags=(r.nivel_prioridad,),
+                              values=(r.image_id, NIVEL_TXT[r.nivel_prioridad], r.n_reglas))
         self.contador.configure(
             text=f"{_miles(total)} escenas" + (f" · se muestran las 400 primeras"
                                                if total > 400 else ""))
@@ -362,11 +363,11 @@ class Panel(ctk.CTk):
         ctk.CTkLabel(self.detalle, text=str(image_id), text_color=TEXTO,
                      font=ctk.CTkFont(size=13, weight="bold")
                      ).pack(anchor="w", padx=16, pady=(12, 2))
-        alertas = [self.titulos.get(a, a) for a in str(fila.alertas).split("|") if a]
+        alertas = [self.titulos.get(a, a) for a in str(fila.reglas_activadas).split("|") if a]
         chips = ctk.CTkFrame(self.detalle, fg_color="transparent")
         chips.pack(anchor="w", padx=16, pady=(0, 4))
         for a in alertas:
-            ctk.CTkLabel(chips, text=f" {a} ", fg_color=NIVEL_COLOR.get(fila.nivel_riesgo, AZUL),
+            ctk.CTkLabel(chips, text=f" {a} ", fg_color=NIVEL_COLOR.get(fila.nivel_prioridad, AZUL),
                          text_color="#fff", corner_radius=6,
                          font=ctk.CTkFont(size=10, weight="bold")).pack(side="left", padx=(0, 5))
         ctk.CTkLabel(self.detalle, text_color=TENUE, font=ctk.CTkFont(size=11),

@@ -1,5 +1,10 @@
 # Abstract and conclusions
 
+> **Working document predating the October 2026 revision.** Some numbers and conclusions in this
+> file were corrected afterwards (count population, dependence analysis, comparison with expert
+> masks, segmenter). The current versions are those in the thesis (`tesis/`) and the
+> [README](../README.en.md).
+
 **🌐 Language:** [Español](conclusiones.md) · **English**
 
 > Draft of the abstract and the conclusions chapter. The abstract goes at the beginning of

@@ -30,6 +30,20 @@ outputs/*.csv
 !outputs/results.csv
 # Resultados pequeños que respaldan figuras del documento.
 !outputs/cobertura_modelo_vs_humano.csv
+# Resultados pequeños de los que dependen las cifras de la tesis (scripts/generar_cifras.py).
+!outputs/results_test_masked-gold-min1-100agree.csv
+!outputs/results_test_masked-gold-min2-100agree.csv
+!outputs/results_test_masked-gold-min3-100agree.csv
+!outputs/fuente_anotacion.csv
+!outputs/sensibilidad_parametros.csv
+!outputs/modelo_vs_experto_min1.csv
+!outputs/comparacion_watershed_sam.csv
+!outputs/exploracion_vetas.csv
+!outputs/split_deeplab_manifiesto.csv
+!outputs/cobertura_modelo_prueba_natural.csv
+!outputs/fuente_anotacion_prueba.csv
+!outputs/calibracion_tabla.csv
+!outputs/priorizacion_catalogo.csv
 
 # ===== Entorno conda exportado con builds locales =====
 environment.lock.yml
@@ -78,12 +92,11 @@ Thumbs.db
 outputs/validacion_manual/imagenes/
 outputs/validacion_manual_v2/imagenes/
 
-# ===== Salidas del sistema de alertas =====
+# ===== Salidas de las reglas de priorización =====
 # El panel HTML y los resúmenes se versionan (son el entregable consultable);
 # las tablas completas se regeneran con los scripts.
 !outputs/panel_ai4mars.html
-!outputs/alertas_catalogo.csv
-!outputs/alertas_resumen.json
+!outputs/priorizacion_resumen.json
 !outputs/geologia_m2020_resumen.json
 
 # Figuras de vetas: se regeneran con scripts/make_vein_figures.py

@@ -39,7 +39,7 @@ from PIL import Image
 from scipy import ndimage as ndi
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from src import config, mask_utils as mu  # noqa: E402
+from src import config, mask_utils as mu, poblaciones  # noqa: E402
 
 BANDAS = ["0", "1-3", "4-9", "10-24", "25-49", "50+"]
 
@@ -108,7 +108,7 @@ def seleccionar(args) -> pd.DataFrame:
     if previo.exists():
         usadas = set(pd.read_csv(previo).image_id)
 
-    cand = res[(res.quality_flag == "ok")
+    cand = res[res.is_e2_eligible.astype(bool)
                & (res.n_bigrock >= MIN_PX_ZONA)
                & (~res.image_id.isin(usadas))].copy()
     if cand.empty:

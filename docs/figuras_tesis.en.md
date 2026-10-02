@@ -20,7 +20,7 @@ representative images.
 | 15 | `Figura_15_conteo_por_bandas.png` | Results, §3 |
 | 16 | `Figura_16_tamano_frecuencia.png` | Results, §3.1 |
 | 17 | `Figura_17_tipologia_escenas.png` | Results, §4 |
-| 18 | `Figura_18_variacion_recorrido.png` | Results, §5 |
+| 18 | `Figura_18_variacion_secuencia.png` | Results, §5 |
 | 19 | `Figura_19_validacion_experto.png` | Results, §6 |
 | 20 | `Figura_20_matriz_acuerdo.png` | Results, §7 |
 | 21 | `Figura_21_cobertura_modelo_vs_humano.png` | Results, §7 |
@@ -103,7 +103,7 @@ representative images.
 > class exceeds 50%, and mixed when none predominates. Almost half of the scenes are rocky.
 > Source: own elaboration.
 
-![Figura_18_variacion_recorrido](../outputs/figures/tesis/Figura_18_variacion_recorrido.png)
+![Figura_18_variacion_secuencia](../outputs/figures/tesis/Figura_18_variacion_secuencia.png)
 
 **Figure 18.** *Rock coverage and presence of big rock along the traverse.*
 

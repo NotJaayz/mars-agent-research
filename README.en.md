@@ -8,7 +8,7 @@ processing and without training any model.
 
 > **Author:** Juan Pablo Delgado Castro
 > **Programme:** Data Science · Department of Mathematics · Universidad Externado de Colombia
-> **Status:** procedure run over 16,064 scenes · thesis document written (87 pages)
+> **Status:** procedure run over 16,064 scenes · thesis document revised after the supervisor's corrections
 
 ---
 
@@ -27,17 +27,29 @@ anything, with every threshold in plain sight, on a laptop.
 
 ## Research question
 
-> How can visible rock coverage and the approximate number of individual rocks per image be
-> quantified from the labelled masks of AI4Mars, through an image-processing pipeline with
-> explicit parameters and reproducible results?
+> Which quantitative indicators of rock coverage and organisation can be derived reproducibly
+> from the AI4Mars masks, and what are the limits of their validity with respect to differences
+> in annotation and to human judgement?
 
-The question has two halves of very different difficulty. Measuring coverage is counting
-pixels with a well-chosen denominator. Counting rocks requires solving an instance
-segmentation problem over a mask **that does not distinguish instances**: when two rocks
-touch, they are recorded as a single connected region.
+The question has two purposes. A **constructive** one: derive indicators with explicit
+parameters. A **critical** one: establish how far they inform about the terrain rather than
+about how it was annotated. Measuring coverage is counting pixels with a well-chosen
+denominator. Counting rocks requires solving an instance-segmentation problem over a mask
+**that does not distinguish instances**: when two rocks touch, they are recorded as a single
+connected region.
 
-The work addresses both and reports in equal detail where each one works and where it does
-not.
+The question was refined during the work: the original proposal asked only *how* to quantify;
+the validity limits were added in light of what the validation revealed, and the thesis
+documents this.
+
+### Working hypotheses
+
+| | Hypothesis | Outcome |
+|---|---|---|
+| **H1** | Coverage is derived reproducibly and is not determined by the labelled fraction of the scene | Supported, with weak residual dependence |
+| **H2** | The count approximates the number of rocks an observer distinguishes in the annotated region, without one-directional bias | Rejected (exploratory evaluation, one observer) |
+| **H3** | The indicators do not depend on the annotation source | Rejected: there is a source effect, much smaller than the raw difference |
+| **H4** | Coverage and count carry different information | Supported: different information, **not** statistical independence |
 
 ---
 
@@ -94,7 +106,7 @@ C = 100 · |R| / |V|
 **Example.** An image of 100 pixels, 45 of which were labelled and 30 are rock:
 `C = 100 · 30/45 = 66.7%`. Note the denominator is **what was labelled**, not the image:
 over the full image it would be 30%. Both measures are reported, and that difference is the
-origin of [Finding 1](#finding-1-crowdsourced-annotation-overestimates-rock).
+origin of the [denominator check](#visible-rock-coverage-e1).
 
 ### Counting individual rocks (E2)
 
@@ -182,370 +194,346 @@ default.
 | Connectivity | 8-neighbour | With 4, diagonally joined rocks would separate |
 
 > **The main calibration.** The prominence criterion replaced local-maximum detection by
-> minimum separation. Under the earlier criterion, a large slab labelled *big rock* generated
-> dozens of spurious seeds —one case produced **142**— and was fragmented into non-existent
-> rocks. The new criterion was verified to act **selectively**: on suspicious scenes it
-> reduces the count by 32% to 44%, while on normal scenes it changes no count at all.
+> minimum separation. With the initial criterion one scene produced **142** seeds, mostly along
+> an elongated band. `scripts/calibracion.py` rebuilds the calibration from a manifest of six
+> scenes and shows that the change was **not selective**: it cut the count by 21 % in scenes
+> with low solidity, by 41 % in those with more than fifteen rocks, and also by 21 % in the
+> rest. It lowered counts across the board, consistent with the undercount the human
+> validation revealed.
 
 ---
 
 ## 3. Results
 
-### Composition of the set
+### Analysis populations
 
-Every image receives a quality flag documenting its suitability for each indicator.
+Each image receives a quality flag documenting its suitability for each indicator.
 
 | Flag | Meaning | Images | % |
 |---|---|---:|---:|
 | `ok` | Contains big rock; suitable for both indicators | 2,193 | 13.7 |
 | `no_bigrock` | Contains rock, but no big rock to count | 8,458 | 52.7 |
 | `no_rock` | Labelled, no rock | 4,950 | 30.8 |
-| `mostly_null` | More than 95% unlabelled | 300 | 1.9 |
+| `mostly_null` | More than 95 % unlabelled | 300 | 1.9 |
 | `empty` | No labelled pixel at all | 163 | 1.0 |
 
-### Visible rock coverage (E1) — works
+- **Coverage (E1):** the 15,901 scenes with at least one labelled pixel (all but `empty`).
+- **Count (E2):** the **2,193 `ok` scenes**. The 33 `mostly_null` scenes that contain some big
+  rock (63 rocks) are excluded: with more than 95 % of the scene unlabelled, the region is an
+  isolated fragment, and annotation artefacts concentrate there.
 
-Of the 16,064 scenes, **10,817 (67.3%)** contain at least one rock pixel. Over those, coverage
-has a median of **96.8%** over labelled pixels and **42.0%** over the full image. The
-distribution is markedly **bimodal**.
+### Visible rock coverage (E1)
+
+Coverage could be computed for **15,901 of the 16,064 scenes (99.0 %)**; **10,817 scenes
+(67.3 % of the total)** had rock coverage greater than zero. Among the latter, the median
+coverage over labelled pixels was **96.8 %** (42.0 % over the full image). The distribution is
+markedly **bimodal**.
 
 ![Coverage distribution](outputs/figures/tesis/Figura_13_distribucion_cobertura.png)
 
-**The control that had to be run.** If the formula were the problem, *sparsely* labelled
-scenes would show *high* coverage, because the denominator would be small. This was tested
-explicitly:
+**Denominator check.** If sparsely labelled scenes mostly retained rock, they would have high
+coverage by construction.
 
-![Coverage versus labelled fraction](outputs/figures/tesis/Figura_14_cobertura_vs_fraccion_etiquetada.png)
+![Coverage vs labelled fraction](outputs/figures/tesis/Figura_14_cobertura_vs_fraccion_etiquetada.png)
 
-The correlation is **r = −0.02**: essentially nil. High coverages correspond to scenes
-genuinely dominated by bedrock, not to a denominator artefact.
+No global linear association was observed between coverage and labelled fraction
+(**r = −0.020**, 95 % CI [−0.037; −0.004]); with 15,901 scenes the association is detectable
+but explains less than a thousandth of the variance. Distance correlation (0.062) detects a weak
+non-linear dependence. By labelled-fraction band, median coverage does **not** follow the
+pattern the artefact would produce (it is not highest in the least-labelled scenes):
 
-### Rock counting (E2) — has a ceiling
+| Labelled fraction | Scenes | Median coverage (over labelled) | (over image) |
+|---|---:|---:|---:|
+| up to 0.25 | 1,895 | 48.2 % | 3.4 % |
+| 0.25 – 0.50 | 4,249 | 59.2 % | 22.0 % |
+| 0.50 – 0.75 | 5,680 | 69.3 % | 42.8 % |
+| above 0.75 | 4,077 | 32.6 % | 26.6 % |
 
-Applied to the 2,193 scenes with big rock, it yields **4,204 rocks**, with a median of 1 per
-image and a maximum of 20.
+The conclusions hold with full-image coverage (rank correlation between both versions: 0.90).
+
+### Rock counting (E2)
+
+Over the 2,193 `ok` scenes: **4,142 rocks**, median 1 per image, maximum 20.
 
 | Rocks per image | Images | % |
 |---|---:|---:|
-| 0 (discarded by the filters) | 453 | 20.7 |
+| 0 (discarded by filters) | 453 | 20.7 |
 | 1 | 772 | 35.2 |
 | 2–3 | 613 | 28.0 |
 | 4–9 | 344 | 15.7 |
 | 10 or more | 11 | 0.5 |
 
-![Count bands](outputs/figures/tesis/Figura_15_conteo_por_bandas.png)
+![Count by band](outputs/figures/tesis/Figura_15_conteo_por_bandas.png)
 
-The size–frequency distribution is **decreasing** —small rocks predominate— which agrees
-qualitatively with rock-abundance studies at landing sites. The comparison is one of shape,
-not magnitude: sizes are relative to the field of view, not metric.
+**Decreasing** size–frequency distribution (1,806 small, 1,317 medium, 1,019 large), consistent
+in shape —not magnitude: sizes are relative to the field of view— with rock-abundance studies.
 
 ![Size-frequency distribution](outputs/figures/tesis/Figura_16_tamano_frecuencia.png)
 
-### Terrain composition and traverse (E3)
+### Relationship between coverage and count (H4)
 
-Mean composition: **bedrock 49.8%, soil 36.4%, sand 12.5%, big rock 1.3%**.
+A Pearson coefficient near zero only rules out *linear* association; it does not prove
+independence. The relationship was therefore measured with progressively more general
+statistics (2,193 scenes):
+
+| Measure | Detects | Value | p |
+|---|---|---:|---:|
+| Pearson r | linear | +0.022 [−0.015; +0.059] | 0.286 |
+| Spearman ρ | monotone | +0.020 [−0.019; +0.060] | 0.351 |
+| Distance correlation | any | 0.074 | 0.002 |
+| Mutual information | any | 0.123 bits (null 0.023) | 0.005 |
+
+**Practically no linear association, but not independence**: there is a weak **inverted-U**
+dependence —few rocks at very low coverage (partly by construction, since big rock is in the
+coverage numerator), a peak between 10 % and 50 %, and fewer rocks in continuous outcrops at
+full coverage—. Coverage deciles explain **5.6 %** of the count variance. The two indicators
+carry different information; they are not independent.
+
+### Terrain composition and acquisition sequence (E3)
+
+Mean composition: **bedrock 49.8 %, soil 36.4 %, sand 12.5 %, big rock 1.3 %**.
 
 ![Scene typology](outputs/figures/tesis/Figura_17_tipologia_escenas.png)
 
-Ordering scenes by the spacecraft clock in their identifier reveals a **clear alternation**
-between frankly rocky stretches and stretches of soil or sand, with localised concentrations
-of big rock reaching 40% of the images in a stretch.
+Temporal order comes from the **spacecraft clock** (`sclk` column), extracted from each image
+identifier. Ordered this way, scenes alternate between rocky and soil or sand segments. This is
+variation **along the acquisition sequence, not in space**: the rover may take many images from
+one location, and the dataset does not include the position of each shot.
 
-![Variation along the traverse](outputs/figures/tesis/Figura_18_variacion_recorrido.png)
-
-### The two indicators are independent
-
-Their correlation is **r = 0.02**. This is not a detail: it means they measure distinct
-facets of the terrain and **neither substitutes for the other**. A continuous outcrop yields
-maximum coverage and a null count; a field of scattered blocks, the opposite.
+![Variation along the acquisition sequence](outputs/figures/tesis/Figura_18_variacion_secuencia.png)
 
 ---
 
-## 4. Findings
+## 4. Comparison with expert masks (H3)
 
-The three results the work considers its main contribution were not anticipated in the
-question: they emerged from validating the procedure.
-
-### Finding 1: crowdsourced annotation overestimates rock
-
-The dataset includes 322 specialist masks. **The same code was run over them, with no
-parameter changed.**
+The dataset includes 322 expert masks, on **images different** from the training ones. With the
+same code and parameters:
 
 | Indicator | Crowdsourced | Expert |
 |---|:---:|:---:|
-| Median coverage | 96.8% | **46.1%** |
-| Scenes at 100% coverage | 41% | **8%** |
-| Soil and sand pixels | 50% | **69%** |
-| Bedrock pixels | 49% | 31% |
+| Median coverage (scenes with rock) | 96.8 % | 46.1 % |
+| Scenes with 100 % coverage | 41 % | 8 % |
+| Labelled fraction of the scene (median) | 0.58 | 0.59 |
 
-![Expert validation](outputs/figures/tesis/Figura_19_validacion_experto.png)
+![Coverage by source](outputs/figures/tesis/Figura_19_validacion_experto.png)
 
-**The mechanism.** A salience bias in the annotation task. Rock is visually prominent and
-easy to delimit; soil and sand are broad, homogeneous surfaces whose delimitation is tedious.
-Since agreement between labellers is required, soil and sand pixels without consensus are
-left **unlabelled and drop out of the denominator**, inflating the rock fraction. The third
-row of the table confirms it: experts did not find more rock, they found **more soil**.
+**The difference cannot simply be attributed to annotation**: the two sources cover different
+images, and AI4Mars does not distribute crowdsourced masks for the expert images. To separate
+the effects, a **common instrument** was used: the trained segmenter (a fixed function of the
+image) applied to the labellable region of 593 crowdsourced scenes not used in its training or
+validation and of the 322 expert ones.
 
-**An important qualification.** The computation itself is *not* biased: applied to expert
-masks it yields plausible values. The bias resides in the input data, and the labels of the
-pixels that were painted are correct. The bias lives in the aggregation formula, not in the
-content of the labels.
+![Common instrument](outputs/figures/tesis/Figura_30_instrumento_comun.png)
 
-> **Why this reaches beyond the thesis.** The entire research line that uses AI4Mars
-> evaluates its models by agreement with these masks. Documenting that they overestimate
-> rock, and quantifying by how much, is relevant to those works and not only to this one.
+| Decomposition of the mean difference | p.p. | 95 % CI |
+|---|---:|---|
+| Total difference according to labels | +20.4 | |
+| Attributable to the **images** | **+18.2 (89 %)** | [+12.4; +23.8] |
+| Attributable to the **annotation** | **+2.2 (11 %)** | [+0.0; +4.5] |
 
-### Finding 2: the counting ceiling is the taxonomy, not the imagery
+1. **The expert mask set consists of far less rocky scenes**: measured by the same instrument,
+   its median coverage is 5.8 % versus 72.5 %. This is a property of the dataset relevant to
+   anyone evaluating against that set.
+2. The annotation component is small and positive, and its size depends on the instrument and the
+   sample: +3.2 [+1.0; +5.4] if the crowdsourced sample is drawn only from the test blocks, and
+   +4.4 [+2.1; +6.5] with the previous model. It is **compatible** with the hypothesis of a
+   salience bias, but the design does not allow that mechanism to be identified causally.
+3. The mechanism of a denominator reduced by unlabelled soil **finds no support**: the labelled
+   fraction is the same in both sources (p = 0.24).
 
-The intuitive explanation for the count's poor performance would be that better imagery is
-needed. This was ruled out with three measurements:
-
-1. **The procedure never opens the images**: all its information comes from the mask. And the
-   images are already at full resolution, with the mask at the same size: there is no
-   resampling loss.
-2. In **13,838 scenes (86.1%)** the mask contains *no* big-rock pixel. Of the rock labelled
-   in the set, bedrock contributes **97.5%** and big rock only **2.5%** — and E2 counts only
-   the latter.
-3. Expert masks contain **less** big rock, not more: from 16.5% of scenes down to 1.6% as the
-   agreement criterion tightens.
-
-This figure needs no explanation: a scene full of obvious individual blocks, labelled in its
-entirety as **a single bedrock region**. The count returns zero. The image is excellent; the
-label is the limit.
-
-![Visible rock labelled as bedrock](tesis/images/diag_bedrock_no_contado.png)
-
-### Finding 3: the annotation is not exhaustive
-
-Human-count validation revealed it. In **36 of 60 scenes**, the big-rock class covers
-**less than 20%** of the labelled rock, with a median of **9.1%**: the annotation marks
-*some* rocks, not all.
-
-Hence a qualification about what the indicator measures: it **does not estimate the number of
-rocks in a scene**, but the number of blocks within the fraction the annotator chose to
-delimit as big rock. The two quantities can differ by an order of magnitude, and even a
-perfect procedure over these masks would still count only what was delimited.
+Since the instrument was trained on crowdsourced labels, it tends to see more rock than the
+expert (it overestimates by +3.1 points on average), so the annotation component is probably
+underestimated.
 
 ---
 
-## 5. Validation against human counting
+## 5. Validation against human counting (H2) — exploratory evaluation
 
-Carried out in two rounds. In each scene the region annotated as big rock is highlighted and
-the question is how many rocks can be distinguished **inside that region** — narrowing the
-question is what makes the disagreement attributable. Material is presented with neutral
-identifiers, in shuffled order, and the automatic result never appears.
-
-**The 24-scene pilot round proved defective and was redone.** Its top band was open-ended at
-"10 or more", so a procedure counting 84 rocks where the observer saw about ten scored as an
-**exact match**: the scale favoured methods that overestimate. Three further defects were
-corrected: scenes whose annotated region was imperceptible, an opaque overlay that hid the
-texture needed to count, and a sampling stratified by the algorithm's own band, which
-conditioned the sample on the method under evaluation.
-
-### Result (60 scenes, six bands)
+A single observer counted, by bands, the rocks they distinguish **within the region annotated**
+as big rock in 60 scenes (neutral identifiers, shuffled order, automatic result hidden).
+Parameters were frozen before the first answer and no calibration scene is in the sample. A
+pilot round of 24 scenes served to fix instrument defects (its open "10 or more" band favoured
+methods that overestimate).
 
 | Measure | Value |
 |---|---:|
-| Exact band agreement | 50% |
-| Cohen's kappa | 0.13 |
-| Weighted kappa | 0.11 |
-| Scenes below / above the observer | **28 / 2** |
-
-The 50% agreement is misleading: **26 of the 30 matches** fall in a single band.
+| Exact band agreement | 50 % |
+| Cohen's kappa | 0.13 [0.00; 0.27] |
+| Weighted kappa | 0.11 [0.01; 0.22] |
+| Scenes below / above the observer | **28 / 2** (sign test p < 0.001) |
 
 ![Agreement matrix](outputs/figures/tesis/Figura_26_validacion_manual_v2.png)
 
-**The decisive feature is the three empty columns.** In none of the 60 scenes does the
-procedure return more than nine rocks, while the observer identified ten or more in twelve
-and twenty-five or more in five. This is not a bias recalibrable by thresholds: it is a
-**structural ceiling**.
+With the frozen parameters the procedure never exceeds 9 rocks; the observer saw 10 or more in
+12 scenes. **It is not a calibration artefact**: across the 36 combinations of prominence,
+smoothing and minimum area tested, the procedure falls below the observer in 23 to 29 scenes.
 
-### Why: the mechanism, seen
+**Why.** Two causes, neither fixable with thresholds:
+
+- **The annotation is not exhaustive**: in 36 of 60 scenes big rock is less than 20 % of the
+  labelled rock (median 9.1 %); the rest was annotated as bedrock.
+- **Some regions lack the geometric information to separate instances**: the watershed only
+  cuts where the region narrows. A polygon enclosing a field of contiguous blocks has nowhere
+  to cut.
 
 ![Undercounting mechanism](outputs/figures/tesis/Figura_28_mecanismo_subconteo.png)
 
-Above, the annotation traces each block separately: there are distinct regions with clear
-constrictions and the cut works (9 rocks; the observer said 4–9). Below, a single polygon
-loosely traced over a field of layered rock: the distance transform forms **one plateau** and,
-however many rocks it contains, there is nowhere to cut (3 rocks; the observer said 25–49).
+> **Scope of the indicator.** The procedure produces a reproducible count of the geometrically
+> separable instances within the *big rock* class, but that count cannot be interpreted as a
+> valid estimate of the total number of rocks visible in the scene. The exploratory evaluation
+> with one observer suggests systematic undercounting. With a single observer, algorithm–person
+> disagreement cannot be separated from between-person variability; confirming it requires at
+> least two independent observers.
 
-This result **corrects the expectation the procedure was calibrated against**. The concern was
-oversegmentation, and the prominence criterion was introduced to contain it. The real bias
-runs the other way.
+**The limit lies in the semantic representation.** Bedrock contributes 97.5 % of labelled rock
+and big rock 2.5 %. On the **same** 322 images, the share of scenes with big rock falls from
+16.5 % to 1.6 % as agreement among experts is tightened: the boundary between the two classes is
+ambiguous for experts too. The evidence indicates that the main limitation for instance counting
+comes from the semantic representation and the granularity of the labels, rather than from an
+evident lack of image resolution (consensus, perspective, scale, occlusion and parametrisation
+also play a part).
+
+![Visible rock labelled as bedrock](tesis/images/diag_bedrock_no_contado.png)
+
+### Exploration: using the image within the region
+
+Four image-derived reliefs were compared (fine gradient, coarse gradient, shadows via black
+top-hat, and a combination), with the same protocol and the parameter chosen by leave-one-out
+cross-validation:
+
+| Relief | Weighted κ | Difference vs E2 | 95 % CI | Bonferroni CI |
+|---|---:|---:|---|---|
+| Fine gradient | 0.18 | +0.06 | [−0.14; +0.28] | [−0.19; +0.33] |
+| Coarse gradient | 0.08 | −0.03 | [−0.20; +0.13] | [−0.24; +0.17] |
+| Shadows | 0.37 | +0.26 | [+0.03; +0.47] | [−0.03; +0.53] |
+| Combined | 0.27 | +0.15 | [−0.05; +0.36] | [−0.11; +0.41] |
+
+**None improves on E2 demonstrably** once the number of methods tested is corrected for, and all
+shift the error towards overestimation. The hybrid approach remains a **proof of concept** and
+future work.
 
 ---
 
 ## 6. Comparison with machine learning
 
-### General model, no specific training
+**General model without specific training (FastSAM)**, 50 scenes restricted to the rock region:
+52 % band agreement with the classical count, rank correlation 0.45.
 
-A foundation segmentation model (FastSAM) applied to 50 scenes, restricted to the rock
-region. Agreement with the classical count is **52%** by bands, with rank correlation 0.45
-and mean absolute error 2.6 rocks. It tends to subdivide a single rock according to its
-internal texture and to miss low-contrast blocks.
+**DeepLabV3 segmenter (ResNet-50)** trained on the crowdsourced masks (rock / non-rock; Adam,
+lr 1e-4, batch 4, 512 px, 6 epochs; no augmentation; seed 0). Design fixed before training:
 
-![Agreement matrix with the general model](outputs/figures/tesis/Figura_20_matriz_acuerdo.png)
+- **Population:** scenes with labelled fraction ≥ 0.20 (14,490; 1,111 excluded).
+- **Temporal-block split:** 30 consecutive spacecraft-clock blocks (~75 sols each) randomly
+  assigned to training, validation and test, with a one-sol margin: no test image is less than
+  a sol away from a training image. The manifest `outputs/split_deeplab_manifiesto.csv`
+  records each scene's block and partition.
+- **Checkpoint:** best validation mIoU (epoch 4, 0.957); the test set is evaluated once.
 
-### Model trained on the masks themselves
+| Test | n | Mean IoU | Coverage correlation | Mean absolute error |
+|---|---:|---:|---:|---:|
+| Balanced sample | 400 | 0.940 | 0.971 | 3.5 |
+| Natural distribution of the test blocks | 2,323 | 0.932 | 0.971 | 3.7 |
+| Excluded by labelled fraction < 0.20 | 178 | 0.815 | 0.869 | 10.4 |
 
-A **DeepLabV3** segmenter via transfer learning, distinguishing rock from non-rock by reading
-the image **without a human mask**. Trained on 2,000 images, 400 for validation and 400 for
-test, six epochs at 512 px, with integrated-GPU acceleration.
+![Model coverage vs human](outputs/figures/tesis/Figura_21_cobertura_modelo_vs_humano.png)
 
-It reaches **mean IoU of 0.940** and its coverage correlates **0.950** with the human one.
+**Information leakage.** A previous version, with a random per-image split, had 75 test images
+less than a minute from a training image and gave a mean IoU of 0.940 and a correlation of
+0.971: practically the same as the block split. That proximity did not inflate performance.
 
-![Model coverage versus human](outputs/figures/tesis/Figura_21_cobertura_modelo_vs_humano.png)
+**Against the expert** (mean IoU 0.836; correlation 0.924):
 
-### A hypothesis that had to be tested
-
-That figure **cannot be read as accuracy**: the model was trained on crowdsourced masks and
-evaluated against crowdsourced masks, so it measures how closely it resembles the annotation
-it learnt from. And since that annotation overestimates rock, the expectation was that it had
-learnt the bias along with the signal.
-
-> **The test.** If it inherited the bias, evaluating it against the 322 expert masks should
-> show systematic **overestimation** of coverage.
->
-> **The result.** It does not overestimate. The median error is **+0.0 percentage points**,
-> with 37% of scenes above and 30% below. *Hypothesis rejected.*
-
-| Measure | Against crowdsourced | Against expert |
+| Coverage error (model − label) | Crowdsourced (593) | Expert (322) |
 |---|:---:|:---:|
-| Mean IoU | 0.940 | 0.843 |
-| Coverage correlation | 0.950 | 0.927 |
-| Mean absolute error | 4.3 pp | 7.5 pp |
-| Median error (bias) | — | **+0.0 pp** |
+| Mean error, 95 % CI | +0.93 [−0.08; +1.90] | +3.12 [+1.36; +4.95] |
+| Mean absolute error | 4.3 | 8.5 |
+| Limits of agreement (Bland–Altman) | [−23.3; +25.2] | [−29.3; +35.6] |
+| Scenes with error > 10 p.p. | 11.1 % | 28.0 % |
 
-![Model versus expert](outputs/figures/tesis/Figura_27_modelo_vs_experto.png)
+![Bland–Altman](outputs/figures/tesis/Figura_29_bland_altman.png)
 
-**Why it did not inherit it.** This fits the bias mechanism: it operates through the
-*denominator* —the unlabelled soil that drops out of the computation— and not through class
-error in the pixels that are labelled. Since training excludes unlabelled pixels from the
-loss, the model learnt rock appearance from correctly labelled pixels.
-
-**Declared caveats.** It estimates **coverage, not counts**: it does not separate blocks and
-does not replace E2. And it is reliable **in aggregate, not scene by scene**: 23% of scenes
-exceed ten points of error and five exceed fifty.
-
-**What it opens up.** The classical procedure needs a human mask, which does not exist when
-the imagery reaches Earth. The segmenter reads the image directly. That it estimates coverage
-without bias against an expert reference suggests the indicator defined and audited here
-could be computed **with no human annotation in the loop**.
+On average the model reproduces the annotation it learnt from, but **overestimates against the
+expert** by about three points, the expected direction if it inherited that annotation's
+criterion. Individual errors are large and range-dependent, so it describes sets of scenes, not
+individual scenes. It estimates coverage, not counts.
 
 ---
 
-## 7. Applied extension
+## 7. Applied extension (thesis appendix)
 
-### Terrain alert system
+**Heuristic prioritisation rules.** Six rules with explicit thresholds rank scenes for review: 98 high priority, 1,343 medium,
+124 low. Count-based rules are evaluated only on the E2 population, and the percentile each
+threshold represents is computed by the script.
+**They are not calibrated for navigation**: without metric scale, a pixel percentage cannot
+support inferences about block height, traversability, wheel damage or entrapment probability.
 
-The indicators are translated into six rules, each with its threshold, severity and
-rationale. Thresholds were set from **percentiles of the observed distribution**, not
-arbitrarily.
-
-| Alert | Threshold | Sev. | Rationale |
-|---|---|:---:|---|
-| Wheel damage | big rock > 5% and solidity < 0.85 | 3 | Blocks with angular contours: the condition associated with the wear documented on *Curiosity* |
-| Major obstacle | largest rock > 15% | 3 | A block dominating the scene may exceed passable height |
-| Sand entrapment | sand > 70% | 3 | Loose sand compromises traction; the failure mode that immobilised *Spirit* |
-| Block field | 5 or more rocks | 2 | Many blocks reduce viable trajectories |
-| Rocky terrain | coverage > 80% | 1 | Informative: good traction, irregular surface |
-| Poorly assessable scene | > 95% unlabelled | 1 | Flags that absence of alerts is not absence of risk |
-
-Of the 16,064 scenes: **104 high risk**, 1,359 medium, 124 low, and 14,477 with no
-operational alert.
-
-![Alert distribution](outputs/figures/tesis/Figura_24_alertas_terreno.png)
-
-> The alerts **inherit the limitations of the indicators** they derive from, including the
-> annotation bias. They are not a traversability assessment validated against real incidents
-> —no such record exists for this subset— but a prioritisation of scenes whose criterion is
-> explicit and therefore auditable.
-
-### Query application
-
-A Python desktop application that makes the results set queryable without programming, with
-four views: descriptive summary, alert distribution, an explorer showing per scene the image,
-the annotation and the detected rocks, and a geological-features view. Figures are generated
-from the same files that back the document.
+**Query application.** A desktop application that makes the results consultable without
+programming (summary, prioritisation, scene explorer, geology).
 
 ```bash
 python app.py
 ```
 
----
-
-## 8. Exploration: vein detection (negative result)
-
-Calcium sulfate veins are deposits precipitated by circulating water and the feature of
-greatest scientific interest present in the annotations. The navigation taxonomy does not
-label them, so the only route would be detecting them from the image. **This was attempted
-and is not viable.**
-
-The method applied a Meijering ridge filter over the bedrock region —it analyses Hessian
-eigenvalues to enhance thin curvilinear structures and is used in angiography; a vein is
-geometrically the same kind of object— plus a variant weighted by the blue/red ratio.
-
-| Measure | Without colour | With colour |
-|---|:---:|:---:|
-| Mean precision | 0.261 | 0.267 |
-| Mean recall | 0.067 | 0.041 |
-| Lift over base rate | 9.1× | 10.2× |
-| Scenes with no hit at all | 11 of 24 | 12 of 24 |
-
-![Vein exploration](outputs/figures/tesis/Figura_25_exploracion_vetas.png)
-
-**There is signal but the detector is unusable**: nine times better than chance is not noise,
-but it recovers less than 7% of vein pixels and fails entirely in nearly half the scenes.
-
-**The colour hypothesis was refuted by our own measurement.** The blue/red ratio in the
-bright areas of bedrock turned out to be barely **1.025 times** that of rock overall, with
-inconsistent direction across scenes. Reddish dust coats the veins too, and the dataset's
-images are compressed files with white balance applied, not calibrated radiometric products.
-Add that NavCam is a navigation instrument: the veins of Gale crater were characterised with
-MAHLI, ChemCam and MastCam.
-
-Documented so the attempt is not repeated without knowing its limits.
+**Vein exploration** (negative result, in the appendix): a ridge filter improves nine-fold on
+the base rate but recovers less than 7 % of vein pixels; colour does not help.
 
 ---
 
 ## 9. Repository structure
 
 ```
-├── src/                         computation modules (12)
+├── src/                         computation modules
 │   ├── config.py                dataset paths and NAV encoding
 │   ├── mask_utils.py            mask reading and binarisation
 │   ├── coverage.py              visible rock coverage (E1)
 │   ├── rock_count.py            watershed-based counting (E2)
+│   ├── poblaciones.py           single definition of the E1 and E2 populations
 │   ├── rock_count_hybrid.py     exploration: mask + image gradient
 │   ├── features.py              composition and rock geometry
 │   ├── pipeline.py              orchestration: one result row per image
-│   ├── alerts.py                terrain alert system
+│   ├── priorizacion.py          heuristic prioritisation rules
 │   ├── segmentation.py          DeepLabV3 segmenter
 │   ├── sam_compare.py           comparison with a foundation model
 │   └── viz.py                   mask and stage visualisation
 │
-├── scripts/                     execution scripts (23)
+├── scripts/                     execution scripts
 │   ├── run_pipeline.py          processes the subset → results.csv
+│   ├── calibracion.py           reconstructs the count calibration
+│   ├── sensibilidad_parametros.py  36 combinations of h, σ and minimum area
+│   ├── analisis_dependencia.py  Pearson, Spearman, distance correlation, mutual information
+│   ├── eval_validation.py       agreement with the observer: simple and weighted kappa
+│   ├── eval_metodos_imagen.py   image reliefs with cross-validation and Bonferroni
+│   ├── train_segmentation.py    trains DeepLabV3 with a temporal-block split
+│   ├── eval_model_expert.py     segmenter versus expert masks (per scene)
+│   ├── eval_fuga_temporal.py    spacecraft-clock distance between test and training
+│   ├── eval_fuente_anotacion.py common instrument: images versus annotation
+│   ├── eval_modelo_detalle.py   signed error, bootstrap and Bland–Altman for the segmenter
+│   ├── compare_sam.py           comparison with FastSAM
+│   ├── run_priorizacion.py      applies the prioritisation rules
 │   ├── make_thesis_figures.py   document figures
 │   ├── make_mechanism_figure.py undercounting-mechanism figure
+│   ├── make_extension_figures.py  prioritisation and vein figures
+│   ├── make_hybrid_figure.py    hybrid proof-of-concept figure
+│   ├── diagnose_errors.py       panels by failure mode
+│   ├── explore_vein_detection.py  vein exploration
 │   ├── make_validation_kit2.py  prepares the human validation
 │   ├── responder_validacion.py  interface to answer it
-│   ├── eval_validation.py       agreement, simple and weighted kappa
-│   ├── eval_hybrid.py           hybrid-count comparison
-│   ├── eval_model_expert.py     segmenter versus expert labels
-│   ├── train_segmentation.py    trains the DeepLabV3
-│   ├── run_alerts.py            evaluates the alert rules
-│   ├── diagnose_errors.py       panels by failure mode
-│   └── explore_vein_detection.py  vein exploration
+│   ├── generar_cifras.py        every number in the thesis → tesis/cifras.tex
+│   └── generar_bibliografia.py  bibliography from Crossref/DataCite → tesis/references.bib
 │
+├── tests/                       tests of the deterministic rules
+├── manifiestos/                 calibration scenes
 ├── tesis/                       LaTeX document (institutional template)
-├── docs/                        supporting documentation (11 files)
+├── docs/                        earlier working documentation
 ├── outputs/
-│   ├── results.csv              24 indicators × 16,064 scenes
+│   ├── results.csv              24 indicators + 4 eligibility columns × 16,064 scenes
+│   ├── split_deeplab_manifiesto.csv  block and partition of each scene for the segmenter
 │   ├── figures/tesis/           document figures
 │   └── validacion_manual_v2/    human-validation responses
+├── Makefile                     full reproduction, in order
 ├── app.py                       desktop application
-└── environment.yml              conda environment
+├── environment.yml              environment with the final-run versions
+└── requirements-lock.txt        exact record of every package
 ```
 
 ---
@@ -553,7 +541,7 @@ Documented so the attempt is not repeated without knowing its limits.
 ## 10. Reproducing
 
 ```bash
-# 1. Environment
+# 1. Environment (final-run versions; exact record in requirements-lock.txt)
 conda env create -f environment.yml
 conda activate tesis-marte
 
@@ -561,22 +549,20 @@ conda activate tesis-marte
 #    Download from https://doi.org/10.5281/zenodo.15995036 and point to it:
 export AI4MARS_ROOT=/path/to/ai4mars-dataset-merged-0.6
 
-# 3. Main procedure → outputs/results.csv
-python scripts/run_pipeline.py
+# 3. Everything, in order: tests, results, calibration, analyses, validation, segmenter,
+#    evaluations, figures, thesis numbers and document
+make todo
 
-# 4. Document figures
-python scripts/make_thesis_figures.py
-python scripts/make_mechanism_figure.py
+# Without retraining the segmenter (~2 h), reusing the trained model:
+make resultados
 
-# 5. Human validation
-python scripts/eval_validation.py --dir outputs/validacion_manual_v2
-
-# 6. Terrain alerts
-python scripts/run_alerts.py
+# Tests only
+make pruebas
 ```
 
-Recorded versions: Python 3.13, NumPy 2.5.1, SciPy 1.18.0, scikit-image 0.26.0,
-pandas 3.0.5, Pillow 12.3.0.
+The trained model (~170 MB) is not versioned; its SHA-256 fingerprint is in
+`outputs/segmentacion_metricas.json`. The document's numbers are never typed by hand:
+`scripts/generar_cifras.py` extracts them from `outputs/` and writes `tesis/cifras.tex`.
 
 ---
 
@@ -588,16 +574,13 @@ elevation data.
 
 **Declared limitations:**
 
-- **Coverages are relative to the crowdsourced set**, not absolute estimates of rock
-  abundance on the terrain. For comparing scenes within the same set the usefulness holds,
-  because the bias acts in the same direction throughout.
-- **No metric scale.** Sizes are relative to the field of view. The camera is a stereo pair,
-  so the route exists, but the available subset is almost entirely monocular (16,027
-  left-eye images against 37 right-eye).
-- **The human validation used a single observer**, so it cannot separate disagreement
-  attributable to the procedure from that inherent to the task.
-- **The count does not reproduce human judgement** faithfully enough to be read as the number
-  of rocks in a scene.
+- **Coverages describe the terrain as recorded by the crowdsourced annotation**; with expert
+  masks they would be somewhat lower. They serve to compare scenes within the same set.
+- **No metric scale.** Sizes are relative to the field of view; the subset is almost entirely
+  monocular (16,027 left-eye images against 37 right-eye).
+- **A single observer** in the count validation: conclusions about H2 are exploratory.
+- **The count** measures geometrically separable instances within the *big rock* class, not the
+  number of visible rocks.
 
 ---
 
@@ -608,5 +591,5 @@ elevation data.
 IEEE/CVF CVPR Workshops. Imagery: NASA/JPL-Caltech.
 
 The masks exist thanks to the work of thousands of volunteers on the AI4Mars project at
-Zooniverse. The bias this work documents is a structural effect of the annotation task's
-design, **not a deficiency attributable to those who performed it**.
+Zooniverse. The differences between annotation sources documented here are properties of the
+dataset and task design, **not a deficiency attributable to those who performed it**.

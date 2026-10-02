@@ -1,0 +1,241 @@
+{
+  "_nota": "Fuente de verdad de la bibliografía. Cada entrada con DOI se genera desde Crossref o DataCite con scripts/generar_bibliografia.py; las entradas sin DOI se declaran completas aquí. 'corregir' sobreescribe campos con errores conocidos en los metadatos de origen.",
+  "swan2021ai4mars": {
+    "doi": "10.1109/CVPRW53098.2021.00226"
+  },
+  "swan2022ai4marsdata": {
+    "doi": "10.5281/zenodo.15995036",
+    "tipo": "dataset",
+    "corregir": {
+      "publisher": "Zenodo",
+      "author": "Swan, R. Michael and Ono, Masahiro and Atha, Deegan"
+    }
+  },
+  "nasapds2024": {
+    "manual": {
+      "tipo": "online",
+      "author": "{NASA Jet Propulsion Laboratory}",
+      "title": "Planetary Data System: Imaging Node",
+      "year": "2024",
+      "url": "https://pds-imaging.jpl.nasa.gov/",
+      "urldate": "2026-10-01"
+    }
+  },
+  "jpl2017wheels": {
+    "manual": {
+      "tipo": "online",
+      "author": "{NASA Jet Propulsion Laboratory}",
+      "title": "Premature wear of the {MSL} wheels",
+      "titleaddon": "NASA Lessons Learned Information System, lección 22401",
+      "year": "2017",
+      "url": "https://llis.nasa.gov/lesson/22401",
+      "urldate": "2026-10-01"
+    }
+  },
+  "grotzinger2012msl": {
+    "doi": "10.1007/s11214-012-9892-2"
+  },
+  "bell2017mastcam": {
+    "doi": "10.1002/2016EA000219"
+  },
+  "edgett2012mahli": {
+    "doi": "10.1007/s11214-012-9910-4"
+  },
+  "arvidson2010spirit": {
+    "doi": "10.1029/2010JE003633"
+  },
+  "arvidson2017wheels": {
+    "doi": "10.1016/j.jterra.2017.03.001"
+  },
+  "rankin2020mobility": {
+    "doi": "10.1109/AERO47225.2020.9172469"
+  },
+  "golombek1997rocks": {
+    "doi": "10.1029/96JE03319",
+    "corregir": {
+      "author": "Golombek, M. P. and Rapp, D."
+    }
+  },
+  "golombek2003mer": {
+    "doi": "10.1029/2003JE002074"
+  },
+  "golombek2012msl": {
+    "doi": "10.1007/s11214-012-9916-y",
+    "corregir": {
+      "author": "Golombek, M. P. and Grant, J. and Kipp, D. and Vasavada, A. and Kirk, R. and Fergason, R. and Bellutta, P. and Calef, F. and Larsen, K. and Katayama, Y. and Huertas, A. and Beyer, R. and Chen, A. and Parker, T. and Pollard, B. and Lee, S. and Sun, Y. and Hoover, R. and Sladek, H. and Grotzinger, J. and Welch, R. and Noe Dobrea, E. and Michalski, J. and Watkins, M."
+    }
+  },
+  "golombek2021insight": {
+    "doi": "10.1029/2021EA001959"
+  },
+  "ward2005spirit": {
+    "doi": "10.1029/2005GL022705",
+    "corregir": {
+      "author": "Ward, J. G. and Arvidson, R. E. and Golombek, M. P."
+    }
+  },
+  "di2016change3": {
+    "doi": "10.1016/j.pss.2015.11.012"
+  },
+  "chen2022zhurong": {
+    "doi": "10.1029/2022EA002252"
+  },
+  "sun2024zhurong": {
+    "doi": "10.3389/fspas.2024.1270079"
+  },
+  "wang2024zhurong": {
+    "doi": "10.1016/j.icarus.2024.116001"
+  },
+  "watkins2019boulder": {
+    "doi": "10.1029/2019JE005963"
+  },
+  "lorenz2023analytic": {
+    "doi": "10.1016/j.pss.2023.105720"
+  },
+  "huertas2006hazard": {
+    "doi": "10.1109/AERO.2006.1655794",
+    "corregir": {
+      "year": "2006",
+      "author": "Huertas, Andres and Cheng, Yang and Madison, Richard"
+    }
+  },
+  "thompson2007rockdet": {
+    "doi": "10.1109/AERO.2007.352699"
+  },
+  "dunlop2007multiscale": {
+    "doi": "10.1109/CVPR.2007.383257"
+  },
+  "castano2007oasis": {
+    "doi": "10.1002/rob.20192"
+  },
+  "furlan2019rockcnn": {
+    "doi": "10.1007/978-3-030-21077-9_14"
+  },
+  "rothrock2016spoc": {
+    "doi": "10.2514/6.2016-5539"
+  },
+  "dai2022segmarsvit": {
+    "doi": "10.3390/rs14246297"
+  },
+  "liu2023hybrid": {
+    "doi": "10.1016/j.actaastro.2022.08.002"
+  },
+  "liu2023rockformer": {
+    "doi": "10.1109/TGRS.2023.3235525"
+  },
+  "xiong2023marsformer": {
+    "doi": "10.1109/TGRS.2023.3302649"
+  },
+  "tian2024rsunet": {
+    "doi": "10.1088/1742-6596/2762/1/012001"
+  },
+  "wei2024lbnet": {
+    "doi": "10.1109/ACCESS.2024.3511084"
+  },
+  "ma2025depthformer": {
+    "doi": "10.1029/2024EA003812"
+  },
+  "qu2025review": {
+    "doi": "10.1016/j.asr.2025.08.042"
+  },
+  "alkawi2025texture": {
+    "doi": "10.1016/j.asr.2025.05.034"
+  },
+  "wang2021gmsri": {
+    "doi": "10.3390/s21165410"
+  },
+  "robbins2014craters": {
+    "doi": "10.1016/j.icarus.2014.02.022"
+  },
+  "snow2008cheap": {
+    "doi": "10.3115/1613715.1613751"
+  },
+  "sheng2008label": {
+    "doi": "10.1145/1401890.1401965"
+  },
+  "northcutt2021labelerrors": {
+    "doi": "10.48550/arXiv.2103.14749",
+    "tipo": "preprint"
+  },
+  "lintott2008galaxyzoo": {
+    "doi": "10.1111/j.1365-2966.2008.13689.x"
+  },
+  "swanson2016citizen": {
+    "doi": "10.1111/cobi.12695"
+  },
+  "vincent1991watersheds": {
+    "doi": "10.1109/34.87344"
+  },
+  "meyer1990morph": {
+    "doi": "10.1016/1047-3203(90)90014-M"
+  },
+  "vincent1993reconstruction": {
+    "doi": "10.1109/83.217222"
+  },
+  "soille2003morph": {
+    "doi": "10.1007/978-3-662-05088-0",
+    "tipo": "book",
+    "corregir": {
+      "edition": "2"
+    }
+  },
+  "vanderwalt2014skimage": {
+    "doi": "10.7717/peerj.453"
+  },
+  "harris2020numpy": {
+    "doi": "10.1038/s41586-020-2649-2"
+  },
+  "virtanen2020scipy": {
+    "doi": "10.1038/s41592-019-0686-2"
+  },
+  "chen2017deeplab": {
+    "doi": "10.48550/arXiv.1706.05587",
+    "tipo": "preprint",
+    "corregir": {
+      "version": null
+    }
+  },
+  "kirillov2023sam": {
+    "doi": "10.1109/ICCV51070.2023.00371"
+  },
+  "zhao2023fastsam": {
+    "doi": "10.48550/arXiv.2306.12156",
+    "tipo": "preprint"
+  },
+  "grady2024rockfall": {
+    "doi": "10.3390/rs16193732"
+  },
+  "guo2023blasted": {
+    "doi": "10.1016/j.measurement.2023.113207"
+  },
+  "sharifi2024fragment": {
+    "doi": "10.17794/rgn.2024.2.1"
+  },
+  "cohen1960kappa": {
+    "doi": "10.1177/001316446002000104"
+  },
+  "cohen1968weighted": {
+    "doi": "10.1037/h0026256"
+  },
+  "landis1977": {
+    "doi": "10.2307/2529310"
+  },
+  "bland1986": {
+    "doi": "10.1016/S0140-6736(86)90837-8",
+    "corregir": {
+      "author": "Bland, J. Martin and Altman, Douglas G."
+    }
+  },
+  "szekely2007dcor": {
+    "doi": "10.1214/009053607000000505"
+  },
+  "kraskov2004mi": {
+    "doi": "10.1103/PhysRevE.69.066138"
+  },
+  "efron1979bootstrap": {
+    "doi": "10.1214/aos/1176344552"
+  },
+  "maimone2007vo": {
+    "doi": "10.1002/rob.20184"
+  }
+}

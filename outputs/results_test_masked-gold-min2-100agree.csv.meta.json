@@ -1,0 +1,31 @@
+{
+  "n_images": 322,
+  "seconds": 39.7,
+  "params": {
+    "open_size": 3,
+    "close_size": 3,
+    "min_area_frac": 0.0005,
+    "max_aspect_ratio": 5.0,
+    "distance_sigma": 3.0,
+    "peak_min_distance": 15,
+    "connectivity": 2,
+    "peak_h": 1.0
+  },
+  "ai4mars_root": "/Users/juan.b.delgado/Desktop/tesis-marte/ai4mars-dataset-merged-0.6",
+  "labels_dir": "/Users/juan.b.delgado/Desktop/tesis-marte/ai4mars-dataset-merged-0.6/msl/ncam/labels/test/masked-gold-min2-100agree",
+  "python": "3.13.13",
+  "quality_flag_counts": {
+    "no_bigrock": 167,
+    "no_rock": 122,
+    "ok": 20,
+    "mostly_null": 12,
+    "empty": 1
+  },
+  "versions": {
+    "numpy": "2.5.1",
+    "pandas": "3.0.5",
+    "scikit-image": "0.26.0",
+    "scipy": "1.18.0",
+    "pillow": "12.3.0"
+  }
+}

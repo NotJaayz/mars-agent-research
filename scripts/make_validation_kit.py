@@ -34,7 +34,7 @@ import pandas as pd
 from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from src import config, mask_utils as mu  # noqa: E402
+from src import config, mask_utils as mu, poblaciones  # noqa: E402
 
 BANDAS = ["0", "1-3", "4-9", "10+"]
 
@@ -48,7 +48,7 @@ def main() -> None:
     args = ap.parse_args()
 
     df = pd.read_csv(args.csv)
-    ok = df[df.quality_flag == "ok"].copy()
+    ok = poblaciones.poblacion_e2(df).copy()
     rng = np.random.default_rng(args.seed)
 
     # Muestreo estratificado por banda del conteo automático, para cubrir todo el rango

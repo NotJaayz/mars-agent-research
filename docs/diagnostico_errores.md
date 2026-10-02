@@ -1,5 +1,10 @@
 # ¿Hacen falta mejores imágenes? Atribución de los errores del conteo
 
+> **Documento de trabajo anterior a la revisión de octubre de 2026.** Algunas cifras y conclusiones de
+> este archivo fueron corregidas después (población del conteo, análisis de dependencia, contraste
+> con las máscaras de experto, segmentador). Las versiones vigentes son las de la tesis (`tesis/`) y
+> el [README](../README.md).
+
 **Pregunta:** el conteo a veces marca rocas donde no las hay y a veces no detecta
 rocas evidentes. ¿El límite está en la calidad de las imágenes?
 

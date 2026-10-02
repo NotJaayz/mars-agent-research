@@ -1,5 +1,10 @@
 # Results, discussion and limitations
 
+> **Working document predating the October 2026 revision.** Some numbers and conclusions in this
+> file were corrected afterwards (count population, dependence analysis, comparison with expert
+> masks, segmenter). The current versions are those in the thesis (`tesis/`) and the
+> [README](../README.en.md).
+
 **🌐 Language:** [Español](resultados_discusion.md) · **English**
 
 > Draft of the results and discussion chapters, written from the execution of the
@@ -168,7 +173,7 @@ concentrations of big rock reaching up to 40% of the images in a segment.
 > **Figure 18.** Coverage and presence of big rock along the traverse.
 >
 
-![Figura_18_variacion_recorrido](../outputs/figures/tesis/Figura_18_variacion_recorrido.png)
+![Figura_18_variacion_secuencia](../outputs/figures/tesis/Figura_18_variacion_secuencia.png)
 
 This reading answers directly the question raised in the introduction about which
 stretches of the traverse concentrate visible rock. It should be interpreted as a relative

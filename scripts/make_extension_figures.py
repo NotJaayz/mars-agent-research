@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-"""Figuras de la extensión aplicada: sistema de alertas y exploración de vetas.
+"""Figuras de la extensión aplicada: reglas de priorización y exploración de vetas.
 
 Continúa la numeración de ``make_thesis_figures.py``. Genera:
 
-  Figura 24 — distribución de escenas por nivel de riesgo y alertas por tipo.
+  Figura 24 — distribución de escenas por nivel de prioridad y reglas por tipo.
   Figura 25 — desempeño del detector de vetas frente a la tasa base, por escena.
 
-Uso:  python scripts/make_alert_figures.py
+Uso:  python scripts/make_extension_figures.py
 """
 from __future__ import annotations
 
@@ -32,16 +32,16 @@ ROCK, BLUE, GREY = "#c0392b", "#2c6fbb", "#9e9e9e"
 OUT = Path("outputs/figures/tesis")
 
 # Nombre legible de cada regla, para no rotular con la clave interna.
-TITULOS = {
-    "dano_ruedas": "Riesgo de daño en ruedas",
-    "obstaculo_mayor": "Obstáculo de gran tamaño",
-    "campo_bloques": "Campo denso de bloques",
-    "atrapamiento_arena": "Riesgo de atrapamiento en arena",
-    "terreno_rocoso": "Terreno mayoritariamente rocoso",
-    "escena_no_evaluable": "Escena poco evaluable",
-}
-NIVELES = ["sin_alerta", "bajo", "medio", "alto"]
-ETIQ_NIVEL = {"sin_alerta": "sin alerta", "bajo": "bajo", "medio": "medio", "alto": "alto"}
+from src import priorizacion as pz  # noqa: E402
+TITULOS = {r.clave: r.titulo for r in pz.REGLAS}
+NIVELES = pz.NIVELES
+ETIQ_NIVEL = {"sin_prioridad": "sin prioridad", "baja": "baja", "media": "media", "alta": "alta"}
+
+
+def miles(v) -> str:
+    """Entero con la norma del documento: sin separador hasta cuatro cifras, punto desde cinco."""
+    v = int(v)
+    return str(v) if abs(v) < 10000 else f"{v:,}".replace(",", ".")
 
 
 def save(fig, n: int, slug: str) -> None:
@@ -52,28 +52,28 @@ def save(fig, n: int, slug: str) -> None:
     print(f"  Figura {n:>2}  {path.name}")
 
 
-def figura_alertas(resumen: dict) -> None:
+def figura_priorizacion(resumen: dict) -> None:
     fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
 
     niveles = [n for n in NIVELES if n in resumen["por_nivel"]]
     vals = [resumen["por_nivel"][n] for n in niveles]
-    colores = {"sin_alerta": GREY, "bajo": BLUE, "medio": "#e67e22", "alto": ROCK}
+    colores = {"sin_prioridad": GREY, "baja": BLUE, "media": "#e67e22", "alta": ROCK}
     b = ax[0].bar([ETIQ_NIVEL[n] for n in niveles], vals,
                   color=[colores[n] for n in niveles])
-    ax[0].bar_label(b, fmt="%d", padding=2, fontsize=9)
-    ax[0].set_yscale("log")   # sin_alerta domina por dos órdenes de magnitud
+    ax[0].bar_label(b, labels=[miles(v) for v in vals], padding=2, fontsize=9)
+    ax[0].set_yscale("log")   # sin_prioridad domina por dos órdenes de magnitud
     ax[0].set_ylabel("escenas (escala logarítmica)")
-    ax[0].set_title("Escenas por nivel de riesgo")
+    ax[0].set_title("Escenas por nivel de prioridad")
 
-    por = pd.Series(resumen["por_alerta"]).sort_values()
+    por = pd.Series(resumen["por_regla"]).sort_values()
     b2 = ax[1].barh([TITULOS.get(k, k) for k in por.index], por.values, color=BLUE)
-    ax[1].bar_label(b2, fmt="%d", padding=3, fontsize=9)
+    ax[1].bar_label(b2, labels=[miles(v) for v in por.values], padding=3, fontsize=9)
     ax[1].set_xlabel("escenas que activan la regla")
-    ax[1].set_title("Alertas emitidas por tipo")
+    ax[1].set_title("Reglas activadas por tipo")
     ax[1].set_xlim(0, por.max() * 1.18)
 
     fig.tight_layout()
-    save(fig, 24, "alertas_terreno")
+    save(fig, 24, "priorizacion")
 
 
 def figura_vetas(d: pd.DataFrame) -> None:
@@ -107,15 +107,15 @@ def figura_vetas(d: pd.DataFrame) -> None:
 
 
 def main() -> None:
-    resumen_p = Path("outputs/alertas_resumen.json")
+    resumen_p = Path("outputs/priorizacion_resumen.json")
     vetas_p = Path("outputs/exploracion_vetas.csv")
     if not resumen_p.exists():
-        sys.exit("Falta outputs/alertas_resumen.json; ejecuta scripts/run_alerts.py")
+        sys.exit("Falta outputs/priorizacion_resumen.json; ejecuta scripts/run_priorizacion.py")
     if not vetas_p.exists():
         sys.exit("Falta outputs/exploracion_vetas.csv; "
                  "ejecuta scripts/explore_vein_detection.py")
 
-    figura_alertas(json.loads(resumen_p.read_text()))
+    figura_priorizacion(json.loads(resumen_p.read_text()))
     figura_vetas(pd.read_csv(vetas_p))
 
 

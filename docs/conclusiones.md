@@ -1,5 +1,10 @@
 # Resumen y conclusiones
 
+> **Documento de trabajo anterior a la revisión de octubre de 2026.** Algunas cifras y conclusiones de
+> este archivo fueron corregidas después (población del conteo, análisis de dependencia, contraste
+> con las máscaras de experto, segmentador). Las versiones vigentes son las de la tesis (`tesis/`) y
+> el [README](../README.md).
+
 **🌐 Idioma:** **Español** · [English](conclusiones.en.md)
 
 > Borrador del resumen y del capítulo de conclusiones. El resumen se coloca al inicio del
