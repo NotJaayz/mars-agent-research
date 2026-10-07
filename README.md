@@ -46,7 +46,7 @@ validación, y la tesis lo documenta.
 |---|---|---|
 | **H1** | La cobertura se deriva de forma reproducible y no está determinada por la fracción de escena etiquetada | Se sostiene, con dependencia residual débil |
 | **H2** | El conteo aproxima el número de rocas que un observador distingue en la región anotada, sin sesgo en una dirección | Se rechaza (evaluación exploratoria, un observador) |
-| **H3** | Los indicadores no dependen de la fuente de la anotación | Se rechaza: hay efecto de la fuente, mucho menor que la diferencia bruta |
+| **H3** | Los indicadores no dependen de la fuente de la anotación | Se rechaza con reservas para la cobertura: efecto de la fuente pequeño e incierto, muy inferior a la diferencia bruta |
 | **H4** | Cobertura y conteo aportan información distinta | Se sostiene: información distinta, **no** independencia estadística |
 
 ---
@@ -234,9 +234,11 @@ tendrían coberturas altas por construcción.
 
 ![Cobertura frente a fracción etiquetada](outputs/figures/tesis/Figura_14_cobertura_vs_fraccion_etiquetada.png)
 
-No se observó una asociación lineal global entre la cobertura y la fracción etiquetada
-(**r = −0,020**, IC 95 % [−0,037; −0,004]); con 15 901 escenas la asociación es detectable,
-pero explica menos de una milésima de la varianza. La correlación de distancia (0,062) detecta
+La asociación lineal entre la cobertura y la fracción etiquetada es prácticamente nula
+(**r = −0,020**, IC 95 % [−0,036; −0,004]): con 15 901 escenas el intervalo por escena excluye
+el cero, pero explica menos de una milésima de la varianza y deja de distinguirse de cero al
+tener en cuenta que las imágenes se adquieren en secuencias (*bootstrap* por sol
+[−0,047; +0,008]; desplazamiento circular, p = 0,62). La correlación de distancia (0,062) detecta
 una dependencia no lineal débil. Por tramos de fracción etiquetada, la cobertura mediana **no**
 sigue el patrón que produciría el artefacto (no es máxima en las escenas menos etiquetadas):
 
@@ -285,9 +287,11 @@ se midió con estadísticos progresivamente más generales (2 193 escenas):
 **Asociación lineal prácticamente nula, pero no independencia**: hay una dependencia débil con
 forma de **U invertida** —pocas rocas cuando la cobertura es muy baja (en parte por
 construcción, porque la roca grande está en el numerador de la cobertura), máximo entre el 10 %
-y el 50 %, y menos rocas en los afloramientos continuos de cobertura total—. Los deciles de
-cobertura explican el **5,6 %** de la varianza del conteo. Los dos indicadores aportan
-información distinta; no son independientes.
+y el 50 %, y poca roca grande que contar en las escenas de cobertura total, cuya roca está
+etiquetada casi toda como lecho rocoso—. Los tramos de cobertura explican el **5,6 %** de la
+varianza del conteo. La dependencia resiste el control de la estructura secuencial
+(desplazamiento circular: correlación de distancia p = 0,026). Los dos indicadores aportan
+información distinta, aunque la relación entre ambos no es nula.
 
 ### Composición del terreno y secuencia de adquisición (E3)
 
@@ -325,25 +329,29 @@ entrenamiento ni en su validación y de las 322 de experto.
 
 ![Instrumento común](outputs/figures/tesis/Figura_30_instrumento_comun.png)
 
-| Descomposición de la diferencia de medias | p.p. | IC 95 % |
-|---|---:|---|
-| Diferencia total según la etiqueta | +20,4 | |
-| Atribuible a las **imágenes** | **+18,2 (89 %)** | [+12,4; +23,8] |
-| Atribuible a la **anotación** | **+2,2 (11 %)** | [+0,0; +4,5] |
+| Descomposición de la diferencia de medias | p.p. | IC 95 % por escena | IC 95 % por sol |
+|---|---:|---|---|
+| Diferencia total según la etiqueta | +20,4 | | |
+| Atribuible a las **imágenes** | **+18,2 (89 %)** | [+12,4; +23,8] | |
+| Atribuible a la **anotación** | **+2,2 (11 %)** | [+0,02; +4,54] | [−1,0; +5,5] |
 
 1. **El conjunto de máscaras de experto está compuesto por escenas mucho menos rocosas**: medido
    por el mismo instrumento, su cobertura mediana es del 5,8 % frente al 72,5 %. Es una
    propiedad del dataset pertinente para cualquiera que evalúe contra ese conjunto.
-2. La componente de anotación es pequeña y positiva, y su magnitud depende del instrumento y de
-   la muestra: +3,2 [+1,0; +5,4] si la muestra colaborativa se toma solo de los bloques de
-   prueba, y +4,4 [+2,1; +6,5] con el modelo anterior. Es **compatible** con la hipótesis de un
-   sesgo de saliencia, pero el diseño no permite identificar causalmente ese mecanismo.
+2. La componente de anotación es pequeña, positiva en todas las variantes e **incierta**: +3,2
+   [+1,0; +5,4] si la muestra colaborativa se toma solo de los bloques de prueba, y +4,4
+   [+2,1; +6,5] con el modelo anterior. Las imágenes de experto se concentran en 48 soles; con
+   un *bootstrap* que remuestrea soles completos, el intervalo de la muestra principal incluye
+   el cero ([−1,0; +5,5]) y el de los bloques de prueba lo excluye por poco ([+0,2; +6,3]). Es
+   **compatible** con la hipótesis de un sesgo de saliencia, pero el diseño no permite
+   identificar causalmente ese mecanismo.
 3. El mecanismo de un denominador reducido por suelo sin etiquetar **no encuentra apoyo**: la
    fracción etiquetada es igual en ambas fuentes (p = 0,24).
 
-Como el instrumento se entrenó con etiquetas colaborativas, tiende a ver más roca que el experto
-(lo sobreestima en +3,1 puntos de media), así que la componente de anotación está probablemente
-subestimada.
+La descomposición supone que el error del instrumento es el mismo en las dos muestras. Un sesgo
+común se cancela al restar; lo que la sesgaría es que el error dependa de la composición de la
+escena, y depende del tramo de cobertura. Por eso la cifra de anotación es aproximada y el sentido
+de su sesgo no puede determinarse con estos datos.
 
 ---
 
@@ -389,7 +397,8 @@ suavizado y área mínima ensayadas, el procedimiento queda por debajo del obser
 **El límite está en la representación semántica.** El lecho rocoso aporta el 97,5 % de la roca
 etiquetada y la roca grande el 2,5 %. Sobre las **mismas** 322 imágenes, la proporción de
 escenas con roca grande cae del 16,5 % al 1,6 % al endurecer el acuerdo entre especialistas:
-la frontera entre ambas clases es ambigua también para ellos. La evidencia indica que la
+solo se conserva el 20 % de sus píxeles, frente al 44 % del lecho rocoso y más del 67 % del suelo y
+la arena. Es la clase que menos consenso reúne también entre ellos. La evidencia indica que la
 principal limitación del conteo de instancias proviene de la representación semántica y de la
 granularidad de las etiquetas, más que de una falta de resolución evidente de las imágenes
 (intervienen también consenso, perspectiva, escala, oclusión y parametrización).
@@ -530,7 +539,7 @@ la tasa base pero recupera menos del 7 % de los píxeles de veta; el color no ap
 ├── tesis/                       documento en LaTeX (plantilla institucional)
 ├── docs/                        documentación de trabajo anterior
 ├── outputs/
-│   ├── results.csv              24 indicadores + 4 columnas de elegibilidad × 16 064 escenas
+│   ├── results.csv              24 columnas + 4 de elegibilidad × 16 064 escenas
 │   ├── split_deeplab_manifiesto.csv  bloque y partición de cada escena en el segmentador
 │   ├── figures/tesis/           figuras del documento
 │   └── validacion_manual_v2/    respuestas de la validación humana

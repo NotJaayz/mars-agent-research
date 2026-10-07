@@ -39,6 +39,7 @@ calibracion:
 # 3. Dependencia entre indicadores y control del denominador.
 analisis:
 	$(PY) scripts/analisis_dependencia.py
+	$(PY) scripts/consenso_experto.py
 
 # 4. Validación con conteo humano (ronda piloto y definitiva) y relieves de imagen.
 validacion:
@@ -57,6 +58,7 @@ evaluacion-modelo:
 	$(PY) scripts/eval_fuente_anotacion.py --muestra general
 	$(PY) scripts/eval_fuente_anotacion.py --muestra prueba
 	$(PY) scripts/eval_modelo_detalle.py
+	$(PY) scripts/sensibilidad_dependencia_temporal.py
 
 # 7. Comparación con el modelo fundacional y exploración de vetas.
 comparaciones:

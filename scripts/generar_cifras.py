@@ -57,8 +57,13 @@ def ic(lo, hi, d=2, signo=False):
 def pv(x):
     """Valor p: con tres decimales, o como cota inferior si es muy pequeño."""
     if x < 0.001:
-        return r"\num{< 0.001}"
+        return r"< \num{0.001}"
     return f(x, 3)
+
+
+def prel(x, k):
+    """Valor p de permutación con su relación: «\\leq» si está en el mínimo posible con k permutaciones."""
+    return (r"\leq " if x <= 1 / (k + 1) + 1e-9 else "= ") + f(x, 3)
 
 
 def m(nombre, valor):
@@ -91,6 +96,15 @@ def main():
     mn = d[d.has_bigrock.astype(bool) & d.is_mostly_null.astype(bool)]
     m("cNNullBig", n(len(mn))); m("cRocasNullBig", n(mn.n_rocks.sum()))
     m("cNOjoIzq", n((d.eye == "L").sum())); m("cNOjoDer", n((d.eye == "R").sum()))
+    # Secuencia de adquisición (Figura de variación): mismos tramos que make_thesis_figures.
+    sq = d[d.quality_flag.isin(["ok", "no_bigrock", "no_rock"])].sort_values("sclk")
+    tq = pd.qcut(sq.sclk, q=40, labels=False, duplicates="drop")
+    gq = sq.groupby(tq)
+    pres = gq.apply(lambda x: 100 * (x.n_bigrock > 0).mean(), include_groups=False)
+    m("cSecN", n(len(sq))); m("cSecTramos", n(tq.nunique())); m("cSecPorTramo", n(len(sq) // 40))
+    m("cSecMediaMax", p(gq.rock_coverage_pct.mean().max())); m("cSecMediaMin", p(gq.rock_coverage_pct.mean().min()))
+    m("cSecBigMin", p(pres.min())); m("cSecBigMax", p(pres.max()))
+    m("cSecTramosSuelo", n((gq.pct_soil.mean() > 50).sum())); m("cSecTramosArena", n((gq.pct_sand.mean() > 50).sum()))
 
     # --- E1 --------------------------------------------------------------------------
     m("cCobMedVal", p(rb.rock_coverage_pct.median())); m("cCobMediaVal", p(rb.rock_coverage_pct.mean()))
@@ -98,6 +112,7 @@ def main():
     k = int((rb.rock_coverage_pct == 100).sum())
     m("cNCobCien", n(k)); m("cPctCobCien", p(100 * k / len(rb)))
     m("cNCobMitad", n((d.rock_coverage_pct > 50).sum()))
+    m("cNCobCero", n(len(e1) - len(rb)))
 
     # --- E2 (src.poblaciones: con roca grande y no casi vacía) ------------------------
     m("cNRocas", n(res2["n_rocas"])); m("cRocasMax", n(ok.n_rocks.max()))
@@ -146,6 +161,8 @@ def main():
     from scipy import stats
     cc = d.dropna(subset=["rock_coverage_pct"])
     m("cSensRho", f(stats.spearmanr(cc.rock_coverage_pct, cc.coverage_total_pct)[0]))
+    cr = cc[cc.rock_coverage_pct > 0]
+    m("cSensRhoRoca", f(stats.spearmanr(cr.rock_coverage_pct, cr.coverage_total_pct)[0]))
     m("cSensMitadTot", n((cc.coverage_total_pct > 50).sum()))
     r1 = stats.pearsonr(ok.coverage_total_pct, ok.n_rocks); r2 = stats.spearmanr(ok.coverage_total_pct, ok.n_rocks)
     m("cSensConteoPearson", s(r1[0], 3)); m("cSensConteoPearsonP", pv(r1[1]))
@@ -185,7 +202,7 @@ def main():
     de = fa["descomposicion"]
     m("cDescTotal", s(de["total"])); m("cDescImg", s(de["imagenes"])); m("cDescAnot", s(de["anotacion"]))
     m("cDescImgPct", p(de["pct_imagenes"], 0)); m("cDescAnotPct", p(de["pct_anotacion"], 0))
-    m("cDescImgIC", ic(*de["ic95_imagenes"], 1, True)); m("cDescAnotIC", ic(*de["ic95_anotacion"], 1, True))
+    m("cDescImgIC", ic(*de["ic95_imagenes"], 1, True)); m("cDescAnotIC", ic(*de["ic95_anotacion"], 2, True))
     m("cResColab", s(fa["residuo_colaborativa"]["media"])); m("cResExp", s(fa["residuo_experto"]["media"]))
 
     # Prueba de dos muestras sobre todo el conjunto (escenas con cobertura > 0).
@@ -205,13 +222,13 @@ def main():
         r = dep[clave]
         m(f"cDep{nom}N", n(r["n"]))
         m(f"cDep{nom}Pearson", s(r["pearson"], 3)); m(f"cDep{nom}PearsonIC", ic(*r["ic95_pearson"], 3, True))
-        m(f"cDep{nom}PearsonP", pv(r["p_pearson"]))
+        m(f"cDep{nom}PearsonP", prel(r["p_pearson"], 999))
         m(f"cDep{nom}Spearman", s(r["spearman"], 3)); m(f"cDep{nom}SpearmanIC", ic(*r["ic95_spearman"], 3, True))
-        m(f"cDep{nom}SpearmanP", pv(r["p_spearman"]))
-        m(f"cDep{nom}Kendall", s(r["kendall"], 3)); m(f"cDep{nom}KendallP", pv(r["p_kendall"]))
-        m(f"cDep{nom}Dcor", f(r["dcor"], 3)); m(f"cDep{nom}DcorP", pv(r["p_dcor"]))
+        m(f"cDep{nom}SpearmanP", prel(r["p_spearman"], 999))
+        m(f"cDep{nom}Kendall", s(r["kendall"], 3)); m(f"cDep{nom}KendallP", prel(r["p_kendall"], 999))
+        m(f"cDep{nom}Dcor", f(r["dcor"], 3)); m(f"cDep{nom}DcorP", prel(r["p_dcor"], 999))
         m(f"cDep{nom}IM", f(r["im_bits"], 3)); m(f"cDep{nom}IMNula", f(r["im_nula_p95"], 3))
-        m(f"cDep{nom}IMP", pv(r["p_im_bits"]))
+        m(f"cDep{nom}IMP", prel(r["p_im_bits"], 199))
     c2 = dep["cobertura_conteo"]["chi2"]
     m("cChiDos", f(c2["chi2"], 1)); m("cChiGl", n(c2["gl"])); m("cChiP", f(c2["p"], 3)); m("cCramer", f(c2["v_cramer"], 3))
     m("cDepDcorSub", n(dep["frac_cobertura"].get("dcor_submuestra", 0)))
@@ -220,15 +237,16 @@ def main():
         mu = y.mean(); gr = y.groupby(g, observed=True)
         return float((gr.size() * (gr.mean() - mu) ** 2).sum() / ((y - mu) ** 2).sum())
     m("cEtaConteo", p(100 * eta2(ok.n_rocks, pd.qcut(ok.rock_coverage_pct, 10, duplicates="drop"))))
+    m("cEtaGrupos", n(pd.qcut(ok.rock_coverage_pct, 10, duplicates="drop").nunique()))
     m("cEtaCob", p(100 * eta2(ok.rock_coverage_pct, pd.cut(ok.n_rocks, [-.5, .5, 1.5, 3.5, 9.5, 1e6]))))
     def eta2_perm(y, g, k=999, seed=0):
         rng = np.random.default_rng(seed); obs = eta2(y, g)
         nul = [eta2(pd.Series(rng.permutation(y.values), index=y.index), g) for _ in range(k)]
         return float(np.percentile(nul, 95)), (1 + sum(v >= obs for v in nul)) / (k + 1)
     q95, pe = eta2_perm(ok.n_rocks, pd.qcut(ok.rock_coverage_pct, 10, duplicates="drop"))
-    m("cEtaConteoNula", p(100 * q95)); m("cEtaConteoP", f(pe, 3))
+    m("cEtaConteoNula", p(100 * q95)); m("cEtaConteoP", prel(pe, 999))
     q95, pe = eta2_perm(ok.rock_coverage_pct, pd.cut(ok.n_rocks, [-.5, .5, 1.5, 3.5, 9.5, 1e6]))
-    m("cEtaCobNula", p(100 * q95)); m("cEtaCobP", f(pe, 3))
+    m("cEtaCobNula", p(100 * q95)); m("cEtaCobP", prel(pe, 999))
     tramo = pd.cut(ok.rock_coverage_pct, [0, 10, 50, 80, 99.99, 100], include_lowest=True,
                    labels=["A", "B", "C", "D", "E"])
     for t in "ABCDE":
@@ -238,6 +256,13 @@ def main():
     for k, (rango, v) in enumerate(dep["cobertura_por_tramo_frac"].items()):
         L = "ABCD"[k]
         m(f"cFTN{L}", n(v["n"])); m(f"cFTMed{L}", p(v["mediana"])); m(f"cFTMedTot{L}", p(v["mediana_total"]))
+    # Peso de los extremos en cada tramo (la mediana mezcla escenas sin roca y escenas toda roca).
+    tfrac = pd.cut(e1.frac_valid, [-0.001, 0.25, 0.5, 0.75, 1.0], labels=list("ABCD"))
+    for L in "ABCD":
+        g = e1[tfrac == L].rock_coverage_pct
+        assert len(g) == dep["cobertura_por_tramo_frac"][list(dep["cobertura_por_tramo_frac"])["ABCD".index(L)]]["n"]
+        m(f"cFTCero{L}", p(100 * (g == 0).mean())); m(f"cFTCien{L}", p(100 * (g == 100).mean()))
+        m(f"cFTMedRoca{L}", p(g[g > 0].median()))
 
     # --- Validación humana (ronda definitiva) --------------------------------------------
     v = (pd.read_csv("outputs/validacion_manual_v2/plantilla.csv", dtype={"banda": str})
@@ -311,6 +336,9 @@ def main():
     dur = man.groupby("bloque").sclk.agg(lambda x: (x.max() - x.min()) / 88775.244)
     m("cSegSolesBloque", n(dur.median()))
     m("cSegEpocaElegida", n(sm["epoca_elegida"])); m("cSegHash", sm["sha256_modelo"][:16] + "…")
+    m("cSegHashCompleto", sm["sha256_modelo"])
+    seg = [e["seconds"] / 60 for e in sm["epochs"]]
+    m("cSegMinEpocaMin", n(min(seg))); m("cSegMinEpocaMax", n(max(seg))); m("cSegMinTotal", n(sum(seg)))
     mv = max(e["miou"] for e in sm["epochs"]); m("cSegValMIoU", f(mv, 3))
     m("cSegValUltima", f(sm["epochs"][-1]["miou"], 3))
     t = sm["test"]
@@ -333,6 +361,7 @@ def main():
         r = ft["por_tramo"].get(lab)
         m(f"cFugaN{nom}", n(r["n"]) if r else "0")
         m(f"cFugaIoU{nom}", f(r["miou"], 3) if r else "---"); m(f"cFugaR{nom}", f(r["r_cobertura"], 3) if r else "---")
+        m(f"cFugaMAE{nom}", f(r["mae"], 1) if r else "---"); m(f"cFugaErr{nom}", s(r["error_medio"], 2) if r else "---")
     m("cFugaExpSol", n(ft["experto"]["menos_de_1sol"]))
     m("cFugaExpHora", n(ft["experto"]["menos_de_1h"])); m("cFugaExpSoles", f(ft["experto"]["mediana_soles"], 1))
     ex = json.load(open("outputs/modelo_vs_experto_min1.json"))
@@ -348,12 +377,16 @@ def main():
         m(f"cBA{nom}Mediana", s(r["mediana"], 1)); m(f"cBA{nom}MAE", f(r["mae"], 1)); m(f"cBA{nom}MAEIC", ic(*r["ic95_mae"], 1))
         m(f"cBA{nom}LoA", ic(*r["loa"], 1, True))
         m(f"cBA{nom}Diez", p(r["pct_mas_10"])); m(f"cBA{nom}Cincuenta", p(r["pct_mas_50"]))
+        e_ = fa_csv[fa_csv.fuente == k]; d_ = e_.cob_modelo_val - e_.cob_etiqueta
+        assert len(e_) == r["n"]
+        m(f"cBA{nom}Pct", ic(np.percentile(d_, 2.5), np.percentile(d_, 97.5), 1, True))
+        m(f"cBA{nom}Encima", p(100 * (d_ > 1e-9).mean())); m(f"cBA{nom}Debajo", p(100 * (d_ < -1e-9).mean()))
     tramos = ["0", "0\u201325", "25\u201350", "50\u201375", "75\u201399,99", "100"]
-    etiq = {"0": "0", "0\u201325": "0--25", "25\u201350": "25--50", "50\u201375": "50--75",
-            "75\u201399,99": "75--99,99", "100": "100"}
+    etiq = {"0": "0", "0\u201325": "$>0$--25", "25\u201350": "25--50", "50\u201375": "50--75",
+            "75\u201399,99": "75--$<100$", "100": "100"}
     def celda(r):
         return f"{r['n']} & {s(r['media'], 1)} & {f(r['mae'], 1)}"
-    filas = [r"\multicolumn{7}{l}{\textit{Por tramo de cobertura de la referencia (\%)}} \\"]
+    filas = [r"\multicolumn{7}{l}{\textit{Por tramo de cobertura de la referencia, en \%}} \\"]
     for t in tramos:
         filas.append(f"{etiq[t]} & {celda(md['colaborativa']['por_tramo'][t])} & "
                      f"{celda(md['experto']['por_tramo'][t])} \\\\")
@@ -391,6 +424,29 @@ def main():
     fv = json.load(open("outputs/fuente_anotacion_resumen_modelo_anterior.json"))
     m("cFVDescImgPct", p(fv["descomposicion"]["pct_imagenes"], 0)); m("cFVDescAnot", s(fv["descomposicion"]["anotacion"]))
     m("cFVDescAnotIC", ic(*fv["descomposicion"]["ic95_anotacion"], 1, True))
+    # Taxonomía geológica de Perseverance (Anexo, vetas).
+    gm = json.load(open("outputs/geologia_m2020_resumen.json"))
+    m("cGeoN", n(gm["n_mascaras"])); m("cGeoVeta", n(gm["con_veta"])); m("cGeoVetaPct", p(gm["pct_con_veta"]))
+    m("cGeoVetaProb", n(gm["veta_probable"])); m("cGeoVetaDud", n(gm["veta_dudosa"]))
+    m("cGeoVetaResto", n(gm["con_veta"] - gm["veta_probable"] - gm["veta_dudosa"]))
+    m("cGeoFloatPct", p(100 * gm["con_float_rock"] / gm["n_mascaras"]))
+    # Consenso entre especialistas por clase (niveles 1 a 3 de las máscaras de experto).
+    ce = json.load(open("outputs/consenso_experto.json"))["clases"]
+    for k, nom in (("roca_grande", "Big"), ("lecho_rocoso", "Bed"), ("suelo", "Soil"), ("arena", "Sand")):
+        m(f"cCons{nom}", p(ce[k]["pct_conserva_nivel3"], 0))
+    assert all(v["pct_cambia_de_clase"] == 0 for v in ce.values())
+    # Sensibilidad a la dependencia entre imágenes (bootstrap por sol, desplazamiento circular).
+    tp = json.load(open("outputs/sensibilidad_dependencia_temporal.json"))
+    fc, cc, fs = tp["fraccion_cobertura"], tp["cobertura_conteo"], tp["fuente_anotacion"]
+    m("cTempNSolesEUno", n(fc["n_soles"])); m("cTempEscSolEUno", n(fc["escenas_por_sol_mediana"]))
+    m("cTempFCIC", ic(*fc["ic95_sol"], 3)); m("cTempFCP", prel(fc["p_desplazamiento"], 999))
+    m("cTempNSolesEDos", n(cc["n_soles"]))
+    m("cTempCCIC", ic(*cc["ic95_sol"], 3)); m("cTempCCP", prel(cc["p_pearson_desplazamiento"], 999))
+    m("cTempDcorP", prel(cc["p_dcor_desplazamiento"], 999)); m("cTempEtaP", prel(cc["p_eta2_desplazamiento"], 999))
+    m("cTempNSolesExp", n(fs["n_soles_experto"]))
+    m("cTempAnotIC", ic(*fs["ic95_anotacion_sol"], 1, True))
+    m("cTempBAIC", ic(*fs["ic95_error_medio_experto_sol"], 2, True))
+    m("cTempAnotPruebaIC", ic(*tp["fuente_anotacion_prueba"]["ic95_anotacion_sol"], 1, True))
 
     # --- Capa aplicada y vetas ---------------------------------------------------------------
     al = json.load(open("outputs/priorizacion_resumen.json"))

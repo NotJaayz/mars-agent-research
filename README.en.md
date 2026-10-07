@@ -48,7 +48,7 @@ documents this.
 |---|---|---|
 | **H1** | Coverage is derived reproducibly and is not determined by the labelled fraction of the scene | Supported, with weak residual dependence |
 | **H2** | The count approximates the number of rocks an observer distinguishes in the annotated region, without one-directional bias | Rejected (exploratory evaluation, one observer) |
-| **H3** | The indicators do not depend on the annotation source | Rejected: there is a source effect, much smaller than the raw difference |
+| **H3** | The indicators do not depend on the annotation source | Rejected with reservations for coverage: a small and uncertain source effect, far below the raw difference |
 | **H4** | Coverage and count carry different information | Supported: different information, **not** statistical independence |
 
 ---
@@ -236,9 +236,11 @@ coverage by construction.
 
 ![Coverage vs labelled fraction](outputs/figures/tesis/Figura_14_cobertura_vs_fraccion_etiquetada.png)
 
-No global linear association was observed between coverage and labelled fraction
-(**r = −0.020**, 95 % CI [−0.037; −0.004]); with 15,901 scenes the association is detectable
-but explains less than a thousandth of the variance. Distance correlation (0.062) detects a weak
+The linear association between coverage and labelled fraction is practically nil
+(**r = −0.020**, 95 % CI [−0.036; −0.004]): with 15,901 scenes the by-scene interval excludes
+zero, but it explains less than a thousandth of the variance and is no longer distinguishable
+from zero once the sequential acquisition of the images is taken into account (bootstrap by
+sol [−0.047; +0.008]; circular shift, p = 0.62). Distance correlation (0.062) detects a weak
 non-linear dependence. By labelled-fraction band, median coverage does **not** follow the
 pattern the artefact would produce (it is not highest in the least-labelled scenes):
 
@@ -285,9 +287,11 @@ statistics (2,193 scenes):
 
 **Practically no linear association, but not independence**: there is a weak **inverted-U**
 dependence —few rocks at very low coverage (partly by construction, since big rock is in the
-coverage numerator), a peak between 10 % and 50 %, and fewer rocks in continuous outcrops at
-full coverage—. Coverage deciles explain **5.6 %** of the count variance. The two indicators
-carry different information; they are not independent.
+coverage numerator), a peak between 10 % and 50 %, and little big rock to count in scenes at
+full coverage, whose rock is labelled almost entirely as bedrock—. Coverage bands explain
+**5.6 %** of the count variance. The dependence survives control for sequential structure
+(circular shift: distance correlation p = 0.026). The two indicators carry different
+information, although the relationship between them is not nil.
 
 ### Terrain composition and acquisition sequence (E3)
 
@@ -325,25 +329,29 @@ validation and of the 322 expert ones.
 
 ![Common instrument](outputs/figures/tesis/Figura_30_instrumento_comun.png)
 
-| Decomposition of the mean difference | p.p. | 95 % CI |
-|---|---:|---|
-| Total difference according to labels | +20.4 | |
-| Attributable to the **images** | **+18.2 (89 %)** | [+12.4; +23.8] |
-| Attributable to the **annotation** | **+2.2 (11 %)** | [+0.0; +4.5] |
+| Decomposition of the mean difference | p.p. | 95 % CI by scene | 95 % CI by sol |
+|---|---:|---|---|
+| Total difference according to labels | +20.4 | | |
+| Attributable to the **images** | **+18.2 (89 %)** | [+12.4; +23.8] | |
+| Attributable to the **annotation** | **+2.2 (11 %)** | [+0.02; +4.54] | [−1.0; +5.5] |
 
 1. **The expert mask set consists of far less rocky scenes**: measured by the same instrument,
    its median coverage is 5.8 % versus 72.5 %. This is a property of the dataset relevant to
    anyone evaluating against that set.
-2. The annotation component is small and positive, and its size depends on the instrument and the
-   sample: +3.2 [+1.0; +5.4] if the crowdsourced sample is drawn only from the test blocks, and
-   +4.4 [+2.1; +6.5] with the previous model. It is **compatible** with the hypothesis of a
-   salience bias, but the design does not allow that mechanism to be identified causally.
+2. The annotation component is small, positive in every variant and **uncertain**: +3.2
+   [+1.0; +5.4] if the crowdsourced sample is drawn only from the test blocks, and +4.4
+   [+2.1; +6.5] with the previous model. The expert images are concentrated in 48 sols; with a
+   bootstrap that resamples whole sols, the interval of the main sample includes zero
+   ([−1.0; +5.5]) and that of the test blocks barely excludes it ([+0.2; +6.3]). It is
+   **compatible** with the hypothesis of a salience bias, but the design does not allow that
+   mechanism to be identified causally.
 3. The mechanism of a denominator reduced by unlabelled soil **finds no support**: the labelled
    fraction is the same in both sources (p = 0.24).
 
-Since the instrument was trained on crowdsourced labels, it tends to see more rock than the
-expert (it overestimates by +3.1 points on average), so the annotation component is probably
-underestimated.
+The decomposition assumes that the instrument's error is the same in both samples. A common bias
+cancels out in the subtraction; what would bias it is an error that depends on scene
+composition, and it does depend on the coverage band. The annotation figure is therefore
+approximate, and the direction of its bias cannot be determined from these data.
 
 ---
 
@@ -387,8 +395,9 @@ smoothing and minimum area tested, the procedure falls below the observer in 23 
 
 **The limit lies in the semantic representation.** Bedrock contributes 97.5 % of labelled rock
 and big rock 2.5 %. On the **same** 322 images, the share of scenes with big rock falls from
-16.5 % to 1.6 % as agreement among experts is tightened: the boundary between the two classes is
-ambiguous for experts too. The evidence indicates that the main limitation for instance counting
+16.5 % to 1.6 % as agreement among experts is tightened: only 20 % of its pixels survive, versus
+44 % for bedrock and over 67 % for soil and sand. It is the class with the least consensus among
+experts too. The evidence indicates that the main limitation for instance counting
 comes from the semantic representation and the granularity of the labels, rather than from an
 evident lack of image resolution (consensus, perspective, scale, occlusion and parametrisation
 also play a part).

@@ -8,7 +8,7 @@
 La pregunta era qué indicadores cuantitativos de cobertura y organización de la roca pueden
 derivarse de forma reproducible de las máscaras de AI4Mars, y cuáles son sus límites de validez
 frente a diferencias en la anotación y al juicio humano. La respuesta tiene tres partes: la
-cobertura sí puede derivarse con fiabilidad; el conteo de rocas individuales, no, y ese
+cobertura sí puede derivarse de forma reproducible; el conteo de rocas individuales, no, y ese
 resultado negativo es en sí mismo un hallazgo; y el propio conjunto de datos presenta
 inconsistencias que delimitan lo que cualquiera de los dos indicadores puede afirmar.
 
@@ -23,17 +23,19 @@ anotación colaborativa.
 
 El \textbf{conteo de rocas} es el resultado negativo del trabajo: \textbf{contar rocas
 individuales a partir de estas máscaras no es sencillo}, y el procedimiento no lo consigue más
-que en un sentido acotado. El procedimiento produce un conteo reproducible de las instancias
+que en un sentido acotado: produce un conteo reproducible de las instancias
 geométricamente separables dentro de la clase roca grande, pero ese conteo no puede
 interpretarse como estimación válida del número total de rocas visibles en la escena. La
-evaluación exploratoria con un observador evidencia subconteo, atribuible tanto a la cobertura
-incompleta de la clase como a regiones que no contienen la información geométrica necesaria
-para separar instancias.
+evaluación exploratoria con un observador sugiere un subconteo sistemático dentro de la propia
+región anotada, debido sobre todo a regiones que no contienen la información geométrica
+necesaria para separar instancias; y como la clase no cubre toda la roca de la escena, ni
+siquiera un conteo exacto de esa región equivaldría al número de rocas visibles.
 
 Las \textbf{inconsistencias del conjunto de datos} completan la respuesta. Las escenas con
-máscara de especialista son mucho menos rocosas que las de entrenamiento, voluntarios y
-especialistas aplican criterios algo distintos, la frontera entre roca grande y lecho rocoso es
-ambigua incluso entre especialistas, y la anotación de la roca grande es parcial y de
+máscara de especialista son mucho menos rocosas que las de entrenamiento; la diferencia de
+criterio entre voluntarios y especialistas, si existe, es pequeña e incierta; la roca grande es
+la clase que menos consenso reúne
+incluso entre especialistas, y la anotación de la roca grande es parcial y de
 granularidad variable. Estos rasgos, que la Tabla~\ref{tab:inconsistencias} reúne, explican buena
 parte de los límites de los dos indicadores.
 
@@ -45,56 +47,81 @@ diferencia. Las conclusiones principales se mantienen con cualquiera de las dos 
 
 \textbf{E2} produjo el conteo para las \cFlagOk{} escenas de bandera \texttt{ok}, con un total de
 \cNRocas{} rocas y una distribución tamaño--frecuencia decreciente, coherente en forma con la
-literatura de abundancia de rocas. El criterio de prominencia contuvo la sobresegmentación de la
-primera versión —el conteo medio por escena (\cRocasMedio) es inferior al número medio de
-componentes conectadas (\cRawMedio)—, pero la reconstrucción de la calibración muestra que lo
-hizo rebajando el conteo de forma general y no solo en las escenas sobresegmentadas. La población de E2 excluye las \cNNullBig{} escenas casi sin
-etiquetar que contienen roca grande, por ser las que concentran los artefactos de anotación.
+literatura de abundancia de rocas. En \cBandaCero{} de esas escenas (\cBandaCeroPct\,\%) los
+filtros de área y forma descartan toda la roca grande y el conteo es cero. El criterio de
+prominencia redujo la fragmentación de la primera versión, pero la reconstrucción de la
+calibración muestra que lo hizo rebajando el conteo de forma general y no solo en las escenas
+sobresegmentadas, y no la eliminó: la división de aguas subdivide alguna región en el
+\cPctSubdiv{} de las escenas que cuentan rocas. La población de E2 excluye las \cNNullBig{}
+escenas casi sin etiquetar que contienen roca grande, por ser las que concentran los artefactos
+de anotación.
 
 \textbf{E3} caracterizó la composición del terreno, definió una tipología de escenas y mostró la
-alternancia entre segmentos rocosos y arenosos a lo largo de la secuencia de adquisición. Esa
-variación es temporal y no espacial: el orden de adquisición no equivale a la distancia
-recorrida. Su componente de comparación entre cámaras no pudo ejecutarse, porque el
-subconjunto es casi enteramente monocular, con \cNOjoIzq{} imágenes del ojo izquierdo frente a
-\cNOjoDer{} del derecho.
+alternancia entre tramos rocosos y tramos dominados por el suelo a lo largo de la secuencia de
+adquisición. Esa variación es temporal y no espacial: el orden de adquisición no equivale a la
+distancia recorrida. La variación entre tipos de escena se describe con la propia tipología,
+que se define a partir de la composición y, por tanto, de la cobertura. Tampoco fue posible
+comparar los dos ojos del par estéreo, porque el subconjunto es casi enteramente monocular, con
+\cNOjoIzq{} imágenes del ojo izquierdo frente a \cNOjoDer{} del derecho.
 
 \textbf{E4} entregó el conjunto de recursos reproducibles: código modular con parámetros
 explícitos, guiones de ejecución que regeneran todas las cifras, tablas y figuras de este
-documento, registro de versiones y un archivo tabular con veinticuatro indicadores por imagen.
+documento, registro de versiones y un archivo tabular con una fila por imagen y veintiocho
+columnas de identificación, indicadores y elegibilidad.
 
-\textbf{E5} estableció los límites de validez mediante cuatro contrastes —fracción etiquetada,
-fuente de la anotación, juicio de un observador y segmentador entrenado—, de los que proceden
-los hallazgos que se resumen a continuación.
+\textbf{E5} estableció los límites de validez mediante tres contrastes —fuente de la anotación,
+juicio de un observador y segmentador entrenado, a los que se suma el control del denominador
+de E1— y atribuyó los errores del conteo a sus causas: en el \cPctSinBig{} de las escenas no hay
+roca grande que contar, en el \cPctFiltradas{} los filtros la descartan, y entre las escenas que
+cuentan rocas la subdivisión afecta al \cPctSubdiv. De ahí proceden los hallazgos que se resumen
+a continuación.
+
+\subsection{Sobre las hipótesis}
+
+La Tabla~\ref{tab:contraste-hipotesis} recoge el dictamen de cada hipótesis. \textbf{H1} se
+sostiene: la cobertura es reproducible y no está gobernada por la fracción etiquetada, aunque
+persiste una dependencia no lineal débil. \textbf{H2} se rechaza, en una evaluación
+exploratoria: el conteo subestima de forma sistemática frente al observador. \textbf{H3} se
+rechaza con reservas: hay un efecto de la fuente de la anotación, pequeño e incierto, muy
+inferior a la diferencia bruta entre fuentes, que procede sobre todo de las imágenes.
+\textbf{H4} se sostiene: cobertura y conteo aportan información distinta, sin ser
+independientes.
 
 \subsection{Sobre la relación entre los indicadores}
 
 Los indicadores presentan una asociación lineal prácticamente nula en las escenas analizadas
-($r = \cDepCCPearson$) y tampoco una asociación monótona. No son, sin embargo, estadísticamente
-independientes: la correlación de distancia y la información mutua detectan una dependencia
-débil ($p = \cDepCCDcorP$ y $p = \cDepCCIMP$), con forma de U invertida, en parte inducida por
-la propia definición de los indicadores. La magnitud es pequeña: los deciles de cobertura
-explican el \cEtaConteo{} de la varianza del conteo. La conclusión que se sostiene es que los
-dos indicadores aportan información distinta —cuánta roca hay y cuántos bloques discretos la
-componen— y que reportarlos por separado está justificado, no que sean independientes.
+($r = \cDepCCPearson$) y tampoco una asociación monótona. Sí muestran, en cambio, una
+dependencia débil y no lineal: la correlación de distancia y la información mutua la detectan
+($p \cDepCCDcorP$ y $p \cDepCCIMP$), con forma de U invertida, en parte inducida por la
+propia definición de los indicadores. La magnitud es pequeña: los tramos de cobertura explican
+el \cEtaConteo{} de la varianza del conteo. La conclusión que se sostiene es que los dos
+indicadores aportan información distinta sobre la anotación —cuánta superficie se etiquetó como
+roca y en cuántas regiones separables se etiquetó la roca grande— y que reportarlos por separado
+está justificado, aunque la relación entre ambos no sea nula.
 
 \subsection{Sobre la fuente de la anotación}
 
 La comparación directa entre máscaras colaborativas y de experto muestra una diferencia grande:
 la cobertura mediana de las escenas con roca pasa del \cCobMedVal{} al \cGoldCobMedPos. Esa
 diferencia, sin embargo, \textbf{no puede atribuirse sin más a la anotación}, porque las dos
-fuentes cubren imágenes distintas. Aplicando a ambas muestras un mismo segmentador como
-instrumento común, el \cDescImgPct{} de la diferencia de medias se asocia con la composición de
-las muestras de imágenes y \cDescAnot{} puntos porcentuales \cDescAnotIC{} con la fuente de las
-etiquetas.
+fuentes cubren imágenes distintas. Aplicando a una muestra de cada fuente un mismo segmentador
+como instrumento común, el \cDescImgPct{} de la diferencia de cobertura media entre las muestras
+(\cDescTotal{} puntos) se asocia con la composición de las imágenes y \cDescAnot{} puntos
+porcentuales (IC~95\,\% \cDescAnotIC) con la fuente de las etiquetas.
 
 De ahí se siguen dos conclusiones. La primera es que \textbf{las máscaras de experto de AI4Mars
 para esta cámara cubren escenas mucho menos rocosas} que las de entrenamiento, una propiedad del
-conjunto que afecta a cualquier comparación entre ambos. La segunda es que existe una componente
-atribuible a la anotación, pequeña —entre dos y cuatro puntos según el instrumento y la muestra— y en la dirección de asignar más roca. Los
+conjunto que afecta a cualquier comparación entre ambos. La segunda es que la componente
+atribuible a la anotación es pequeña e incierta: su estimación es positiva en todas las
+variantes —entre \cDescAnot{} y \cFVDescAnot{} puntos según la muestra y el instrumento, en el
+sentido de que la anotación colaborativa asigna algo más de roca que la de especialista—, pero
+cuando se tiene en cuenta que las imágenes de experto se concentran en \cTempNSolesExp{} soles,
+su intervalo en la muestra principal incluye el cero \cTempAnotIC. Los
 resultados son compatibles con la hipótesis de un sesgo de saliencia en la anotación
 colaborativa, pero el diseño del estudio no permite identificar causalmente ese mecanismo. El
 mecanismo alternativo de un denominador reducido por suelo sin etiquetar no encuentra apoyo,
-porque la fracción etiquetada es igual en las dos fuentes.
+porque la fracción etiquetada no difiere apreciablemente entre las dos fuentes
+(\cFracValidMed{} frente a \cFracValidGold, $p = \cFracValidP$).
 
 \subsection{Sobre el segmentador entrenado}
 
@@ -104,14 +131,14 @@ máscaras con un IoU medio de \cSegMIoU{} en la muestra equilibrada de prueba y 
 en su distribución natural. Un reparto anterior al azar por imagen daba cifras prácticamente
 iguales, de modo que la proximidad entre imágenes no las inflaba. Frente a las máscaras de
 experto el IoU medio baja a \cExpMIoU{} y el modelo sobreestima la cobertura en \cBAExpMedia{}
-puntos de media \cBAExpMediaIC, la dirección esperable si heredó el criterio de la anotación con
-que se entrenó.
+puntos de media \cBAExpMediaIC, lo que es compatible con que haya heredado el criterio de la
+anotación con que se entrenó, aunque estos datos no permiten demostrarlo.
 
-El modelo no es, por tanto, insesgado frente al experto. El error absoluto medio es de
+Frente al experto, el modelo presenta por tanto un sesgo positivo. El error absoluto medio es de
 \cBAExpMAE{} puntos, los límites de acuerdo abarcan unos sesenta y cinco puntos porcentuales y el
 error depende del tramo de cobertura, con sobreestimación en las coberturas intermedias y
-subestimación en las totales. El modelo describe conjuntos de escenas y no valora escenas individuales, y estima
-cobertura, no conteo.
+subestimación en las de cobertura total. El modelo describe conjuntos de escenas, no escenas
+individuales, y estima cobertura, no conteo.
 
 \subsection{Sobre el conteo y el juicio humano}
 
@@ -121,12 +148,16 @@ acuerdo escaso. El desacuerdo es asimétrico —el procedimiento queda por debaj
 \cVAbajo{} escenas y por encima en \cVArriba— y no depende del ajuste de los parámetros: en las
 \cSenN{} combinaciones ensayadas el procedimiento subcuenta en al menos \cSenAbajoMin{} escenas.
 
-La causa principal no es algorítmica. La anotación de roca grande no marca todas las rocas de
-una escena sino algunas —en \cVNoExhN{} de las \cVN{} escenas representa menos del
-\SI{20}{\percent} de la roca etiquetada—, y cuando un polígono envuelve un campo de bloques
-contiguos la máscara no contiene la información geométrica que permitiría separarlos. El
-procedimiento cuenta bien lo que la máscara permite separar; la máscara permite separar mucho
-menos de lo que un observador ve.
+La evidencia apunta a que la causa principal del subconteo está en la máscara más que en el
+algoritmo. Cuando un polígono envuelve un campo de bloques contiguos, la máscara no contiene la
+información geométrica que permitiría separarlos, y la división de aguas no tiene dónde cortar.
+El procedimiento separa de forma reproducible lo que la geometría de la máscara permite
+separar, con una subdivisión residual en parte de las escenas
+(Sección~\ref{sec:diagnostico}); la máscara permite separar mucho menos de lo que un observador
+distingue. Aparte de ese desacuerdo, la anotación de roca grande no marca todas las rocas de una
+escena sino algunas —en \cVNoExhN{} de las \cVN{} escenas representa menos del
+\SI{20}{\percent} de la roca etiquetada—, de modo que el conteo tampoco representaría la escena
+completa aunque coincidiera con el observador dentro de la región.
 
 \subsection{Sobre el origen de los límites del conteo}
 
@@ -135,8 +166,9 @@ de la representación semántica y de la granularidad de las etiquetas, más que
 resolución evidente de las imágenes. El lecho rocoso aporta el \cParteBed{} de la roca
 etiquetada y la roca grande solo el \cParteBig; y sobre las mismas \cNGold{} imágenes, la
 proporción de escenas con roca grande cae del \cGoldUnoBig{} al \cGoldTresBig{} al endurecer el
-acuerdo exigido a los especialistas, lo que indica que la frontera entre ambas clases es ambigua
-también para ellos. No es posible, con todo, aislar la taxonomía como causa única: intervienen
+acuerdo exigido a los especialistas: solo se conserva el \cConsBig{} de sus píxeles, frente al
+\cConsBed{} del lecho rocoso, lo que indica que la roca grande es la clase más difícil de
+delimitar también para ellos. No es posible, con todo, aislar la taxonomía como causa única: intervienen
 también las reglas de consenso, la perspectiva, la escala, la oclusión y la parametrización.
 
 Los ensayos que usan la imagen para separar bloques dentro de la región anotada no mejoran el
@@ -146,10 +178,11 @@ El enfoque híbrido queda como prueba de concepto.
 \subsection{Sobre las inconsistencias del conjunto de datos}
 
 El diagnóstico del conjunto de datos es el resultado más transferible del trabajo. Seis
-inconsistencias, documentadas con evidencia cuantitativa en la Sección~\ref{sec:inconsistencias},
+inconsistencias —cinco documentadas con evidencia cuantitativa y una ilustrada con ejemplos en
+la Sección~\ref{sec:inconsistencias}—
 condicionan su uso como medida del terreno y como referencia de evaluación: la composición
-distinta de las escenas de entrenamiento y de especialista, el criterio distinto de voluntarios y
-especialistas, la frontera ambigua entre roca grande y lecho rocoso, la anotación no exhaustiva de
+distinta de las escenas de entrenamiento y de especialista, la posible diferencia de criterio
+entre voluntarios y especialistas, el escaso consenso sobre la roca grande, la anotación no exhaustiva de
 la roca grande, la granularidad variable del trazado y las escenas casi sin etiquetar. Ninguna
 invalida el conjunto para el propósito con que se creó, pero todas deben tenerse en cuenta antes
 de leer sus máscaras como medidas.
@@ -159,14 +192,15 @@ de leer sus máscaras como medidas.
 \paragraph{Un diagnóstico de los límites de validez de las máscaras de AI4Mars.} Es el aporte
 principal. El trabajo establece qué puede y qué no puede inferirse de esas máscaras: la
 cobertura se deriva de forma reproducible y no está gobernada por la fracción etiquetada; el
-conteo de instancias queda limitado por la representación semántica; y la comparación entre
+conteo de instancias queda limitado sobre todo por la representación semántica y la granularidad
+de las etiquetas, junto con otros factores; y la comparación entre
 fuentes de anotación está dominada por una diferencia de composición entre las muestras de
 imágenes que, hasta donde llega la revisión realizada, no se había documentado. Esto último es
 pertinente para todo trabajo que emplee las máscaras de experto como referencia de evaluación.
 
 \paragraph{Un procedimiento y un conjunto de resultados.} Un flujo documentado, auditable y de
-bajo costo computacional que deriva veinticuatro indicadores por imagen para \cNEscenas{}
-escenas, ejecutable en procesador convencional sin conjunto de entrenamiento. Todas las cifras,
+bajo costo computacional que deriva, para \cNEscenas{} escenas, una fila de indicadores por
+imagen con veintiocho columnas, ejecutable en procesador convencional sin conjunto de entrenamiento. Todas las cifras,
 tablas y figuras se regeneran con guiones a partir de los resultados, y el conjunto es
 reutilizable con independencia del procedimiento que lo generó.
 
@@ -199,16 +233,22 @@ significar ausencia de rocas o ausencia de la etiqueta que permite contarlas, si
 conjunto de resultados distingue.
 
 Los indicadores de tamaño relativo no deben leerse literalmente en escenas de fracción
-etiquetada muy baja, y la variación a lo largo de la secuencia de adquisición no debe leerse
+etiquetada inferior a $0{,}05$ —bandera \texttt{mostly\_null}—, y conviene tratarlos con
+cautela por debajo de $0{,}20$, el umbral con que se excluyeron escenas del entrenamiento del
+segmentador. La variación a lo largo de la secuencia de adquisición no debe leerse
 como variación a lo largo del trayecto.
 
 \subsection{Para trabajos futuros}
 
 \paragraph{Ampliar la validación humana.} Es la prioridad. La validación se hizo con un único
-observador; repetirla con al menos dos observadores independientes, idealmente tres, con el
-mismo protocolo —imágenes anonimizadas, orden aleatorio, resultado automático oculto— permitiría
-reportar primero el acuerdo entre personas y después el acuerdo entre el procedimiento y cada
-una de ellas.
+observador, el propio autor, sobre una muestra estratificada que no es representativa del
+subconjunto. Convendría repetirla con al menos dos observadores independientes del autor,
+idealmente tres, sobre una muestra representativa y con el mismo protocolo —imágenes
+anonimizadas, orden aleatorio, resultado automático oculto—, reportando primero el acuerdo
+entre personas, con un estadístico como el alfa de Krippendorff, y después el acuerdo entre el
+procedimiento y cada una de ellas. Hacer dos preguntas por escena, una sobre la región anotada y
+otra sobre la escena completa, permitiría además cuantificar cuánto deja fuera la anotación no
+exhaustiva.
 
 \paragraph{Evaluar el conteo basado en la imagen.} El relieve de sombras es el que más se acerca
 al observador, sin superar la corrección por comparaciones múltiples. Su evaluación requiere una
@@ -218,13 +258,16 @@ sobresegmentación que la textura de la imagen introduce.
 \paragraph{Probar una taxonomía con bloques explícitos.} La taxonomía geológica que AI4Mars
 incluye para \textit{Perseverance} distingue roca suelta y guijarros. Extender el análisis a esa
 misión permitiría poner a prueba la hipótesis de que una taxonomía con representación más
-explícita de los bloques mejora la estimación de instancias. No se aborda aquí porque implica
-otro rover, otra cámara, otra distribución de datos y nuevas validaciones.
+explícita de los bloques mejora la estimación de instancias. Más allá del inventario descriptivo
+del Anexo~\ref{app:vetas}, no se aborda aquí porque implica otro rover, otra cámara, otra
+distribución de datos y nuevas validaciones.
 
-\paragraph{Recuperar la escala métrica.} La cámara de navegación es un par estéreo. Un
-subconjunto con ambos ojos disponibles permitiría expresar los tamaños en unidades métricas y
-comparar las distribuciones tamaño--frecuencia en magnitud, y no solo en forma, con la
-literatura de abundancia de rocas.
+\paragraph{Recuperar la escala métrica.} La cámara de navegación es un par estéreo, y el archivo
+planetario de la NASA distribuye para sus imágenes productos de distancia y de coordenadas
+derivados del par. Combinarlos con las máscaras, aunque estas solo existan para el ojo
+izquierdo, permitiría expresar los tamaños en unidades métricas y comparar las distribuciones
+tamaño--frecuencia en magnitud, y no solo en forma, con la literatura de abundancia de
+rocas.
 
 \paragraph{Estimar el indicador sin anotación humana.} El segmentador aproxima la cobertura a
 partir de la imagen sola. Validarlo contra varias referencias y sobre otras partes de la misión
@@ -238,5 +281,15 @@ Las máscaras de experto de la cámara de navegación de \textit{Curiosity} cubr
 menos rocosas que las de entrenamiento. Una caída del desempeño al pasar de unas a otras mezcla,
 por tanto, el cambio de anotación con el cambio de composición, y no debe atribuirse solo a la
 primera. Se recomienda reportar el desempeño frente a ambas referencias, por clase, describir la
-composición de cada conjunto de evaluación y repartir los datos agrupando por secuencia de
-adquisición para evitar que imágenes casi idénticas queden a ambos lados del reparto.
+composición de cada conjunto de evaluación y, como precaución, repartir los datos agrupando por
+secuencia de adquisición para que imágenes casi idénticas no queden a ambos lados del reparto;
+en este trabajo el reparto al azar no infló las cifras, pero no hay garantía de que ocurra lo
+mismo con otros modelos o conjuntos.
+
+\subsection{Para quienes mantienen el conjunto de datos}
+
+Tres medidas reducirían las inconsistencias documentadas: describir cómo se eligieron las
+imágenes de la muestra de especialista, cuya composición difiere tanto de la de entrenamiento;
+publicar máscaras colaborativas de esas mismas imágenes, para que las dos fuentes puedan
+compararse sobre el mismo material; y anotar la roca grande por instancias, con un polígono por
+bloque, si se quiere que el conjunto sirva para contar rocas.

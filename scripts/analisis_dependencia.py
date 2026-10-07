@@ -169,7 +169,7 @@ def main() -> None:
     res["cobertura_conteo"] = analizar(x, y, "cobertura", "conteo", args.perm, args.boot,
                                        args.dcor_max, rng)
     res["cobertura_conteo"]["chi2"] = chi2_tramos(
-        x, y, [0, 50, 80, 95, 99.99, 100], [-0.5, 0.5, 1.5, 3.5, 9.5, 1e6])
+        x, y, [0, 50, 80, 95, 99.99, 100], [-0.5, 0.5, 1.5, 3.5, 1e6])  # 4+ fusionado: celdas esperadas >= 5
 
     # Par 2: cobertura frente a fracción etiquetada (control del denominador).
     cal = d.dropna(subset=["rock_coverage_pct", "frac_valid"])

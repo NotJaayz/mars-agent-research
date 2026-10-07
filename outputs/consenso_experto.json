@@ -1,0 +1,29 @@
+{
+ "n_imagenes": 322,
+ "clases": {
+  "suelo": {
+   "pixeles_nivel1": 89096149,
+   "pct_conserva_nivel2": 90.06549991290869,
+   "pct_conserva_nivel3": 67.42044372759591,
+   "pct_cambia_de_clase": 0.0
+  },
+  "lecho_rocoso": {
+   "pixeles_nivel1": 60015953,
+   "pct_conserva_nivel2": 74.51755035865214,
+   "pct_conserva_nivel3": 43.64329430876487,
+   "pct_cambia_de_clase": 0.0
+  },
+  "arena": {
+   "pixeles_nivel1": 44774352,
+   "pct_conserva_nivel2": 85.61288837859675,
+   "pct_conserva_nivel3": 68.43182230755679,
+   "pct_cambia_de_clase": 0.0
+  },
+  "roca_grande": {
+   "pixeles_nivel1": 382233,
+   "pct_conserva_nivel2": 33.92093304345779,
+   "pct_conserva_nivel3": 20.327391931099616,
+   "pct_cambia_de_clase": 0.0
+  }
+ }
+}

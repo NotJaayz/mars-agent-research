@@ -15,10 +15,11 @@
     "manual": {
       "tipo": "online",
       "author": "{NASA Jet Propulsion Laboratory}",
-      "title": "Planetary Data System: Imaging Node",
+      "title": "{Planetary Data System}: {Imaging Node}",
       "year": "2024",
       "url": "https://pds-imaging.jpl.nasa.gov/",
-      "urldate": "2026-10-01"
+      "urldate": "2026-10-01",
+      "langid": "english"
     }
   },
   "jpl2017wheels": {
@@ -26,10 +27,11 @@
       "tipo": "online",
       "author": "{NASA Jet Propulsion Laboratory}",
       "title": "Premature wear of the {MSL} wheels",
-      "titleaddon": "NASA Lessons Learned Information System, lección 22401",
       "year": "2017",
       "url": "https://llis.nasa.gov/lesson/22401",
-      "urldate": "2026-10-01"
+      "urldate": "2026-10-01",
+      "organization": "NASA Lessons Learned Information System",
+      "langid": "english"
     }
   },
   "grotzinger2012msl": {
@@ -45,7 +47,10 @@
     "doi": "10.1029/2010JE003633"
   },
   "arvidson2017wheels": {
-    "doi": "10.1016/j.jterra.2017.03.001"
+    "doi": "10.1016/j.jterra.2017.03.001",
+    "corregir": {
+      "title": "Relating geologic units and mobility system kinematics contributing to {Curiosity} wheel damage at {Gale Crater}, {Mars}"
+    }
   },
   "rankin2020mobility": {
     "doi": "10.1109/AERO47225.2020.9172469"
@@ -57,7 +62,10 @@
     }
   },
   "golombek2003mer": {
-    "doi": "10.1029/2003JE002074"
+    "doi": "10.1029/2003JE002074",
+    "corregir": {
+      "pages": "8072"
+    }
   },
   "golombek2012msl": {
     "doi": "10.1007/s11214-012-9916-y",
@@ -71,7 +79,9 @@
   "ward2005spirit": {
     "doi": "10.1029/2005GL022705",
     "corregir": {
-      "author": "Ward, J. G. and Arvidson, R. E. and Golombek, M. P."
+      "author": "Ward, J. G. and Arvidson, R. E. and Golombek, M. P.",
+      "pages": "L11203",
+      "title": "The size-frequency and areal distribution of rock clasts at the {Spirit} landing site, {Gusev Crater}, {Mars}"
     }
   },
   "di2016change3": {
@@ -106,10 +116,20 @@
     "doi": "10.1109/CVPR.2007.383257"
   },
   "castano2007oasis": {
-    "doi": "10.1002/rob.20192"
+    "doi": "10.1002/rob.20192",
+    "corregir": {
+      "title": "{OASIS}: Onboard autonomous science investigation system for opportunistic rover science"
+    }
   },
   "furlan2019rockcnn": {
-    "doi": "10.1007/978-3-030-21077-9_14"
+    "doi": "10.1007/978-3-030-21077-9_14",
+    "corregir": {
+      "booktitle": "Pattern Recognition: 11th {Mexican} Conference, {MCPR} 2019",
+      "editor": "Carrasco-Ochoa, Jesús Ariel and Martínez-Trinidad, José Francisco and Olvera-López, José Arturo and Salas, Joaquín",
+      "series": "Lecture Notes in Computer Science",
+      "volume": "11524",
+      "publisher": "Springer"
+    }
   },
   "rothrock2016spoc": {
     "doi": "10.2514/6.2016-5539"
@@ -148,14 +168,25 @@
     "doi": "10.1016/j.icarus.2014.02.022"
   },
   "snow2008cheap": {
-    "doi": "10.3115/1613715.1613751"
+    "doi": "10.3115/1613715.1613751",
+    "corregir": {
+      "title": "Cheap and fast---but is it good? {Evaluating} non-expert annotations for natural language tasks",
+      "booktitle": "Proceedings of the 2008 Conference on Empirical Methods in Natural Language Processing",
+      "pages": "254--263"
+    }
   },
   "sheng2008label": {
-    "doi": "10.1145/1401890.1401965"
+    "doi": "10.1145/1401890.1401965",
+    "corregir": {
+      "title": "Get another label? {Improving} data quality and data mining using multiple, noisy labelers"
+    }
   },
   "northcutt2021labelerrors": {
     "doi": "10.48550/arXiv.2103.14749",
-    "tipo": "preprint"
+    "tipo": "preprint",
+    "corregir": {
+      "version": null
+    }
   },
   "lintott2008galaxyzoo": {
     "doi": "10.1111/j.1365-2966.2008.13689.x"
@@ -180,10 +211,16 @@
     }
   },
   "vanderwalt2014skimage": {
-    "doi": "10.7717/peerj.453"
+    "doi": "10.7717/peerj.453",
+    "corregir": {
+      "title": "{scikit-image}: image processing in {Python}"
+    }
   },
   "harris2020numpy": {
-    "doi": "10.1038/s41586-020-2649-2"
+    "doi": "10.1038/s41586-020-2649-2",
+    "corregir": {
+      "author": "Harris, Charles R. and Millman, K. Jarrod and van der Walt, Stéfan J. and Gommers, Ralf and Virtanen, Pauli and Cournapeau, David and Wieser, Eric and Taylor, Julian and Berg, Sebastian and Smith, Nathaniel J. and Kern, Robert and Picus, Matti and Hoyer, Stephan and van Kerkwijk, Marten H. and Brett, Matthew and Haldane, Allan and Fernández del Río, Jaime and Wiebe, Mark and Peterson, Pearu and Gérard-Marchant, Pierre and Sheppard, Kevin and Reddy, Tyler and Weckesser, Warren and Abbasi, Hameer and Gohlke, Christoph and Oliphant, Travis E."
+    }
   },
   "virtanen2020scipy": {
     "doi": "10.1038/s41592-019-0686-2"
@@ -200,16 +237,19 @@
   },
   "zhao2023fastsam": {
     "doi": "10.48550/arXiv.2306.12156",
-    "tipo": "preprint"
-  },
-  "grady2024rockfall": {
-    "doi": "10.3390/rs16193732"
+    "tipo": "preprint",
+    "corregir": {
+      "version": null
+    }
   },
   "guo2023blasted": {
     "doi": "10.1016/j.measurement.2023.113207"
   },
   "sharifi2024fragment": {
-    "doi": "10.17794/rgn.2024.2.1"
+    "doi": "10.17794/rgn.2024.2.1",
+    "corregir": {
+      "author": "Sharifi, Elmira and Ebrahimi Farsangi, Mohamad Ali and Mansouri, Hamid and Rashedi, Esmat"
+    }
   },
   "cohen1960kappa": {
     "doi": "10.1177/001316446002000104"
@@ -218,7 +258,10 @@
     "doi": "10.1037/h0026256"
   },
   "landis1977": {
-    "doi": "10.2307/2529310"
+    "doi": "10.2307/2529310",
+    "corregir": {
+      "pages": "159--174"
+    }
   },
   "bland1986": {
     "doi": "10.1016/S0140-6736(86)90837-8",
@@ -227,15 +270,27 @@
     }
   },
   "szekely2007dcor": {
-    "doi": "10.1214/009053607000000505"
+    "doi": "10.1214/009053607000000505",
+    "corregir": {
+      "pages": "2769--2794"
+    }
   },
   "kraskov2004mi": {
     "doi": "10.1103/PhysRevE.69.066138"
   },
   "efron1979bootstrap": {
-    "doi": "10.1214/aos/1176344552"
+    "doi": "10.1214/aos/1176344552",
+    "corregir": {
+      "pages": "1--26"
+    }
   },
   "maimone2007vo": {
     "doi": "10.1002/rob.20184"
+  },
+  "nachon2014sulfate": {
+    "doi": "10.1002/2013JE004588"
+  },
+  "meijering2004neurite": {
+    "doi": "10.1002/cyto.a.20022"
   }
 }

@@ -8,7 +8,7 @@ indicadores cuantitativos de cobertura y organización de la roca pueden derivar
 forma reproducible, y cuáles son sus límites de validez frente a diferencias en la anotación y
 al juicio humano.
 
-Se implementó un procedimiento de procesamiento clásico de imagen que calcula, para cada
+Se implementó un método clásico de procesamiento de imágenes que calcula, para cada
 máscara, la cobertura de roca visible como cociente entre píxeles de roca y píxeles etiquetados,
 y estima el número de rocas individuales mediante componentes conectadas, transformada de
 distancia y división de aguas guiada por máximos de prominencia, con filtros explícitos de área
@@ -20,23 +20,27 @@ La cobertura pudo calcularse en \cNCobCalc{} escenas (\cPctCobCalc); \cNCobPos{}
 sobre píxeles etiquetados, y no se encontró evidencia de que sus valores altos se expliquen por
 la fracción de escena etiquetada. El conteo, aplicado a las \cFlagOk{} escenas aptas, arrojó
 \cNRocas{} rocas. Ambos indicadores presentan una asociación lineal prácticamente nula
-($r = \cDepCCPearson$), aunque medidas no lineales detectan una dependencia débil. Frente a las
-\cNGold{} máscaras de especialista del propio conjunto, la cobertura mediana cae al
-\cGoldCobMedPos; un segmentador entrenado, usado como instrumento común sobre ambas muestras,
-atribuye la mayor parte de esa diferencia a que las escenas de especialista son mucho menos
-rocosas, y \cDescAnot{} puntos porcentuales a la fuente de la anotación. Una evaluación
-exploratoria con un observador muestra que el conteo subestima de forma sistemática
-(kappa ponderado de \cVKappaPond): cuenta de forma reproducible las instancias geométricamente
-separables dentro de la clase roca grande, pero no el número de rocas visibles, porque esa clase
-cubre solo una parte de la roca y a menudo agrupa varios bloques en un polígono.
+($r = \cDepCCPearson$), aunque medidas no lineales detectan una dependencia débil. En las
+\cNGold{} máscaras de especialista del propio conjunto, que recaen sobre otras imágenes, la
+cobertura mediana de las escenas con roca es del \cGoldCobMedPos. Un segmentador entrenado,
+usado como instrumento común sobre una muestra de cada fuente, atribuye el \cDescImgPct{} de la
+diferencia de cobertura media entre las muestras a que las escenas de especialista son mucho
+menos rocosas, y el \cDescAnotPct{} restante —unos dos puntos porcentuales, con un intervalo
+que incluye el cero cuando se tiene en cuenta la agrupación de las imágenes por sol— a la fuente
+de la anotación. Una evaluación exploratoria con un observador, que contó las rocas dentro de la región
+anotada como roca grande, indica un subconteo sistemático: el procedimiento queda por debajo del
+observador en \cVAbajo{} de \cVN{} escenas y por encima en \cVArriba{} (kappa ponderado de
+\cVKappaPond). Cuenta de forma reproducible las instancias geométricamente separables dentro de
+esa clase, pero no el número de rocas visibles: un mismo polígono agrupa a menudo varios bloques,
+y la clase cubre solo una parte de la roca de la escena.
 
 El resultado es, por tanto, negativo para el conteo: contar rocas individuales con estas
 máscaras no es sencillo. Es, en cambio, diagnóstico para el conjunto de datos, cuyas
-inconsistencias —escenas de especialista de composición muy distinta, criterios de anotación
-diferentes, una frontera ambigua entre roca grande y lecho rocoso incluso para los especialistas
-y una anotación parcial de los bloques— se documentan con evidencia cuantitativa. El trabajo
-entrega además un conjunto de resultados con veinticuatro indicadores por imagen y un diseño de
-evaluación que separa el efecto de la anotación del de las imágenes.
+inconsistencias —escenas de especialista de composición muy distinta, una diferencia de
+criterio entre anotaciones pequeña e incierta, una clase roca grande en la que ni los
+especialistas coinciden y una anotación parcial de los bloques— se documentan con evidencia cuantitativa. El trabajo
+entrega además un conjunto de resultados con una fila por imagen y veintiocho columnas, y un
+diseño de evaluación que separa el efecto de la anotación del de las imágenes.
 
 \vspace{0.4cm}
 \noindent

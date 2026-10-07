@@ -26,6 +26,15 @@
 \newcommand{\cRocasNullBig}{\num{63}}
 \newcommand{\cNOjoIzq}{\num{16027}}
 \newcommand{\cNOjoDer}{\num{37}}
+\newcommand{\cSecN}{\num{15601}}
+\newcommand{\cSecTramos}{\num{40}}
+\newcommand{\cSecPorTramo}{\num{390}}
+\newcommand{\cSecMediaMax}{\SI{97.9}{\percent}}
+\newcommand{\cSecMediaMin}{\SI{0.5}{\percent}}
+\newcommand{\cSecBigMin}{\SI{0.3}{\percent}}
+\newcommand{\cSecBigMax}{\SI{42.6}{\percent}}
+\newcommand{\cSecTramosSuelo}{\num{15}}
+\newcommand{\cSecTramosArena}{\num{0}}
 \newcommand{\cCobMedVal}{\SI{96.8}{\percent}}
 \newcommand{\cCobMediaVal}{\SI{75.1}{\percent}}
 \newcommand{\cCobMedTot}{\SI{42.0}{\percent}}
@@ -33,6 +42,7 @@
 \newcommand{\cNCobCien}{\num{4471}}
 \newcommand{\cPctCobCien}{\SI{41.3}{\percent}}
 \newcommand{\cNCobMitad}{\num{8339}}
+\newcommand{\cNCobCero}{\num{5084}}
 \newcommand{\cNRocas}{\num{4142}}
 \newcommand{\cRocasMax}{\num{20}}
 \newcommand{\cRocasMed}{\num{1}}
@@ -92,6 +102,7 @@
 \newcommand{\cNArtefacto}{\num{3}}
 \newcommand{\cNArtefactoOk}{\num{0}}
 \newcommand{\cSensRho}{\num{0.90}}
+\newcommand{\cSensRhoRoca}{\num{0.68}}
 \newcommand{\cSensMitadTot}{\num{4387}}
 \newcommand{\cSensConteoPearson}{\num{-0.027}}
 \newcommand{\cSensConteoPearsonP}{\num{0.201}}
@@ -99,7 +110,7 @@
 \newcommand{\cSensConteoSpearmanP}{\num{0.478}}
 \newcommand{\cSensTotColab}{\SI{42.0}{\percent}}
 \newcommand{\cSensTotExp}{\SI{19.8}{\percent}}
-\newcommand{\cSensTotP}{\num{< 0.001}}
+\newcommand{\cSensTotP}{< \num{0.001}}
 \newcommand{\cGoldUnoBig}{\SI{16.5}{\percent}}
 \newcommand{\cGoldUnoRocas}{\num{0.29}}
 \newcommand{\cGoldUnoCobMed}{\SI{12.5}{\percent}}
@@ -125,17 +136,17 @@
 \newcommand{\cFAEtiqMedExp}{\SI{12.5}{\percent}}
 \newcommand{\cFAEtiqMediaColab}{\SI{53.3}{\percent}}
 \newcommand{\cFAEtiqMediaExp}{\SI{32.9}{\percent}}
-\newcommand{\cFAEtiqP}{\num{< 0.001}}
+\newcommand{\cFAEtiqP}{< \num{0.001}}
 \newcommand{\cFARegMedColab}{\SI{72.5}{\percent}}
 \newcommand{\cFARegMedExp}{\SI{5.8}{\percent}}
 \newcommand{\cFARegMediaColab}{\SI{54.4}{\percent}}
 \newcommand{\cFARegMediaExp}{\SI{36.1}{\percent}}
-\newcommand{\cFARegP}{\num{< 0.001}}
+\newcommand{\cFARegP}{< \num{0.001}}
 \newcommand{\cFAValMedColab}{\SI{74.3}{\percent}}
 \newcommand{\cFAValMedExp}{\SI{6.1}{\percent}}
 \newcommand{\cFAValMediaColab}{\SI{54.3}{\percent}}
 \newcommand{\cFAValMediaExp}{\SI{36.0}{\percent}}
-\newcommand{\cFAValP}{\num{< 0.001}}
+\newcommand{\cFAValP}{< \num{0.001}}
 \newcommand{\cFAFracColab}{\num{0.89}}
 \newcommand{\cFAFracExp}{\num{0.92}}
 \newcommand{\cDescTotal}{\ensuremath{+}\num{20.4}}
@@ -144,67 +155,68 @@
 \newcommand{\cDescImgPct}{\SI{89}{\percent}}
 \newcommand{\cDescAnotPct}{\SI{11}{\percent}}
 \newcommand{\cDescImgIC}{[\ensuremath{+}\num{12.4}; \ensuremath{+}\num{23.8}]}
-\newcommand{\cDescAnotIC}{[\ensuremath{+}\num{0.0}; \ensuremath{+}\num{4.5}]}
+\newcommand{\cDescAnotIC}{[\ensuremath{+}\num{0.02}; \ensuremath{+}\num{4.54}]}
 \newcommand{\cResColab}{\num{-1.0}}
 \newcommand{\cResExp}{\num{-3.2}}
 \newcommand{\cFuenteDifMed}{\ensuremath{+}\num{50.7}}
 \newcommand{\cFuenteDifIC}{[\ensuremath{+}\num{36.0}; \ensuremath{+}\num{64.7}]}
-\newcommand{\cFuenteMWp}{\num{< 0.001}}
+\newcommand{\cFuenteMWp}{< \num{0.001}}
 \newcommand{\cFracValidGold}{\num{0.59}}
 \newcommand{\cFracValidP}{\num{0.24}}
 \newcommand{\cDepCCN}{\num{2193}}
 \newcommand{\cDepCCPearson}{\ensuremath{+}\num{0.022}}
-\newcommand{\cDepCCPearsonIC}{[\num{-0.015}; \ensuremath{+}\num{0.059}]}
-\newcommand{\cDepCCPearsonP}{\num{0.286}}
+\newcommand{\cDepCCPearsonIC}{[\num{-0.015}; \ensuremath{+}\num{0.060}]}
+\newcommand{\cDepCCPearsonP}{= \num{0.286}}
 \newcommand{\cDepCCSpearman}{\ensuremath{+}\num{0.020}}
-\newcommand{\cDepCCSpearmanIC}{[\num{-0.019}; \ensuremath{+}\num{0.060}]}
-\newcommand{\cDepCCSpearmanP}{\num{0.351}}
+\newcommand{\cDepCCSpearmanIC}{[\num{-0.021}; \ensuremath{+}\num{0.060}]}
+\newcommand{\cDepCCSpearmanP}{= \num{0.351}}
 \newcommand{\cDepCCKendall}{\ensuremath{+}\num{0.018}}
-\newcommand{\cDepCCKendallP}{\num{0.271}}
+\newcommand{\cDepCCKendallP}{= \num{0.271}}
 \newcommand{\cDepCCDcor}{\num{0.074}}
-\newcommand{\cDepCCDcorP}{\num{0.002}}
+\newcommand{\cDepCCDcorP}{= \num{0.002}}
 \newcommand{\cDepCCIM}{\num{0.123}}
 \newcommand{\cDepCCIMNula}{\num{0.023}}
-\newcommand{\cDepCCIMP}{\num{0.005}}
+\newcommand{\cDepCCIMP}{\leq \num{0.005}}
 \newcommand{\cDepFCN}{\num{15901}}
 \newcommand{\cDepFCPearson}{\num{-0.020}}
-\newcommand{\cDepFCPearsonIC}{[\num{-0.037}; \num{-0.004}]}
-\newcommand{\cDepFCPearsonP}{\num{0.008}}
+\newcommand{\cDepFCPearsonIC}{[\num{-0.036}; \num{-0.004}]}
+\newcommand{\cDepFCPearsonP}{= \num{0.011}}
 \newcommand{\cDepFCSpearman}{\num{-0.021}}
 \newcommand{\cDepFCSpearmanIC}{[\num{-0.037}; \num{-0.004}]}
-\newcommand{\cDepFCSpearmanP}{\num{0.009}}
+\newcommand{\cDepFCSpearmanP}{= \num{0.012}}
 \newcommand{\cDepFCKendall}{\num{-0.014}}
-\newcommand{\cDepFCKendallP}{\num{0.012}}
+\newcommand{\cDepFCKendallP}{= \num{0.013}}
 \newcommand{\cDepFCDcor}{\num{0.062}}
-\newcommand{\cDepFCDcorP}{\num{0.001}}
+\newcommand{\cDepFCDcorP}{\leq \num{0.001}}
 \newcommand{\cDepFCIM}{\num{0.037}}
 \newcommand{\cDepFCIMNula}{\num{0.011}}
-\newcommand{\cDepFCIMP}{\num{0.005}}
+\newcommand{\cDepFCIMP}{\leq \num{0.005}}
 \newcommand{\cDepFTN}{\num{15901}}
 \newcommand{\cDepFTPearson}{\ensuremath{+}\num{0.362}}
-\newcommand{\cDepFTPearsonIC}{[\ensuremath{+}\num{0.349}; \ensuremath{+}\num{0.376}]}
-\newcommand{\cDepFTPearsonP}{\num{0.001}}
+\newcommand{\cDepFTPearsonIC}{[\ensuremath{+}\num{0.349}; \ensuremath{+}\num{0.375}]}
+\newcommand{\cDepFTPearsonP}{\leq \num{0.001}}
 \newcommand{\cDepFTSpearman}{\ensuremath{+}\num{0.235}}
-\newcommand{\cDepFTSpearmanIC}{[\ensuremath{+}\num{0.218}; \ensuremath{+}\num{0.252}]}
-\newcommand{\cDepFTSpearmanP}{\num{0.001}}
+\newcommand{\cDepFTSpearmanIC}{[\ensuremath{+}\num{0.218}; \ensuremath{+}\num{0.250}]}
+\newcommand{\cDepFTSpearmanP}{\leq \num{0.001}}
 \newcommand{\cDepFTKendall}{\ensuremath{+}\num{0.230}}
-\newcommand{\cDepFTKendallP}{\num{0.001}}
-\newcommand{\cDepFTDcor}{\num{0.385}}
-\newcommand{\cDepFTDcorP}{\num{0.001}}
+\newcommand{\cDepFTKendallP}{\leq \num{0.001}}
+\newcommand{\cDepFTDcor}{\num{0.409}}
+\newcommand{\cDepFTDcorP}{\leq \num{0.001}}
 \newcommand{\cDepFTIM}{\num{2.766}}
-\newcommand{\cDepFTIMNula}{\num{0.009}}
-\newcommand{\cDepFTIMP}{\num{0.005}}
-\newcommand{\cChiDos}{\num{26.1}}
-\newcommand{\cChiGl}{\num{16}}
-\newcommand{\cChiP}{\num{0.053}}
-\newcommand{\cCramer}{\num{0.055}}
+\newcommand{\cDepFTIMNula}{\num{0.010}}
+\newcommand{\cDepFTIMP}{\leq \num{0.005}}
+\newcommand{\cChiDos}{\num{23.7}}
+\newcommand{\cChiGl}{\num{12}}
+\newcommand{\cChiP}{\num{0.022}}
+\newcommand{\cCramer}{\num{0.060}}
 \newcommand{\cDepDcorSub}{\num{3000}}
 \newcommand{\cEtaConteo}{\SI{5.6}{\percent}}
+\newcommand{\cEtaGrupos}{\num{8}}
 \newcommand{\cEtaCob}{\SI{0.3}{\percent}}
 \newcommand{\cEtaConteoNula}{\SI{0.7}{\percent}}
-\newcommand{\cEtaConteoP}{\num{0.001}}
+\newcommand{\cEtaConteoP}{\leq \num{0.001}}
 \newcommand{\cEtaCobNula}{\SI{0.4}{\percent}}
-\newcommand{\cEtaCobP}{\num{0.133}}
+\newcommand{\cEtaCobP}{= \num{0.133}}
 \newcommand{\cUNA}{\num{443}}
 \newcommand{\cUMediaA}{\num{1.40}}
 \newcommand{\cUCeroA}{\num{23.0}}
@@ -237,9 +249,21 @@
 \newcommand{\cFTND}{\num{4077}}
 \newcommand{\cFTMedD}{\SI{32.6}{\percent}}
 \newcommand{\cFTMedTotD}{\SI{26.6}{\percent}}
+\newcommand{\cFTCeroA}{\SI{32.6}{\percent}}
+\newcommand{\cFTCienA}{\SI{28.1}{\percent}}
+\newcommand{\cFTMedRocaA}{\SI{95.7}{\percent}}
+\newcommand{\cFTCeroB}{\SI{29.3}{\percent}}
+\newcommand{\cFTCienB}{\SI{24.8}{\percent}}
+\newcommand{\cFTMedRocaB}{\SI{91.8}{\percent}}
+\newcommand{\cFTCeroC}{\SI{27.3}{\percent}}
+\newcommand{\cFTCienC}{\SI{28.0}{\percent}}
+\newcommand{\cFTMedRocaC}{\SI{95.2}{\percent}}
+\newcommand{\cFTCeroD}{\SI{41.0}{\percent}}
+\newcommand{\cFTCienD}{\SI{31.7}{\percent}}
+\newcommand{\cFTMedRocaD}{\SI{100.0}{\percent}}
 \newcommand{\cVN}{\num{60}}
 \newcommand{\cVAcuerdo}{\SI{50}{\percent}}
-\newcommand{\cVSignoP}{\num{< 0.001}}
+\newcommand{\cVSignoP}{< \num{0.001}}
 \newcommand{\cVKappa}{\num{0.13}}
 \newcommand{\cVKappaPond}{\num{0.11}}
 \newcommand{\cVKappaIC}{[\ensuremath{+}\num{0.00}; \ensuremath{+}\num{0.27}]}
@@ -318,6 +342,10 @@
 \newcommand{\cSegSolesBloque}{\num{75}}
 \newcommand{\cSegEpocaElegida}{\num{4}}
 \newcommand{\cSegHash}{ea767438f90218d2…}
+\newcommand{\cSegHashCompleto}{ea767438f90218d2dd58829b6a234e8a0e41f344f0552da96bf297036934a104}
+\newcommand{\cSegMinEpocaMin}{\num{12}}
+\newcommand{\cSegMinEpocaMax}{\num{23}}
+\newcommand{\cSegMinTotal}{\num{99}}
 \newcommand{\cSegValMIoU}{\num{0.957}}
 \newcommand{\cSegValUltima}{\num{0.948}}
 \newcommand{\cSegIoUNo}{\num{0.947}}
@@ -352,12 +380,18 @@
 \newcommand{\cFugaNA}{\num{94}}
 \newcommand{\cFugaIoUA}{\num{0.939}}
 \newcommand{\cFugaRA}{\num{0.969}}
+\newcommand{\cFugaMAEA}{\num{2.9}}
+\newcommand{\cFugaErrA}{\num{-0.02}}
 \newcommand{\cFugaNB}{\num{212}}
 \newcommand{\cFugaIoUB}{\num{0.945}}
 \newcommand{\cFugaRB}{\num{0.969}}
+\newcommand{\cFugaMAEB}{\num{3.3}}
+\newcommand{\cFugaErrB}{\ensuremath{+}\num{0.65}}
 \newcommand{\cFugaNC}{\num{94}}
 \newcommand{\cFugaIoUC}{\num{0.925}}
 \newcommand{\cFugaRC}{\num{0.977}}
+\newcommand{\cFugaMAEC}{\num{4.2}}
+\newcommand{\cFugaErrC}{\ensuremath{+}\num{2.47}}
 \newcommand{\cFugaExpSol}{\num{67}}
 \newcommand{\cFugaExpHora}{\num{0}}
 \newcommand{\cFugaExpSoles}{\num{3.1}}
@@ -376,6 +410,9 @@
 \newcommand{\cBAColLoA}{[\num{-23.3}; \ensuremath{+}\num{25.2}]}
 \newcommand{\cBAColDiez}{\SI{11.1}{\percent}}
 \newcommand{\cBAColCincuenta}{\SI{1.5}{\percent}}
+\newcommand{\cBAColPct}{[\num{-14.9}; \ensuremath{+}\num{24.5}]}
+\newcommand{\cBAColEncima}{\SI{30.4}{\percent}}
+\newcommand{\cBAColDebajo}{\SI{21.8}{\percent}}
 \newcommand{\cBAExpN}{\num{322}}
 \newcommand{\cBAExpMedia}{\ensuremath{+}\num{3.12}}
 \newcommand{\cBAExpMediaIC}{[\ensuremath{+}\num{1.36}; \ensuremath{+}\num{4.95}]}
@@ -385,6 +422,9 @@
 \newcommand{\cBAExpLoA}{[\num{-29.3}; \ensuremath{+}\num{35.6}]}
 \newcommand{\cBAExpDiez}{\SI{28.0}{\percent}}
 \newcommand{\cBAExpCincuenta}{\SI{2.2}{\percent}}
+\newcommand{\cBAExpPct}{[\num{-24.6}; \ensuremath{+}\num{37.8}]}
+\newcommand{\cBAExpEncima}{\SI{42.5}{\percent}}
+\newcommand{\cBAExpDebajo}{\SI{25.2}{\percent}}
 \newcommand{\cSamN}{\num{50}}
 \newcommand{\cSamAcuerdo}{\SI{52}{\percent}}
 \newcommand{\cSamRho}{\num{0.45}}
@@ -409,6 +449,30 @@
 \newcommand{\cFVDescImgPct}{\SI{76}{\percent}}
 \newcommand{\cFVDescAnot}{\ensuremath{+}\num{4.4}}
 \newcommand{\cFVDescAnotIC}{[\ensuremath{+}\num{2.1}; \ensuremath{+}\num{6.5}]}
+\newcommand{\cGeoN}{\num{8497}}
+\newcommand{\cGeoVeta}{\num{294}}
+\newcommand{\cGeoVetaPct}{\SI{3.5}{\percent}}
+\newcommand{\cGeoVetaProb}{\num{150}}
+\newcommand{\cGeoVetaDud}{\num{69}}
+\newcommand{\cGeoVetaResto}{\num{75}}
+\newcommand{\cGeoFloatPct}{\SI{61.2}{\percent}}
+\newcommand{\cConsBig}{\SI{20}{\percent}}
+\newcommand{\cConsBed}{\SI{44}{\percent}}
+\newcommand{\cConsSoil}{\SI{67}{\percent}}
+\newcommand{\cConsSand}{\SI{68}{\percent}}
+\newcommand{\cTempNSolesEUno}{\num{1441}}
+\newcommand{\cTempEscSolEUno}{\num{8}}
+\newcommand{\cTempFCIC}{[\num{-0.047}; \num{0.008}]}
+\newcommand{\cTempFCP}{= \num{0.623}}
+\newcommand{\cTempNSolesEDos}{\num{576}}
+\newcommand{\cTempCCIC}{[\num{-0.019}; \num{0.064}]}
+\newcommand{\cTempCCP}{= \num{0.478}}
+\newcommand{\cTempDcorP}{= \num{0.026}}
+\newcommand{\cTempEtaP}{\leq \num{0.001}}
+\newcommand{\cTempNSolesExp}{\num{48}}
+\newcommand{\cTempAnotIC}{[\num{-1.0}; \ensuremath{+}\num{5.5}]}
+\newcommand{\cTempBAIC}{[\ensuremath{+}\num{0.53}; \ensuremath{+}\num{5.98}]}
+\newcommand{\cTempAnotPruebaIC}{[\ensuremath{+}\num{0.2}; \ensuremath{+}\num{6.3}]}
 \newcommand{\cPrioAlta}{\num{98}}
 \newcommand{\cPrioMedia}{\num{1343}}
 \newcommand{\cPrioBaja}{\num{124}}

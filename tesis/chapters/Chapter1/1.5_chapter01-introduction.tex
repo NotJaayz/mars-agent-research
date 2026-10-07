@@ -11,11 +11,11 @@ las imágenes recibidas, y a confiar en el software de a bordo durante su ejecuc
 Las ruedas de \textit{Curiosity} sufrieron perforaciones prematuras al atravesar afloramientos
 de aristas agudas, y la respuesta fue cartografiar el terreno para planificar rutas que
 redujeran el daño \citep{arvidson2017wheels}. La abundancia de rocas forma parte, además, de
-los criterios de selección de los sitios de aterrizaje desde las primeras misiones
-\citep{golombek2003mer, golombek2012msl}.
+los criterios de selección de los sitios de aterrizaje, al menos desde los \textit{Mars
+Exploration Rovers} \citep{golombek2003mer, golombek2012msl}.
 
 Las misiones de superficie han acumulado cientos de miles de imágenes tomadas desde el propio
-terreno. Sobre ese acervo, el conjunto de datos AI4Mars \citep{swan2021ai4mars,
+terreno, publicadas en el archivo planetario de la NASA \citep{nasapds2024}. Sobre ese acervo, el conjunto de datos AI4Mars \citep{swan2021ai4mars,
 swan2022ai4marsdata} añadió algo poco frecuente: máscaras de segmentación por píxel para
 decenas de miles de escenas, producidas por anotación colaborativa y fusionadas exigiendo
 consenso entre anotadores. Cada píxel de esas máscaras lleva una etiqueta de tipo de terreno.
@@ -29,8 +29,12 @@ problema de aprendizaje: son en sí mismas un mapa cuantitativo del terreno. Si 
 etiquetado como roca informa de que en ese punto de la escena hay roca, contar píxeles y
 agrupar los que se tocan permite medir cuánta roca hay y cómo se organiza, sin entrenar ningún
 modelo. Esa lectura, sin embargo, solo es válida si se conocen sus límites: qué permite
-inferir la máscara, qué no, y cuánto depende de cómo fue producida. Este trabajo aborda ambas
-cuestiones.
+inferir la máscara, qué no, y cuánto depende de cómo fue producida. Este trabajo aborda las dos
+tareas: derivar los indicadores y delimitar su validez. Como se mostrará, la cobertura puede
+derivarse de forma reproducible, pero contar rocas individuales con estas máscaras no es
+sencillo, y el examen documenta inconsistencias del propio conjunto de datos: la mayor parte de
+la diferencia entre la anotación colaborativa y la de especialista procede de las imágenes, no
+de la anotación.
 
 \section{Pregunta o propósito central}
 
@@ -41,6 +45,9 @@ La pregunta que orienta el trabajo es la siguiente:
 reproducible de las máscaras de AI4Mars, y cuáles son sus límites de validez frente a
 diferencias en la anotación y al juicio humano?
 \end{quote}
+
+Por organización de la roca se entiende aquí el número, el tamaño y la forma de los bloques
+discretos que la máscara permite delimitar.
 
 La pregunta reúne dos propósitos. El primero es constructivo: derivar indicadores con
 parámetros explícitos. El segundo es crítico: delimitar hasta dónde esos indicadores informan
@@ -63,9 +70,9 @@ división de aguas se puede auditar: cada umbral es un número explícito y cada
 es una imagen que puede inspeccionarse. Un modelo entrenado entrega una predicción cuya
 justificación no es directamente legible.
 
-En segundo lugar, \textbf{costo}. El procedimiento corre en un procesador convencional, sin
-unidad gráfica ni conjunto de entrenamiento, y procesa las \cNEscenas{} escenas del subconjunto
-en aproximadamente media hora con un solo núcleo. Es reproducible en cualquier equipo y sirve
+En segundo lugar, \textbf{costo}. El cálculo de los indicadores corre en un procesador
+convencional, sin unidad gráfica ni entrenamiento previo, y procesa las \cNEscenas{} escenas
+del subconjunto en unos diecisiete minutos con un solo núcleo. Es reproducible en cualquier equipo y sirve
 de línea de base frente a métodos más costosos.
 
 En tercer lugar, \textbf{examen del propio conjunto de datos}. Las máscaras de AI4Mars son la
@@ -79,15 +86,15 @@ Tierra. Su relevancia es la de caracterizar el terreno y el dato con que se estu
 un sistema de apoyo operativo validado.
 
 El valor esperado es, por tanto, un procedimiento documentado, un conjunto de resultados
-reutilizable con un indicador por imagen y una delimitación cuantitativa de los límites que
+reutilizable con una fila de indicadores por imagen y una delimitación cuantitativa de los límites que
 impone el material de partida.
 
 \section{Objetivos}
 
 \subsection{Objetivo general}
 
-Derivar de las máscaras de AI4Mars, mediante un procedimiento de procesamiento de imágenes con
-parámetros explícitos y reproducible, indicadores por imagen de la cobertura de roca visible y
+Derivar de las máscaras de AI4Mars, mediante un procedimiento reproducible de procesamiento de imágenes con
+parámetros explícitos, indicadores por imagen de la cobertura de roca visible y
 del número aproximado de rocas individuales, y establecer sus límites de validez frente a la
 fuente de la anotación y al juicio de un observador.
 
@@ -95,11 +102,13 @@ fuente de la anotación y al juicio de un observador.
 
 \begin{description}
 
-  \item[E1.] Estimar, para cada imagen con máscara de AI4Mars, la cobertura de roca visible,
+  \item[E1.] Estimar, para cada imagen de la cámara de navegación de \textit{Curiosity} con
+    máscara de entrenamiento de AI4Mars, la cobertura de roca visible,
     entendida como el porcentaje de píxeles etiquetados que corresponden a lecho rocoso o roca
     grande.
 
-  \item[E2.] Estimar, para cada imagen, el número aproximado de rocas individuales en las zonas
+  \item[E2.] Estimar, para cada imagen con roca grande, el número aproximado de rocas
+    individuales en las zonas
     etiquetadas como roca grande, separando las que aparecen unidas mediante componentes
     conectadas, transformada de distancia y división de aguas, y filtrando las regiones
     resultantes por tamaño y forma.
@@ -122,9 +131,9 @@ fuente de la anotación y al juicio de un observador.
 El Capítulo~\ref{cap:contexto} sitúa el problema en su contexto operativo, revisa la literatura
 en cinco líneas de trabajo, identifica la brecha que el trabajo aborda y formula las hipótesis y
 variables de estudio. El Capítulo~\ref{cap:metodos} describe el diseño, la fuente de datos, el
-procedimiento con todos sus parámetros, la estrategia de evaluación, la operacionalización de
-los objetivos y el cronograma. El Capítulo~\ref{cap:resultados} presenta los resultados de los
+procedimiento con todos sus parámetros, la operacionalización de los objetivos, la estrategia
+de evaluación, las consideraciones éticas y de gestión de datos y el cronograma. El Capítulo~\ref{cap:resultados} presenta los resultados de los
 cinco objetivos, contrasta las hipótesis y discute las implicaciones y limitaciones. El
 Capítulo~\ref{cap:conclusiones} sintetiza las conclusiones, los aportes y las recomendaciones.
-Los anexos recogen el esquema del conjunto de resultados, la documentación técnica y las
-exploraciones complementarias.
+Tras el glosario, el Anexo~\ref{app:material-complementario} recoge el esquema del conjunto de
+resultados, la documentación técnica y las exploraciones complementarias.

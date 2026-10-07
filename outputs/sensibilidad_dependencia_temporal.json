@@ -1,0 +1,60 @@
+{
+ "metodo": {
+  "sol_segundos": 88775.244,
+  "n_boot": 2000,
+  "n_desplazamientos": 999,
+  "desplazamiento_minimo": "5 % de la serie"
+ },
+ "fraccion_cobertura": {
+  "n": 15901,
+  "n_soles": 1441,
+  "escenas_por_sol_mediana": 8.0,
+  "pearson": -0.020204813727688464,
+  "ic95_sol": [
+   -0.04708401067100474,
+   0.008277731764156384
+  ],
+  "p_desplazamiento": 0.623
+ },
+ "cobertura_conteo": {
+  "n": 2193,
+  "n_soles": 576,
+  "escenas_por_sol_mediana": 3.0,
+  "pearson": 0.02223173837453232,
+  "ic95_sol": [
+   -0.018682020311280984,
+   0.06392551610996461
+  ],
+  "p_pearson_desplazamiento": 0.478,
+  "dcor": 0.0735518392471265,
+  "p_dcor_desplazamiento": 0.026,
+  "eta2_conteo": 0.05583004014516946,
+  "p_eta2_desplazamiento": 0.001
+ },
+ "fuente_anotacion": {
+  "n_colaborativa": 593,
+  "n_soles_colaborativa": 436,
+  "n_experto": 322,
+  "n_soles_experto": 48,
+  "escenas_por_sol_experto_mediana": 7.0,
+  "anotacion": 2.2034102695038698,
+  "ic95_anotacion_sol": [
+   -1.0064555537475075,
+   5.495603616749736
+  ],
+  "error_medio_experto": 3.120775649210444,
+  "ic95_error_medio_experto_sol": [
+   0.5250414930223102,
+   5.983842238885331
+  ]
+ },
+ "fuente_anotacion_prueba": {
+  "n_colaborativa": 600,
+  "n_soles_colaborativa": 175,
+  "anotacion": 3.213666164853463,
+  "ic95_anotacion_sol": [
+   0.18790533160838457,
+   6.2715037572694925
+  ]
+ }
+}

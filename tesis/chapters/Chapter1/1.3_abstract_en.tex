@@ -3,7 +3,8 @@
 
 % Separadores decimales y de millares en inglés dentro de este resumen.
 % \decimalpoint (babel-spanish) evita que el punto decimal se convierta en coma en modo matemático.
-{\decimalpoint\sisetup{output-decimal-marker={.}, group-separator={,}}
+\begin{otherlanguage}{english}
+{\decimalpoint\sisetup{output-decimal-marker={.}, group-separator={,}, group-minimum-digits=4}
 
 The AI4Mars dataset provides pixel-level segmentation masks, produced by crowdsourced
 annotation, for tens of thousands of images taken on the surface of Mars. These masks have been
@@ -22,24 +23,31 @@ of the total) had coverage greater than zero, with a median of \cCobMedVal{} ove
 pixels, and no evidence was found that high values are explained by the labelled fraction of the
 scene. The count, applied to the \cFlagOk{} eligible scenes, yielded \cNRocas{} rocks. The two
 indicators show practically no linear association ($r = \cDepCCPearson$), although non-linear
-measures detect a weak dependence. Against the \cNGold{} expert masks included in the dataset,
-median coverage drops to \cGoldCobMedPos; a trained segmenter, used as a common instrument on
-both samples, attributes most of that difference to the expert scenes being far less rocky, and
-\cDescAnot{} percentage points to the annotation source. An exploratory evaluation with one
-observer shows that the count systematically underestimates (weighted kappa \cVKappaPond): it
-reproducibly counts the geometrically separable instances within the big-rock class, but not the
-number of visible rocks, because that class covers only part of the rock and often groups
-several blocks into a single polygon.
+measures detect a weak dependence. In the \cNGold{} expert masks included in the dataset, which
+cover other images, the median coverage of scenes with rock is \cGoldCobMedPos. A trained
+segmenter, used as a common instrument on a sample from each source, attributes \cDescImgPct{}
+of the difference in mean coverage between the samples to the expert scenes being far less
+rocky, and the remaining \cDescAnotPct{} —about two percentage points, with an interval that
+includes zero once the grouping of images by sol is taken into account— to the annotation
+source.
+An exploratory evaluation with one observer, who counted the rocks within the region annotated
+as big rock, indicates systematic undercounting: the procedure falls below the observer in
+\cVAbajo{} of \cVN{} scenes and above in \cVArriba{} (weighted kappa \cVKappaPond). It
+reproducibly counts the geometrically separable instances within that class, but not the number
+of visible rocks: a single polygon often groups several blocks, and the class covers only part
+of the rock in the scene.
 
 The result is therefore negative for counting: counting individual rocks from these masks is not
 straightforward. It is, instead, diagnostic for the dataset, whose inconsistencies —expert scenes
-of very different composition, differing annotation criteria, a boundary between big rock and
-bedrock that is ambiguous even for experts, and partial annotation of blocks— are documented with
-quantitative evidence. The work also delivers a results set with twenty-four per-image indicators
-and an evaluation design that separates the effect of annotation from that of the images.
+of very different composition, a small and uncertain difference in annotation criteria, a
+big-rock class on which not even experts agree, and partial annotation of blocks— are documented with
+quantitative evidence. The work also delivers a results set with one row per image and
+twenty-eight columns, and an evaluation design that separates the effect of annotation from that
+of the images.
 
 \vspace{0.4cm}
 \noindent
 \textbf{Keywords:} Mars; AI4Mars; semantic segmentation; watershed; mathematical morphology;
 rock coverage; crowdsourced annotation; data quality; indicator validity.
 }
+\end{otherlanguage}

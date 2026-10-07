@@ -31,8 +31,8 @@ CLAVE = Path("outputs/validacion_manual_v2/clave.csv")
 
 # Dos escenas de la validación: la primera con acuerdo, la segunda con subconteo grave.
 CASOS = [
-    ("W26", "FUNCIONA", "observador: 4-9 · procedimiento: 9", "#1E6B45"),
-    ("W48", "NO FUNCIONA", "observador: 25-49 · procedimiento: 3", "#C0392B"),
+    ("W26", "Coincide con\nel observador", "observador: 4–9 · procedimiento: 9", "#1E6B45"),
+    ("W48", "Subcuenta", "observador: 25–49 · procedimiento: 3", "#C0392B"),
 ]
 
 
@@ -62,7 +62,7 @@ def main() -> None:
         ax = axes[fila]
         ax[0].imshow(img[rs, cs], cmap="gray")
         ax[0].contour(region[rs, cs], levels=[0.5], colors="yellow", linewidths=1.6)
-        ax[0].set_ylabel(f"{vid}\n{veredicto}", fontsize=12, fontweight="bold", color=color)
+        ax[0].set_ylabel(veredicto, fontsize=12, fontweight="bold", color=color)
         ax[0].set_title("1. Imagen y región anotada", fontsize=10)
 
         ax[1].imshow(region[rs, cs], cmap="gray_r")
@@ -81,7 +81,8 @@ def main() -> None:
             for lid in st["kept_ids"]:
                 rgba[sub == lid] = (*rng.uniform(0.3, 1.0, 3), 0.70)
             ax[3].imshow(rgba)
-        ax[3].set_title(f"4. Resultado: {len(st['kept_ids'])} roca(s)\n{detalle}", fontsize=10)
+        k = len(st["kept_ids"])
+        ax[3].set_title(f"4. Resultado: {k} {'roca' if k == 1 else 'rocas'}\n{detalle}", fontsize=10)
 
         for a in ax:
             a.set_xticks([]); a.set_yticks([])

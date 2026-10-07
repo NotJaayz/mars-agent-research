@@ -41,6 +41,11 @@ def miles(v) -> str:
     return str(v) if abs(v) < 10000 else f"{v:,}".replace(",", ".")
 
 
+def pct1(x) -> str:
+    """Porcentaje con un decimal y coma decimal, para rótulos de texto."""
+    return f"{x:.1f}".replace(".", ",")
+
+
 def coma_decimal(fig) -> None:
     """Sustituye el punto decimal por la coma en las marcas de los ejes lineales."""
     from matplotlib.ticker import FixedLocator, ScalarFormatter
@@ -48,8 +53,10 @@ def coma_decimal(fig) -> None:
     for ax in fig.axes:
         for axis in (ax.xaxis, ax.yaxis):
             if isinstance(axis.get_major_formatter(), ScalarFormatter):
+                # Las etiquetas se piden al formateador y no al texto dibujado: en ejes
+                # compartidos el texto del eje oculto está vacío y borraría el del visible.
                 locs = axis.get_majorticklocs()
-                etiquetas = [t.get_text().replace(".", ",") for t in axis.get_majorticklabels()]
+                etiquetas = [e.replace(".", ",") for e in axis.get_major_formatter().format_ticks(locs)]
                 axis.set_major_locator(FixedLocator(locs)); axis.set_ticklabels(etiquetas)
 
 
@@ -85,7 +92,7 @@ def fig_quality(df, n):
     fig, ax = plt.subplots(figsize=(7, 3.4))
     bars = ax.barh(c.index[::-1], c.values[::-1], color=[colors[k] for k in c.index[::-1]])
     for b, v in zip(bars, c.values[::-1]):
-        ax.text(v, b.get_y() + b.get_height() / 2, f" {miles(v)} ({100*v/len(df):.0f} %)",
+        ax.text(v, b.get_y() + b.get_height() / 2, f" {miles(v)} ({pct1(100*v/len(df))} %)",
                 va="center", fontsize=8.5)
     ax.set_xlabel("número de imágenes"); ax.margins(x=0.18); ax.grid(axis="y")
     save(fig, n, "banderas_calidad")
@@ -106,11 +113,11 @@ def fig_coverage(df, n):
 def fig_cov_vs_valid(df, n):
     rb = df[df.rock_coverage_pct.notna() & df.frac_valid.notna()]
     fig, ax = plt.subplots(figsize=(5.6, 4.4))
-    hb = ax.hexbin(rb.frac_valid * 100, rb.rock_coverage_pct, gridsize=42,
-                   cmap="magma", mincnt=1, bins="log")
-    fig.colorbar(hb, ax=ax, label="número de imágenes (escala log)")
-    ax.set(xlabel="fracción de la escena etiquetada (%)",
-           ylabel="cobertura de roca sobre píxeles válidos (%)")
+    hb = ax.hexbin(rb.frac_valid, rb.rock_coverage_pct, gridsize=42,
+                   cmap="magma_r", mincnt=1, bins="log")
+    fig.colorbar(hb, ax=ax, label="número de imágenes (escala logarítmica)")
+    ax.set(xlabel="fracción de la escena etiquetada",
+           ylabel="cobertura de roca sobre píxeles etiquetados (%)")
     save(fig, n, "cobertura_vs_fraccion_etiquetada")
 
 
@@ -123,7 +130,7 @@ def fig_counts(df, n):
     fig, ax = plt.subplots(figsize=(6.2, 3.6))
     bars = ax.bar([b[0] for b in bands], [int(b[1]) for b in bands], color=ROCK, alpha=0.88)
     for b, v in zip(bars, [int(x[1]) for x in bands]):
-        ax.text(b.get_x() + b.get_width()/2, v, f"{miles(v)}\n({100*v/len(ok):.0f} %)",
+        ax.text(b.get_x() + b.get_width()/2, v, f"{miles(v)}\n({pct1(100*v/len(ok))} %)",
                 ha="center", va="bottom", fontsize=8.5)
     ax.set(xlabel="rocas contadas por imagen", ylabel="número de imágenes"); ax.margins(y=0.18)
     save(fig, n, "conteo_por_bandas")
@@ -132,12 +139,12 @@ def fig_counts(df, n):
 def fig_size_freq(df, n):
     ok = poblaciones.poblacion_e2(df)
     vals = [int(ok.n_small.sum()), int(ok.n_medium.sum()), int(ok.n_large.sum())]
-    labs = ["pequeña\n(< 0,5 %)", "mediana\n(0,5 – 2 %)", "grande\n(≥ 2 %)"]
+    labs = ["pequeña\n(0,05 – 0,5 %)", "mediana\n(0,5 – 2 %)", "grande\n(≥ 2 %)"]
     T = sum(vals)
     fig, ax = plt.subplots(figsize=(5.6, 3.6))
     bars = ax.bar(labs, vals, color=["#f0a58f", "#d7654a", ROCK])
     for b, v in zip(bars, vals):
-        ax.text(b.get_x() + b.get_width()/2, v, f"{miles(v)}\n({100*v/T:.0f} %)",
+        ax.text(b.get_x() + b.get_width()/2, v, f"{miles(v)}\n({pct1(100*v/T)} %)",
                 ha="center", va="bottom", fontsize=8.5)
     ax.set(xlabel="clase de tamaño (fracción del área de la imagen)",
            ylabel="número de rocas"); ax.margins(y=0.18)
@@ -151,31 +158,32 @@ def fig_scenes(df, n):
     fig, ax = plt.subplots(figsize=(6.2, 3.5))
     bars = ax.bar(c.index, c.values, color=[colors[k] for k in c.index])
     for b, v in zip(bars, c.values):
-        ax.text(b.get_x() + b.get_width()/2, v, f"{miles(v)}\n({100*v/len(df):.0f} %)",
+        ax.text(b.get_x() + b.get_width()/2, v, f"{miles(v)}\n({pct1(100*v/len(df))} %)",
                 ha="center", va="bottom", fontsize=8.5)
     ax.set(xlabel="tipo de escena", ylabel="número de imágenes"); ax.margins(y=0.18)
     save(fig, n, "tipologia_escenas")
 
 
 def fig_secuencia(df, n, n_bins=40):
-    import re
-    d = df[df.quality_flag.isin(["ok", "no_bigrock", "no_rock"])].copy()
-    d["sclk"] = d.image_id.str.extract(r"^N[LR][AB]_(\d+)")[0].astype(float)
-    d = d.dropna(subset=["sclk"]).sort_values("sclk")
-    d["bin"] = pd.qcut(d.sclk, q=n_bins, labels=False, duplicates="drop")
-    g = d.groupby("bin")
-    cov = g.rock_coverage_pct.median()
+    """Tramos de igual número de imágenes, en orden de reloj de nave (escenas con etiqueta útil)."""
+    d = df[df.quality_flag.isin(["ok", "no_bigrock", "no_rock"])].sort_values("sclk").copy()
+    d["tramo"] = pd.qcut(d.sclk, q=n_bins, labels=False, duplicates="drop") + 1
+    g = d.groupby("tramo")
     presence = g.apply(lambda x: (x.n_bigrock > 0).mean() * 100, include_groups=False)
-    mid = g.sclk.median()
-    x = (mid - mid.min()) / (mid.max() - mid.min()) * 100
+    x = np.asarray(g.size().index)
     fig, ax = plt.subplots(2, 1, figsize=(8.5, 4.8), sharex=True)
-    ax[0].plot(x, cov, "-o", color=ROCK, ms=3.2)
-    ax[0].fill_between(x, cov, alpha=0.15, color=ROCK)
-    ax[0].set_ylabel("cobertura mediana\n(% de píxeles válidos)")
+    ax[0].plot(x, g.rock_coverage_pct.mean(), "-o", color=ROCK, ms=3.2, label="media")
+    ax[0].plot(x, g.rock_coverage_pct.median(), "--", color=ROCK, lw=1, alpha=0.7, label="mediana")
+    ax[0].fill_between(x, g.rock_coverage_pct.mean(), alpha=0.15, color=ROCK)
+    ax[0].set_ylabel("cobertura\n(% de lo etiquetado)")
+    ax[0].legend(fontsize=8, loc="upper right", ncol=2)
     ax[1].plot(x, presence, "-s", color=BLUE, ms=3.2)
     ax[1].fill_between(x, presence, alpha=0.15, color=BLUE)
     ax[1].set(ylabel="imágenes con\nroca grande (%)",
-              xlabel="posición relativa en la secuencia de adquisición (%), según el reloj de nave")
+              xlabel=f"tramo de la secuencia de adquisición, en orden de reloj de nave "
+                     f"({len(d) // n_bins} imágenes por tramo)")
+    ax[1].set_xticks([1] + list(range(5, n_bins + 1, 5)))
+    ax[1].set_xlim(0.5, n_bins + 0.5)
     fig.tight_layout()
     save(fig, n, "variacion_secuencia")
 
@@ -239,7 +247,7 @@ def fig_model_coverage(n):
     fig, ax = plt.subplots(figsize=(4.8, 4.6))
     ax.plot([0, 100], [0, 100], "--", color="gray", lw=1, label="igualdad")
     ax.scatter(cov.human_cov, cov.pred_cov, c=BLUE, s=18, alpha=0.6)
-    ax.set(xlabel="cobertura desde la máscara humana (%)",
+    ax.set(xlabel="cobertura desde la máscara colaborativa (%)",
            ylabel="cobertura desde la máscara predicha (%)", xlim=(0, 100), ylim=(0, 100))
     ax.legend(fontsize=8); ax.text(0.04, 0.94, f"r = {r:.2f}".replace(".", ","), transform=ax.transAxes,
                                    fontsize=10, va="top")
@@ -311,13 +319,13 @@ def main() -> None:
     fig_counts(df, 15); fig_size_freq(df, 16); fig_scenes(df, 17)
     fig_secuencia(df, 18); fig_validation(df, 19); fig_agreement(20); fig_model_coverage(21)
     # Limitación
-    panel(22, "subdivision_afloramiento", "NLB_614913932EDR_F0761384NCAM00294M1")
+    panel(22, "subdivision_afloramiento", "NLB_471807024EDR_F0442414NCAM00262M1")
     fig_model_expert(27); fig_fuente(30)
     # Anexo: resto de paneles del procedimiento (§8.9 pide al menos cinco)
     for i, iid in enumerate([
         "NLB_448901529EDR_F0300740NCAM00256M1",
         "NLB_547801039EDR_F0630346NCAM07753M1",
-        "NLB_550010635EDR_F0632582NCAM00282M1",
+        "NLB_478900081EDR_F0450450NCAM00372M1",
         "NLA_407351345EDR_F0050406NCAM00340M1"], start=1):
         panel(f"A{i}", f"procedimiento_anexo_{i}", iid)
     print(f"\nListas en {OUT}/")

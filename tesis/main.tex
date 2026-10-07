@@ -17,7 +17,7 @@
 % Codificación e idioma
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[spanish,es-noquoting,es-lcroman,es-tabla]{babel}
+\usepackage[english,spanish,es-noquoting,es-lcroman,es-tabla]{babel}
 \usepackage{csquotes}
 
 % Página y tipografía
@@ -36,7 +36,7 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \graphicspath{{images/}}
-\usepackage{booktabs,longtable,adjustbox}
+\usepackage{array,booktabs,longtable,adjustbox}
 % La matriz de operacionalización requiere una página apaisada.
 \usepackage{pdflscape}
 % Listas con márgenes ajustables (hipótesis de estudio).
@@ -58,7 +58,7 @@
 \usepackage{titlesec}
 \titleformat{\chapter}[display]
   {\normalfont\bfseries\centering\huge}
-  {\chaptername\ \thechapter}
+  {\chaptertitlename\ \thechapter}
   {0.5em}
   {}
 \titlespacing*{\chapter}{0pt}{-10pt}{20pt}
@@ -72,7 +72,7 @@
 \fancyhf{}
 \fancyhead[RO,LE]{\ThesisShortTitle}
 \fancyfoot[LE,RO]{\thepage}
-\fancyfoot[LO,RE]{Capítulo \thechapter}
+\fancyfoot[LO,RE]{\chaptertitlename\ \thechapter}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
@@ -85,8 +85,13 @@
 \DeclareLanguageMapping{spanish}{spanish-apa}
 \DeclareDelimFormat{nameyeardelim}{\addcomma\space}
 \addbibresource{references.bib}
+% APA 7 en español: «Recuperado el … de», no «Consultado el … desde».
+\DefineBibliographyStrings{spanish}{retrieved = {Recuperado}, from = {de}}
 
 % Enlaces
+% Sin estirar el texto para llenar la página: el espacio sobrante queda al pie.
+\raggedbottom
+\usepackage{xurl}
 \usepackage[hidelinks]{hyperref}
 
 
@@ -179,6 +184,7 @@
 \input{glossary}
 
 \appendix
+\renewcommand{\appendixname}{Anexo}
 \input{chapters/Appendices/appendixA}
 
 

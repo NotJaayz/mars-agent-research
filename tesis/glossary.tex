@@ -1,6 +1,7 @@
 \chapter*{Glosario}
 \addcontentsline{toc}{chapter}{Glosario}
 
+{\sloppy
 \begin{description}
 
   \item[Abundancia de rocas] Proporción de la superficie ocupada por rocas por
@@ -9,10 +10,10 @@
     indica terreno relativamente limpio y valores altos señalan zonas peligrosas
     para un módulo o un rover.
 
-  \item[Anotación colaborativa] Modalidad de trabajo en la que personas no
-    especialistas participan en tareas científicas, por ejemplo etiquetando
-    imágenes. En AI4Mars miles de voluntarios marcaron el tipo de terreno píxel a
-    píxel y las anotaciones se combinaron exigiendo acuerdo entre anotadores.
+  \item[Anotación colaborativa] Anotación realizada por voluntarios no
+    especialistas. En AI4Mars, cada voluntario trazó polígonos sobre la imagen para
+    marcar el tipo de terreno, y los polígonos de varios voluntarios se fusionaron
+    en una máscara por píxel exigiendo consenso entre ellos.
 
   \item[Apertura morfológica] Erosión seguida de dilatación con el mismo elemento
     estructurante. Elimina manchas pequeñas y ruido aislado sin alterar
@@ -20,6 +21,17 @@
 
   \item[Área de una componente] Número de píxeles que pertenecen a una misma
     región conectada. Es una medida directa del tamaño proyectado del objeto.
+
+  \item[Arena] Clase de la escala de navegación (\textit{sand}) que agrupa los
+    depósitos de arena suelta.
+
+  \item[Bandera de calidad] Etiqueta que resume la aptitud de cada escena para los
+    indicadores: \texttt{ok}, \texttt{no\_bigrock}, \texttt{no\_rock},
+    \texttt{mostly\_null} y \texttt{empty} (Tabla~\ref{tab:banderas}).
+
+  \item[\textit{Bootstrap} por sol] Remuestreo que toma soles completos, con todas
+    sus escenas, en lugar de escenas sueltas, para que los intervalos tengan en
+    cuenta que las imágenes de un mismo sol no son independientes.
 
   \item[Caja envolvente] Rectángulo alineado con los ejes de la imagen que contiene
     por completo una componente conectada. De ella se derivan el ancho, el alto y
@@ -30,48 +42,110 @@
 
   \item[Cobertura de roca visible] Porcentaje de píxeles etiquetados de una imagen
     que corresponden a lecho rocoso o roca grande. Resume cuán rocoso es el terreno
-    de la escena.
+    de la escena tal como lo registra la anotación.
 
   \item[Componente conectada] Conjunto de píxeles activos de una imagen binaria en
     el que cada píxel se alcanza desde los demás mediante pasos entre vecinos.
     Con conectividad de ocho vecinos se admiten también los pasos diagonales.
 
+  \item[Correlación de distancia] Medida de dependencia entre dos variables que vale
+    cero si y solo si son independientes, de modo que detecta también relaciones no
+    lineales y no monótonas.
+
+  \item[Desplazamiento circular, prueba por] Contraste de la relación entre dos
+    variables que ordena las escenas en el tiempo y desplaza una serie respecto de
+    la otra: cada serie conserva su autocorrelación y solo se rompe la relación
+    entre ambas.
+
+  \item[Diagrama de Bland--Altman] Gráfico de la diferencia entre dos mediciones
+    frente a su media, con el error medio y los límites de acuerdo. Muestra si una
+    medición se desvía de la otra de forma sistemática y cuánto.
+
+  \item[Distribución tamaño--frecuencia] Relación entre el tamaño de las rocas y su
+    número. En superficies planetarias suele ser decreciente: predominan las rocas
+    pequeñas y la frecuencia cae al aumentar el tamaño.
+
   \item[División de aguas] Técnica de segmentación que interpreta una imagen —o una
-    transformación de ella— como un relieve topográfico. A partir de semillas
-    situadas en los puntos altos, las regiones crecen hasta encontrarse y definen
-    las fronteras. Aquí se aplica sobre la transformada de distancia para separar
-    rocas que aparecen pegadas.
+    transformación de ella— como un relieve topográfico que se inunda desde sus
+    mínimos; las regiones crecen hasta encontrarse y definen las fronteras. Aquí se
+    inunda el negativo de la transformada de distancia, partiendo de semillas
+    situadas en sus máximos, para separar rocas que aparecen pegadas.
 
   \item[Elemento estructurante] Máscara pequeña que define la vecindad empleada por
     una operación morfológica.
 
+  \item[Fracción etiquetada] Proporción de los píxeles de una escena que tienen
+    clase asignada en la máscara. Es el denominador de la cobertura sobre píxeles
+    etiquetados y un indicador de calidad de cada escena.
+
+  \item[Información mutua] Cantidad de información, en bits, que una variable aporta
+    sobre otra. Vale cero si son independientes y no presupone ninguna forma de
+    relación.
+
+  \item[Instrumento común] Medición aplicada por igual a dos muestras para separar lo
+    que se debe a las imágenes de lo que se debe a la anotación. En este trabajo es
+    el segmentador entrenado, aplicado a la región anotable de cada escena.
+
+  \item[Kappa ponderado] Coeficiente de acuerdo entre dos clasificaciones ordinales,
+    corregido por el acuerdo esperable por azar, que penaliza más los desacuerdos
+    entre categorías alejadas.
+
   \item[Lecho rocoso] Roca expuesta en continuidad con el sustrato, frente a los
-    bloques sueltos apoyados sobre el regolito. En la escala NAV corresponde a la
-    clase \textit{bedrock}.
+    bloques sueltos apoyados sobre el regolito. En la escala de navegación
+    corresponde a la clase \textit{bedrock}. En la práctica, en AI4Mars la clase
+    incluye también muchos bloques sueltos (Sección~\ref{sec:diagnostico}).
 
   \item[Máscara binaria] Imagen de dos valores en la que los píxeles activos
     señalan la clase de interés y el resto el fondo.
+
+  \item[Máscara colaborativa] Máscara producida por anotación colaborativa. En
+    AI4Mars son las máscaras del conjunto de entrenamiento, por lo que el texto las
+    llama también máscaras de entrenamiento.
+
+  \item[Máscara de especialista] Máscara elaborada por especialistas de la misión
+    para evaluar modelos; el texto la llama también máscara de experto. AI4Mars la
+    publica en tres niveles, según cuántos especialistas deben coincidir en cada
+    píxel.
 
   \item[Máscara de segmentación por píxel] Imagen del mismo tamaño que la original
     en la que cada píxel guarda un entero que identifica la clase de terreno a la
     que pertenece.
 
   \item[Máximo de prominencia] Máximo local cuya altura sobre el entorno supera un
-    umbral dado. Filtrar por prominencia descarta las crestas espurias que
+    umbral dado. Filtrar por prominencia descarta las crestas de poca altura que
     subdividen una región continua.
 
-  \item[Píxel sin etiqueta] Píxel que la anotación deja sin clase asignada, por
-    falta de acuerdo entre anotadores o por corresponder al cuerpo del rover, al
-    cielo o a distancias mayores que el alcance definido. Se excluye de todos los
-    cálculos.
+  \item[Píxel sin etiqueta] Píxel que la máscara deja sin clase asignada, por falta
+    de acuerdo entre anotadores o por corresponder al cuerpo del rover, al cielo o
+    a distancias mayores de treinta metros. Se excluye del denominador de la
+    cobertura sobre píxeles etiquetados, pero cuenta en la cobertura sobre la
+    imagen completa y en la fracción etiquetada.
+
+  \item[Población de E1 y de E2] Escenas sobre las que se calcula cada indicador:
+    la cobertura, sobre todas las que tienen algún píxel etiquetado; el conteo,
+    sobre las de bandera \texttt{ok}, con roca grande y sin estar casi vacías.
+
+  \item[Reglas heurísticas de priorización] Reglas con umbrales explícitos que
+    ordenan las escenas para su revisión a partir de los indicadores. No están
+    calibradas para decisiones de navegación (Anexo~\ref{app:extension}).
 
   \item[Relación de aspecto] Cociente entre el lado mayor y el lado menor de la
     caja envolvente. Sirve para descartar formas excesivamente alargadas, poco
     plausibles como roca aislada.
 
+  \item[Reloj de nave] Contador de segundos de a bordo que el identificador de cada
+    imagen incluye. Permite ordenar las imágenes en el tiempo.
+
   \item[Reproducibilidad] Propiedad de un análisis que permite obtener los mismos
     resultados a partir de los mismos datos siguiendo el procedimiento descrito,
     con el código, los parámetros y las versiones de biblioteca documentados.
+
+  \item[Roca grande] Clase de la escala de navegación (\textit{big rock}) destinada
+    a los bloques discretos apoyados sobre el terreno. Es la única que el conteo
+    considera.
+
+  \item[Secuencia de adquisición] Orden en que el rover tomó las imágenes, según el
+    reloj de nave. Es un orden temporal: no equivale a la distancia recorrida.
 
   \item[Segmentación semántica] Tarea de asignar a cada píxel de una imagen una
     etiqueta de clase, sin distinguir entre instancias de la misma clase.
@@ -80,17 +154,25 @@
     dominio en la división de aguas. Cada semilla origina, en principio, una región
     de salida.
 
+  \item[Sobresegmentación] División de un mismo objeto en varias regiones. En el
+    conteo, se produce cuando la división de aguas parte en varios trozos una
+    región que corresponde a una sola roca o a un afloramiento continuo.
+
+  \item[Sol] Día solar marciano, de unas 24 horas y 40 minutos.
+
   \item[Solidez] Cociente entre el área de una región y el área de su envolvente
-    convexa. Valores próximos a uno indican formas compactas; valores bajos
-    señalan contornos cóncavos o subdivisión excesiva.
+    convexa. Valores próximos a uno indican formas convexas; valores bajos señalan
+    contornos cóncavos.
+
+  \item[Subconteo] Conteo inferior al número de rocas que un observador distingue.
+
+  \item[Suelo] Clase de la escala de navegación (\textit{soil}) que agrupa el
+    regolito de grano fino que no es arena.
 
   \item[Transformada de distancia] Imagen en la que cada píxel activo guarda la
     distancia al píxel de fondo más cercano. Sus máximos locales se sitúan en los
     centros de las regiones y sirven como semillas naturales.
 
-  \item[Distribución tamaño--frecuencia] Relación entre el tamaño de las rocas y su
-    número. En superficies planetarias suele ser decreciente: predominan las rocas
-    pequeñas y la frecuencia cae al aumentar el tamaño.
-
 \end{description}
+}
 \clearpage

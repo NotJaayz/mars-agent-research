@@ -21,8 +21,7 @@ Un rover marciano no se conduce en tiempo real. \citet{rankin2020mobility}, que 
 restricción de partida: la intervención humana durante una travesía no es posible por la
 latencia en la subida de comandos y la bajada de telemetría, de modo que el equipo de
 operaciones depende del software de a bordo para impedir que el vehículo alcance un estado
-inseguro. La comunicación entre el rover y la Tierra es, además, intermitente y diferida
-\citep{tian2024rsunet}. En la práctica, cada desplazamiento se planifica desde la Tierra a
+inseguro. En la práctica, cada desplazamiento se planifica desde la Tierra a
 partir de las imágenes recibidas, y el rover ejecuta la secuencia con autonomía limitada.
 
 En ese esquema, las cámaras de navegación cumplen un papel doble. Sirven al equipo en Tierra
@@ -36,17 +35,17 @@ este trabajo provienen de ese mismo tipo de instrumento.
 
 La naturaleza del terreno condiciona directamente el éxito de una travesía. De los \num{738}
 intentos documentados por \citet{rankin2020mobility}, \num{116} fueron impedidos o detenidos
-por el software de protección, y los riesgos principales identificados para la movilidad son
+por el software de protección, y las principales amenazas identificadas para la movilidad son
 el desgaste de las ruedas, su atrapamiento, el hundimiento progresivo —que puede llevar a que
 el vehículo quede inmovilizado— y las interacciones con el terreno.
 
 El caso de las ruedas de \textit{Curiosity} es ilustrativo. \citet{arvidson2017wheels}
 documentan que las primeras travesías sobre afloramientos de arenisca de aristas agudas
-produjeron una tasa inaceptable de perforaciones y grietas en la delgada piel de aluminio de
-las ruedas: las ruedas que encabezaban un pivote de la suspensión eran empujadas contra
-superficies afiladas e inmóviles por las demás. La respuesta operativa fue elaborar un mapa
-geomorfológico del terreno para planificar rutas que minimizaran el daño. La lección de la
-misión registra el mismo episodio \citep{jpl2017wheels}. Ese mapa es precisamente el tipo de
+produjeron una tasa inaceptable de perforaciones y grietas en la delgada pared de aluminio de
+las ruedas: las demás ruedas empujaban a las delanteras de cada balancín contra rocas afiladas
+e inmóviles. La respuesta operativa fue elaborar un mapa geomorfológico del terreno para
+planificar rutas que minimizaran el daño. La base de lecciones aprendidas de la NASA registra
+el mismo episodio \citep{jpl2017wheels}. Ese mapa es precisamente el tipo de
 producto al que contribuye una caracterización sistemática del terreno: no sustituye la
 decisión del equipo, pero le da información sobre dónde está la roca y cómo se organiza.
 
@@ -67,15 +66,19 @@ anotación colaborativa: cada imagen fue etiquetada por unas diez personas para 
 acuerdo, y las etiquetas individuales se fusionaron exigiendo un consenso mínimo por píxel.
 El conjunto incluye además del orden de \num{1500} etiquetas de validación elaboradas por
 planificadores de travesías y científicos de la misión, destinadas a evaluar modelos frente a
-una referencia de especialista. Los autores motivan el conjunto señalando que los vehículos
+una referencia de especialista; para la cámara de navegación de \textit{Curiosity}, la versión
+0.6 contiene \cNGold{} imágenes con máscara de especialista, que son las que emplea este
+trabajo. Los autores motivan el conjunto señalando que los vehículos
 autónomos en Marte se conducían todavía con sistemas clásicos de visión artificial, y que la
 segmentación semántica beneficiaría la seguridad y la productividad de las misiones. Este
 trabajo emplea la versión 0.6 \citep{swan2022ai4marsdata}.
 
 La escala de navegación distingue cuatro clases —suelo, lecho rocoso, arena y roca grande— y
-un valor para el píxel sin etiqueta. La distinción entre \textit{lecho rocoso} y \textit{roca
-grande} es central para este trabajo: la primera designa roca expuesta en continuidad con el
-sustrato, y la segunda, bloques discretos apoyados sobre el terreno. Es una distinción
+un valor para el píxel sin etiqueta; según la documentación del conjunto, las clases se
+pensaron para diferenciar zonas de buena y mala transitabilidad \citep{swan2022ai4marsdata}. La
+distinción entre \textit{lecho rocoso} y \textit{roca grande} es central para este trabajo: en
+su uso habitual, la primera designa roca expuesta en continuidad con el sustrato, y la segunda,
+bloques discretos apoyados sobre el terreno. Es una distinción
 geológicamente sensata, pero, como se verá, su aplicación práctica condiciona qué puede
 contarse.
 
@@ -94,9 +97,10 @@ tamaño--frecuencia de rocas siguen curvas exponenciales simples, y las combinar
 de teledetección para predecir la frecuencia de bloques peligrosos para futuras misiones.
 Ese modelo exponencial, conocido después como modelo de Golombek y Rapp, se convirtió en
 referencia para la selección de los sitios de los \textit{Mars Exploration Rovers}
-\citep{golombek2003mer}, del \textit{Mars Science Laboratory} \citep{golombek2012msl} y de
-\textit{InSight} \citep{golombek2021insight}. En esta etapa la identificación de las rocas es
-manual, se hace sobre pocas escenas y el producto es una distribución métrica.
+\citep{golombek2003mer} y del \textit{Mars Science Laboratory} \citep{golombek2012msl}, y se
+aplicó después a la caracterización del sitio de \textit{InSight} \citep{golombek2021insight}.
+En esta etapa identifican las rocas especialistas, a mano o con detectores que ellos mismos
+supervisan, sobre pocos sitios, y el producto es una distribución métrica.
 
 \paragraph{Segunda etapa: detección automática para la autonomía científica.} A mediados de
 la década de 2000 el objetivo se desplazó hacia la autonomía del rover: detectar rocas en las
@@ -158,11 +162,11 @@ más regularmente espaciados que cerca de los bordes de cráter, lo que atribuye
 transporte eólico. \citet{golombek2021insight} combinaron ortoimágenes del campo cercano del
 módulo \textit{InSight}, panorámicas del campo lejano e imágenes orbitales de alta resolución:
 las distribuciones de cuatro zonas siguen las curvas exponenciales del modelo, con una
-abundancia de roca que varía entre el \SI{0.6}{\percent} y el 3--\SI{5}{\percent} y es, en
+abundancia de roca que varía, según la zona, del \SI{0.6}{\percent} a un 3--\SI{5}{\percent} y es, en
 conjunto, algo superior al \SI{3}{\percent}. En la Luna, \citet{di2016change3} analizaron la
 distribución tamaño--frecuencia en el sitio de alunizaje de \textit{Chang'E-3}, y
 \citet{watkins2019boulder} caracterizaron las poblaciones de bloques alrededor de seis cráteres
-jóvenes, encontrando que su densidad disminuye con la edad del cráter.
+jóvenes, y encontraron que su densidad disminuye con la edad del cráter.
 
 La línea ha incorporado detección automática. \citet{chen2022zhurong} desarrollaron un método
 basado en una red convolucional para detectar del orden de \num{10000} rocas de al menos
@@ -170,8 +174,10 @@ basado en una red convolucional para detectar del orden de \num{10000} rocas de 
 de roca cercana al \SI{5}{\percent} y la confirmaron con las imágenes tomadas después por el
 propio rover. \citet{sun2024zhurong} calcularon la distribución a partir de las cámaras de
 navegación y de terreno de \textit{Zhurong}, comparando el interior de la depresión excavada
-por el aterrizaje con la superficie circundante, y \citet{wang2024zhurong} analizaron la
-distribución en el mismo sitio a partir de esas cámaras.
+por los propulsores del aterrizaje con la superficie circundante, y encontraron en la
+depresión una abundancia de roca menor (\SI{4.15}{\percent}) que fuera de la zona afectada
+(cerca del \SI{7}{\percent}). \citet{wang2024zhurong} extendieron el análisis con esas mismas
+cámaras a lo largo de todo el trayecto del rover.
 
 \paragraph{Aporte y límite para este trabajo.} La línea proporciona el marco interpretativo de
 una distribución tamaño--frecuencia y una vara de medida externa: si una población de rocas
@@ -195,7 +201,7 @@ propiedad uniforme que las distinga del suelo.
 \paragraph{Estudios y respuestas.} \citet{thompson2007rockdet} revisaron siete algoritmos de
 detección de rocas de la literatura de autonomía científica y los evaluaron sobre imágenes de
 los \textit{Mars Exploration Rovers}, de entornos análogos terrestres y de un simulador de
-terreno marciano, mostrando que el desempeño varía con las condiciones de adquisición.
+terreno marciano, y mostraron que el desempeño varía con las condiciones de adquisición.
 \citet{dunlop2007multiscale} propusieron combinar rasgos locales —textura—, rasgos de objeto
 —sombreado y forma bidimensional— y rasgos de escena —la dirección de iluminación—: una
 sobresegmentación en superpíxeles se fusiona en regiones, y un modelo aprendido de la
@@ -203,14 +209,15 @@ apariencia de las rocas puntúa cada agrupación candidata. El sistema OASIS
 \citep{castano2007oasis} integró la detección de rocas en un ciclo autónomo cerrado: el rover
 adquiere imágenes, encuentra rocas, analiza sus propiedades e identifica las que merecen una
 observación adicional. Para el descenso, \citet{huertas2006hazard} presentaron un sistema
-pasivo de detección de peligros que incluye rocas a partir de cierta altura. Más
+pasivo de detección de peligros que incluye rocas por encima de cierto tamaño. Más
 recientemente, la detección se ha abordado con redes convolucionales en entornos análogos a
 Marte \citep{furlan2019rockcnn}.
 
 \paragraph{Aporte y límite para este trabajo.} Esta línea aporta dos ideas que el trabajo
 retoma. La primera, que la separación de rocas en contacto requiere información que no está
 en la silueta —el sombreado y la dirección de iluminación de \citet{dunlop2007multiscale}—;
-el Capítulo~\ref{cap:resultados} vuelve sobre ella al explorar el corte por sombras. La
+la Sección~\ref{sec:hibrido} vuelve sobre ella al explorar relieves derivados de la imagen,
+entre ellos el de sombras. La
 segunda, que el resultado depende de las condiciones de imagen, lo que obliga a validar contra
 una referencia humana. Su límite es la escala: estos sistemas se evalúan en muestras reducidas
 de imágenes y no producen indicadores agregados para un conjunto completo.
@@ -221,21 +228,21 @@ de imágenes y no producen indicadores agregados para un conjunto completo.
 
 \paragraph{Enfoque teórico.} La segmentación semántica formula el problema como clasificación
 por píxel: asignar a cada punto de la imagen una clase de terreno. El aprendizaje es
-supervisado, y la máscara anotada hace de verdad de referencia. El criterio de evaluación
+supervisado, y la máscara anotada actúa como verdad de referencia. El criterio de evaluación
 estándar es el índice de intersección sobre la unión, que mide el solapamiento entre la
 región predicha y la anotada.
 
-\paragraph{Estudios y respuestas.} El trabajo pionero en clasificación de terreno para la
-planificación de travesías es SPOC \citep{rothrock2016spoc}, que aplicó aprendizaje profundo
-a la clasificación del terreno en las misiones a Marte. A partir de AI4Mars
+\paragraph{Estudios y respuestas.} Uno de los primeros trabajos en aplicar aprendizaje profundo
+a la clasificación del terreno para planificar travesías en Marte es SPOC
+\citep{rothrock2016spoc}. A partir de AI4Mars
 \citep{swan2021ai4mars} la producción se ha orientado a dos objetivos. El primero es la
 eficiencia para cómputo a bordo: SegMarsViT \citep{dai2022segmarsvit} propone un segmentador
 ligero basado en transformadores móviles, adecuado para las restricciones de procesamiento y
 consumo de una nave, y LBNet \citep{wei2024lbnet} una red bilateral ligera que separa una rama
 de detalle espacial de otra de información semántica. El segundo es la precisión en la
 delimitación de rocas, cuya variabilidad de forma, tamaño, textura y color dificulta la tarea:
-RockFormer \citep{liu2023rockformer} es el primer marco de transformador en forma de U para
-segmentar rocas marcianas; MarsFormer \citep{xiong2023marsformer} combina un codificador de
+RockFormer \citep{liu2023rockformer}, que sus autores presentan como el primer marco de
+transformador en forma de U para segmentar rocas marcianas; MarsFormer \citep{xiong2023marsformer} combina un codificador de
 transformadores jerárquicos con módulos de realce de rasgos; RSU-Net \citep{tian2024rsunet}
 introduce atención en una arquitectura U-Net; otras propuestas incorporan atención híbrida
 para terreno no estructurado \citep{liu2023hybrid} o información de profundidad
@@ -258,13 +265,14 @@ correcta, un supuesto que la línea siguiente pone en cuestión.
 
 \paragraph{Enfoque teórico.} La anotación colaborativa descansa sobre una premisa de
 agregación: los errores individuales de muchos anotadores no especialistas se compensan al
-combinar sus juicios, de modo que el consenso se aproxima al de un especialista. La literatura
+combinar sus juicios, de modo que el consenso se aproxima al de un especialista
+\citep{snow2008cheap, sheng2008label}. La literatura
 estudia cuándo se cumple esa premisa, y qué ocurre cuando las etiquetas resultantes se usan
 como referencia.
 
 \paragraph{Estudios y respuestas.} La evidencia es en general favorable para tareas de
 clasificación. \citet{snow2008cheap} encontraron un acuerdo alto entre las anotaciones de
-contribuyentes no especialistas y las de especialistas en cinco tareas de lenguaje, y que
+anotadores no especialistas y las de especialistas en cinco tareas de lenguaje, y que
 entrenar con las primeras puede ser tan eficaz como hacerlo con las segundas.
 \citet{sheng2008label} mostraron que repetir el etiquetado mejora la calidad de las etiquetas
 y de los modelos, aunque no siempre. En astronomía, Galaxy Zoo \citep{lintott2008galaxyzoo}
@@ -290,10 +298,11 @@ modelos, y recomendaron evaluarlos sobre conjuntos de prueba correctamente etiqu
 
 \paragraph{Aporte y límite para este trabajo.} Esta línea justifica examinar la anotación en
 lugar de darla por buena, y ofrece el procedimiento: contrastar contra una referencia de
-especialista. También advierte de una dificultad que el trabajo encontró en su propio diseño:
-la comparación entre fuentes de anotación solo es interpretable si ambas etiquetan el mismo
-material. Su límite para el caso presente es que los estudios favorables se refieren sobre
-todo a clasificación de imágenes completas; la anotación por píxel con una regla de consenso,
+especialista. Los estudios revisados comparan las fuentes sobre el mismo material; en AI4Mars
+no es así, porque las máscaras de especialista recaen sobre otras imágenes, y esa diferencia
+obligó a diseñar un instrumento común (Sección~\ref{sec:evaluacion}). Su límite para el caso
+presente es que los estudios favorables se refieren sobre todo a la clasificación de unidades
+completas —textos, imágenes u objetos—; la anotación por píxel con una regla de consenso,
 como la de AI4Mars, añade un efecto —qué píxeles quedan sin etiqueta— que esos estudios no
 abordan.
 
@@ -316,10 +325,9 @@ cuyos mínimos locales entre máximos marcan los estrangulamientos. La selecció
 el punto crítico, y la reconstrucción morfológica en escala de grises de
 \citet{vincent1993reconstruction}, basada en la noción de máximos regionales, proporciona el
 algoritmo eficiente sobre el que se calculan los máximos con un umbral de prominencia. El
-esquema es de uso corriente donde hay que contar objetos que se tocan. En minería se aplica a
-la distribución de tamaños de fragmentos tras una voladura, hoy también con redes neuronales
-\citep{guo2023blasted, sharifi2024fragment}, y en cartografía de riesgo por caída de rocas se
-emplea sobre inventarios obtenidos por teledetección \citep{grady2024rockfall}. La
+esquema es de uso corriente donde hay que contar objetos que se tocan. En minería, la medición
+de los fragmentos de roca tras una voladura plantea un problema análogo, que hoy se aborda
+también con redes neuronales \citep{guo2023blasted, sharifi2024fragment}. La
 implementación utilizada es la de \texttt{scikit-image} \citep{vanderwalt2014skimage}.
 
 \paragraph{Aporte y límite para este trabajo.} Esta línea aporta el método del conteo y, con
@@ -337,9 +345,10 @@ instancias de roca y si emplean una máscara de segmentación como dato de entra
 
 \begin{landscape}
 \begin{spacing}{1}
-\footnotesize
+\scriptsize
 \setlength{\tabcolsep}{3.5pt}
-\begin{longtable}{@{}p{2.6cm}p{3.0cm}p{3.2cm}p{1.8cm}p{3.2cm}p{3.6cm}p{1.5cm}p{1.5cm}@{}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\begin{longtable}{@{}L{2.6cm}L{2.9cm}L{3.0cm}L{1.4cm}L{3.1cm}L{3.8cm}L{1.6cm}L{1.6cm}@{}}
   \caption{Síntesis comparativa de estudios previos.}
   \label{tab:estado-arte}\\
   \toprule
@@ -358,17 +367,17 @@ instancias de roca y si emplean una máscara de segmentación como dato de entra
     Modelar la población de rocas & Sitio & Medición manual, ajuste de funciones &
     Distribuciones exponenciales simples & Sí, manual & No \\
   \citet{ward2005spirit} & Panorámicas de \textit{Spirit} & Tamaño y espaciamiento de clastos &
-    Zona & Medición sobre imagen & Clastos menores y más espaciados en llanuras & Sí, manual & No \\
+    Zona & Medición sobre imagen & Clastos menores y más regularmente espaciados en llanuras & Sí, manual & No \\
   \citet{golombek2021insight} & Ortoimágenes, panorámicas y orbitales de \textit{InSight} &
     Abundancia de rocas & Zona & Medición manual, modelo exponencial &
     Abundancia algo superior al \SI{3}{\percent} & Sí, manual & No \\
   \citet{chen2022zhurong} & Imágenes orbitales del sitio de \textit{Zhurong} &
     Abundancia y erosión & Región & Red convolucional de detección &
-    \num{10000} rocas; abundancia cercana al \SI{5}{\percent}, confirmada en superficie &
+    Unas \num{10000} rocas; abundancia cercana al \SI{5}{\percent}, confirmada en superficie &
     Sí, automática & No \\
   \citet{sun2024zhurong} & Cámaras de navegación y terreno de \textit{Zhurong} &
     Distribución tamaño--frecuencia & Zona & Medición sobre imagen de superficie &
-    Menor abundancia en la depresión de aterrizaje & Sí & No \\
+    Menor abundancia en la depresión de aterrizaje & Sí, sobre estéreo & No \\
   \citet{thompson2007rockdet} & Imágenes MER, análogas y sintéticas & Comparar detectores &
     Imagen & Siete algoritmos de detección & Desempeño dependiente de la adquisición &
     Sí, automática & No \\
@@ -378,7 +387,7 @@ instancias de roca y si emplean una máscara de segmentación como dato de entra
   \citet{castano2007oasis} & Rover FIDO en análogo & Ciencia autónoma & Roca &
     Detección y análisis a bordo & Ciclo autónomo cerrado demostrado & Sí, automática & No \\
   \citet{swan2021ai4mars} & \num{35000} imágenes de tres rovers & Conjunto de entrenamiento &
-    Píxel & Anotación colaborativa con consenso & Primer conjunto a gran escala & No &
+    Píxel & Anotación colaborativa con consenso & Primer conjunto a gran escala, según sus autores & No &
     Produce las máscaras \\
   \citet{liu2023rockformer} & Imágenes marcianas etiquetadas & Segmentar roca & Píxel &
     Transformador en U & Mejora del acuerdo con la máscara & No & Como verdad \\
@@ -394,8 +403,9 @@ instancias de roca y si emplean una máscara de segmentación como dato de entra
     \SI{3.3}{\percent} de errores medios; altera comparaciones & No & Audita etiquetas \\
   \textbf{Este trabajo} & \textbf{\cNEscenas{} máscaras MSL NavCam} &
     \textbf{Indicadores derivados de la máscara y sus límites} & \textbf{Imagen} &
-    \textbf{Morfología matemática y división de aguas} & \textbf{Ver Capítulo~\ref{cap:resultados}} &
-    \textbf{Sí, aproximado} & \textbf{Como dato} \\
+    \textbf{Morfología matemática y división de aguas} & \textbf{Cobertura reproducible; el conteo
+    subestima frente a un observador; inconsistencias del conjunto} &
+    \textbf{Sí, aproximado; subestima} & \textbf{Como dato} \\
 \end{longtable}
 \end{spacing}
 \end{landscape}
@@ -444,12 +454,14 @@ de lo que surgió al validar.
 \item[H1.] \textbf{La cobertura de roca visible puede derivarse de forma reproducible de las
   máscaras, y su valor no está determinado por la fracción de la escena que fue etiquetada.}
   Prevista: la cobertura es el objetivo E1; el control del denominador es la condición para
-  que el indicador sea interpretable. Se contrasta con la relación entre cobertura y fracción
-  etiquetada, mediante medidas de dependencia lineal y no lineal.
+  que el indicador sea interpretable. Se contrasta en dos partes: la reproducibilidad, con una
+  reejecución íntegra del procedimiento, y la independencia del denominador, con la relación
+  entre cobertura y fracción etiquetada mediante medidas de dependencia lineal y no lineal y
+  una descripción por tramos.
 
 \item[H2.] \textbf{El conteo por división de aguas sobre la clase roca grande aproxima el número
-  de rocas que un observador distingue dentro de la región anotada, sin sesgo sistemático en
-  una dirección.} Prevista: es el objetivo E2, y el anteproyecto contemplaba comprobar la
+  de rocas que un observador distingue dentro de la región anotada, sin tendencia sistemática
+  a subestimar ni a sobrestimar.} Prevista: es el objetivo E2, y el anteproyecto contemplaba comprobar la
   dirección del error. Se contrasta con el acuerdo por bandas frente al conteo humano, medido
   con kappa simple y ponderado, y con la proporción de escenas por encima y por debajo.
 
@@ -467,15 +479,17 @@ de lo que surgió al validar.
 \end{description}
 
 La Tabla~\ref{tab:variables} define las variables de estudio. Todas se derivan de la máscara,
-excepto la banda del observador, que se recoge en la validación, y la cobertura del modelo, que
-procede del segmentador entrenado.
+excepto la banda del observador, que se recoge en la validación; la fuente de la anotación y el
+reloj de nave, que identifican la escena; y la cobertura del modelo, que procede del
+segmentador entrenado.
 
-\begin{table}[H]
+\begin{table}[htbp]
   \centering
   \small
+  \begin{spacing}{1.15}
   \caption{Variables de estudio.}
   \label{tab:variables}
-  \begin{tabular}{p{3.6cm}p{6.4cm}p{2.6cm}c}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}p{2.6cm}c}
     \toprule
     \textbf{Variable} & \textbf{Definición operativa} & \textbf{Tipo} & \textbf{Hip.} \\
     \midrule
@@ -492,9 +506,10 @@ procede del segmentador entrenado.
     Banda del observador & Número de rocas distinguidas por una persona dentro de la región
       anotada, en seis bandas & Ordinal & H2 \\
     Fuente de la anotación & Colaborativa o de especialista & Nominal & H3 \\
-    Cobertura del modelo & Fracción de roca que predice el segmentador en la región anotable
+    Cobertura del modelo & Porcentaje de roca que predice el segmentador en la región anotable
       de la escena & Continua, 0--100 & H3 \\
-    Reloj de nave & Contador temporal de a bordo, extraído del identificador & Ordinal & Secuencia \\
+    Reloj de nave & Contador temporal de a bordo, extraído del identificador & Ordinal & --- (E3) \\
     \bottomrule
   \end{tabular}
+  \end{spacing}
 \end{table}

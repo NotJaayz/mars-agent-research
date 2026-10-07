@@ -110,7 +110,9 @@ def autores_cr(m):
     out = []
     for a in m.get("author", []):
         if "family" in a:
-            out.append(f"{a['family']}, {a.get('given', '')}".strip().rstrip(","))
+            # Iniciales separadas por espacio («R.E.» → «R. E.»), como pide APA.
+            given = re.sub(r"\.(?=[A-ZÁÉÍÓÚ])", ". ", a.get("given", "").replace("\u2010", "-"))
+            out.append(f"{a['family']}, {given}".strip().rstrip(","))
         elif "name" in a:
             out.append("{" + a["name"] + "}")
     return " and ".join(out)
@@ -174,7 +176,8 @@ def main():
     for clave, spec in refs.items():
         tipo, campos, fuente = entrada(clave, spec)
         campos.setdefault("langid", "english" if fuente != "manual" else "spanish")
-        orden = ["author", "title", "titleaddon", "journal", "booktitle", "publisher", "edition",
+        orden = ["author", "title", "titleaddon", "journal", "booktitle", "editor", "series",
+                 "publisher", "organization", "edition",
                  "version", "volume", "number", "pages", "year", "eprint", "eprinttype", "doi",
                  "url", "urldate", "langid"]
         cuerpo = ",\n".join(f"  {k:<10s} = {{{campos[k]}}}" for k in orden if k in campos)
