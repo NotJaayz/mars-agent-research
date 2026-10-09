@@ -1,5 +1,10 @@
 # Figuras y pies de figura para el documento
 
+> **Documento de trabajo anterior a la revisión de octubre de 2026.** Algunas cifras y pies de figura
+> de este archivo fueron corregidos después (población del conteo, secuencia de adquisición,
+> contraste con las máscaras de experto). Las versiones vigentes son las de la tesis (`tesis/`) y el
+> [README](../README.md).
+
 **🌐 Idioma:** **Español** · [English](figuras_tesis.en.md)
 
 Las imágenes están en `outputs/figures/tesis/` y se generan con

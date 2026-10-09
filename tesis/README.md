@@ -33,7 +33,7 @@ Todas las cifras del texto proceden de `cifras.tex` y `tabla_error_modelo.tex`, 
 |---|---|
 | `main.tex` | Preámbulo y orden de los capítulos. **No contiene texto del documento.** |
 | `config.tex` | Título, autor, tutora (Juliana De Mier Medellin), año y modalidad de grado. |
-| `references.bib` | 64 entradas, generadas por `scripts/generar_bibliografia.py` desde los DOI de `referencias.json`; estilo APA 7 vía `biblatex` + `biber`. |
+| `references.bib` | 65 entradas, generadas por `scripts/generar_bibliografia.py` desde los DOI de `referencias.json`; estilo APA 7 vía `biblatex` + `biber`. |
 | `cifras.tex`, `tabla_error_modelo.tex` | Cifras y tabla generadas por `scripts/generar_cifras.py`. |
 | `abbreviations.tex` | Abreviaturas y siglas. |
 | `glossary.tex` | Glosario. |

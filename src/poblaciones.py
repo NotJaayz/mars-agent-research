@@ -17,6 +17,15 @@ def poblacion_e1(df: pd.DataFrame) -> pd.DataFrame:
     return df[df.is_e1_eligible.astype(bool)]
 
 
+def poblacion_secuencia(df: pd.DataFrame) -> pd.DataFrame:
+    """Escenas con etiqueta útil para describir la secuencia de adquisición.
+
+    Excluye las casi vacías y las vacías (banderas ``mostly_null`` y ``empty``), cuya
+    composición no es interpretable, y las ordena por reloj de nave.
+    """
+    return df[df.is_e1_eligible.astype(bool) & ~df.is_mostly_null.astype(bool)].sort_values("sclk")
+
+
 def poblacion_e2(df: pd.DataFrame) -> pd.DataFrame:
     """Escenas aptas para el conteo: con roca grande y no casi vacías."""
     return df[df.is_e2_eligible.astype(bool)]

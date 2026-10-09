@@ -172,7 +172,7 @@ def main() -> None:
         x, y, [0, 50, 80, 95, 99.99, 100], [-0.5, 0.5, 1.5, 3.5, 1e6])  # 4+ fusionado: celdas esperadas >= 5
 
     # Par 2: cobertura frente a fracción etiquetada (control del denominador).
-    cal = d.dropna(subset=["rock_coverage_pct", "frac_valid"])
+    cal = poblaciones.poblacion_e1(d)
     x2, y2 = cal.frac_valid.to_numpy(float), cal.rock_coverage_pct.to_numpy(float)
     print(f"[2] fracción etiquetada ~ cobertura   (cobertura calculable, n = {len(cal)})")
     res["frac_cobertura"] = analizar(x2, y2, "frac_valid", "cobertura", args.perm, args.boot,

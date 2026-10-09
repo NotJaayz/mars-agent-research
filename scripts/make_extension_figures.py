@@ -97,9 +97,9 @@ def figura_vetas(d: pd.DataFrame) -> None:
                   edgecolor="white", linewidth=0.6, label="sin color")
     ax[1].scatter(d.recall_color, d.precision_color, s=42, color=ROCK, marker="^",
                   edgecolor="white", linewidth=0.6, label="con color")
-    ax[1].set_xlabel("recall")
+    ax[1].set_xlabel("exhaustividad")
     ax[1].set_ylabel("precisión")
-    ax[1].set_title("Precisión frente a recall")
+    ax[1].set_title("Precisión frente a exhaustividad")
     ax[1].legend(frameon=False, fontsize=9)
 
     fig.tight_layout()

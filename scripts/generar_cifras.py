@@ -97,7 +97,7 @@ def main():
     m("cNNullBig", n(len(mn))); m("cRocasNullBig", n(mn.n_rocks.sum()))
     m("cNOjoIzq", n((d.eye == "L").sum())); m("cNOjoDer", n((d.eye == "R").sum()))
     # Secuencia de adquisición (Figura de variación): mismos tramos que make_thesis_figures.
-    sq = d[d.quality_flag.isin(["ok", "no_bigrock", "no_rock"])].sort_values("sclk")
+    sq = poblaciones.poblacion_secuencia(d)
     tq = pd.qcut(sq.sclk, q=40, labels=False, duplicates="drop")
     gq = sq.groupby(tq)
     pres = gq.apply(lambda x: 100 * (x.n_bigrock > 0).mean(), include_groups=False)

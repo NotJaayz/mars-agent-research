@@ -46,7 +46,7 @@ validación, y la tesis lo documenta.
 |---|---|---|
 | **H1** | La cobertura se deriva de forma reproducible y no está determinada por la fracción de escena etiquetada | Se sostiene, con dependencia residual débil |
 | **H2** | El conteo aproxima el número de rocas que un observador distingue en la región anotada, sin sesgo en una dirección | Se rechaza (evaluación exploratoria, un observador) |
-| **H3** | Los indicadores no dependen de la fuente de la anotación | Se rechaza con reservas para la cobertura: efecto de la fuente pequeño e incierto, muy inferior a la diferencia bruta |
+| **H3** | Los indicadores no dependen de la fuente de la anotación | No concluyente para la cobertura: efecto de la fuente pequeño, positivo en todas las variantes pero distinguible de cero por sol solo en una |
 | **H4** | Cobertura y conteo aportan información distinta | Se sostiene: información distinta, **no** independencia estadística |
 
 ---
@@ -377,13 +377,12 @@ en 12 escenas. **No es un artefacto de la calibración**: en las 36 combinacione
 suavizado y área mínima ensayadas, el procedimiento queda por debajo del observador en entre
 23 y 29 escenas.
 
-**Por qué.** Dos causas, ninguna corregible con umbrales:
-
-- **La anotación no es exhaustiva**: en 36 de 60 escenas la roca grande es menos del 20 % de la
-  roca etiquetada (mediana 9,1 %); el resto se anotó como lecho rocoso.
-- **Hay regiones sin información geométrica para separar instancias**: la división de aguas
-  solo corta donde la región se estrangula. Un polígono que envuelve un campo de bloques
-  contiguos no tiene dónde cortar.
+**Por qué.** El observador contó dentro de la misma región que el procedimiento, así que el
+desacuerdo se explica sobre todo porque **hay regiones sin información geométrica para separar
+instancias**: la división de aguas solo corta donde la región se estrangula, y un polígono que
+envuelve un campo de bloques contiguos no tiene dónde cortar. Aparte de ese desacuerdo, **la
+anotación no es exhaustiva** (en 36 de 60 escenas la roca grande es menos del 20 % de la roca
+etiquetada; mediana 9,1 %): ni un conteo exacto de la región equivaldría a las rocas de la escena.
 
 ![Mecanismo del subconteo](outputs/figures/tesis/Figura_28_mecanismo_subconteo.png)
 
@@ -575,8 +574,12 @@ make pruebas
 
 El modelo entrenado (~170 MB) no se versiona en git: se descarga de la versión publicada
 [modelo-deeplab-v2](https://github.com/NotJaayz/mars-agent-research/releases/tag/modelo-deeplab-v2) y se copia a `outputs/`. Su huella SHA-256 está en
-`outputs/segmentacion_metricas.json`. Las cifras del documento nunca se escriben a mano:
-`scripts/generar_cifras.py` las extrae de `outputs/` y las escribe en `tesis/cifras.tex`.
+`outputs/segmentacion_metricas.json`. Las cifras de resultados del documento no se escriben a
+mano: `scripts/generar_cifras.py` las extrae de `outputs/` y las escribe en `tesis/cifras.tex`.
+Dos archivos son salidas congeladas del modelo anterior, que se conservan solo para la
+comparación con el reparto al azar y no se regeneran:
+`outputs/segmentacion_metricas_reparto_aleatorio.json` y
+`outputs/fuente_anotacion_resumen_modelo_anterior.json`.
 
 ---
 

@@ -1,5 +1,10 @@
 # Figures and captions for the document
 
+> **Working document from before the October 2026 revision.** Some figures and captions in this file
+> were corrected afterwards (count population, acquisition sequence, comparison with expert
+> masks). The current versions are those in the thesis (`tesis/`) and the
+> [README](../README.en.md).
+
 **🌐 Language:** [Español](figuras_tesis.md) · **English**
 
 The images live in `outputs/figures/tesis/` and are produced by

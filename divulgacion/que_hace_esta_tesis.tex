@@ -46,7 +46,7 @@
 \noindent\textbf{En una frase.} Existen unos mapas de Marte que alguien pintó a mano, y que
 hasta ahora solo se usaban para enseñarle a una inteligencia artificial a reconocer el
 terreno. Esta tesis los usa para otra cosa: \textbf{medir}. Y al medirlos, descubre que esos
-mapas tienen un defecto que nadie había documentado.
+mapas tienen inconsistencias que, en la revisión realizada, no se habían documentado.
 \end{idea}
 
 \section{El problema: las rocas estorban}
@@ -154,9 +154,9 @@ esa diferencia está en las fotos.
 
 \smallskip
 \noindent El resultado: \textbf{casi nueve de cada diez puntos de diferencia se deben a que las
-fotos de los especialistas tienen mucha menos roca}. Solo entre 2 y 4 puntos de porcentaje se
-deben a la forma de pintar. Esa parte pequeña existe y va en la dirección de pintar algo más de
-roca, pero la tesis no puede probar por qué ocurre.
+fotos de los especialistas tienen mucha menos roca}. La parte atribuible a la forma de pintar
+es pequeña, de 2 a 4 puntos de porcentaje, e incierta: cuando se tiene en cuenta que muchas fotos
+se tomaron el mismo día, ni siquiera se puede asegurar que sea distinta de cero.
 \end{idea}
 
 \subsection*{2. El problema del conteo no son las fotos}
@@ -172,16 +172,18 @@ principal está en cómo se pintaron los mapas:
 \end{figure}
 
 Y no es solo cosa de voluntarios: cuando a los especialistas se les exige ponerse de acuerdo
-entre ellos, la categoría «roca suelta» casi desaparece. Ni siquiera los expertos coinciden en
-dónde termina una roca suelta y dónde empieza el suelo rocoso.
+entre ellos, la categoría «roca suelta» casi desaparece. Es la categoría en la que menos
+coinciden: solo uno de cada cinco de sus píxeles sobrevive cuando se exige que tres
+especialistas estén de acuerdo, frente a casi la mitad en el lecho rocoso.
 
 \subsection*{3. El conteo se queda corto}
 
 Una persona contó rocas a mano en 60 fotos. El programa contó \textbf{menos que ella en 28
-fotos y más en solo 2}, y eso se mantiene aunque se cambien los ajustes del programa. Dos
-razones: el mapa marca solo una parte de las rocas (en 36 de las 60 fotos, menos del
-20\,\% de la roca), y cuando un voluntario pinta un solo manchón sobre muchas rocas, no hay
-forma de separarlas.
+fotos y más en solo 2}, y eso se mantiene aunque se cambien los ajustes del programa. La
+persona contó dentro de la misma zona que el programa, así que la razón principal es esta:
+cuando un voluntario pinta un solo manchón sobre muchas rocas, no hay forma de separarlas. Y
+aparte, el mapa marca solo una parte de las rocas (en 36 de las 60 fotos, menos del 20\,\% de la
+roca), así que ni contando perfecto se obtendrían todas las rocas de la foto.
 
 Consecuencia honesta: el número que produce la tesis \textbf{no es «cuántas rocas hay en la
 foto»}, sino «cuántos bloques se pueden separar dentro de lo que el mapa marcó como roca

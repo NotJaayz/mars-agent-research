@@ -593,7 +593,7 @@ como una estimación aproximada cuyo sentido de sesgo no puede determinarse con 
 \paragraph{Interpretación.} Dado que el mismo cálculo se aplicó a ambas fuentes, la diferencia
 observada no puede atribuirse a la implementación de la fórmula; según el instrumento común, se
 asocia principalmente con la composición de las muestras de imágenes y, en menor medida, con la
-fuente de las etiquetas. La componente de anotación es compatible con la hipótesis de un
+fuente de las etiquetas. La componente de anotación, si existe, es compatible con la hipótesis de un
 \textbf{sesgo de saliencia} en la anotación colaborativa —que las regiones visualmente
 prominentes, como la roca, reciban una anotación más consistente o completa—, pero el diseño
 del estudio no permite identificar causalmente ese mecanismo: no se midieron la atención, la
@@ -666,7 +666,8 @@ artefacto del ajuste de los umbrales.
 \label{sec:anotacion-parcial}
 
 El examen de las escenas permite separar dos límites distintos, ninguno de los cuales se
-corrige ajustando el procedimiento. Solo el primero explica el desacuerdo con el observador; el
+corrige ajustando el procedimiento. El primero es el principal mecanismo del desacuerdo con el
+observador; el
 segundo delimita lo que el conteo representa aun si ese desacuerdo desapareciera.
 
 El primero es que algunas regiones \textbf{no contienen la información geométrica necesaria
@@ -677,7 +678,7 @@ la máscara no contiene ningún indicio de dónde termina un bloque y empieza el
 Figura~\ref{fig:mecanismo} contrasta un caso en que el procedimiento coincide con el observador
 y otro en que, sobre una sola región que el observador cuenta entre veinticinco y cuarenta y
 nueve rocas, el procedimiento solo encuentra tres. Como el observador contó dentro de la misma
-región que el procedimiento, este es el mecanismo que explica el subconteo medido.
+región que el procedimiento, este es el mecanismo principal del subconteo medido.
 
 El segundo es que la anotación de roca grande \textbf{no marca todas las rocas de la escena,
 sino algunas}. En \cVNoExhN{} de las \cVN{} escenas, la clase roca grande representa menos del
@@ -988,7 +989,9 @@ hallazgo sobre el modelo.
 \paragraph{Lectura.} El segmentador estima la cobertura con un desempeño alto frente a la
 anotación de la que aprendió y claramente menor frente al experto, respecto del cual sobreestima unos
 tres puntos de media, con errores individuales grandes y dependientes del tramo. Esa
-sobreestimación es la esperable si el modelo heredó el criterio de la anotación colaborativa. Sirve, por tanto, para describir conjuntos de escenas y no para valorar una escena
+sobreestimación es compatible con que el modelo haya heredado el criterio de la anotación
+colaborativa, aunque también con un error que dependa de la composición de las escenas
+(Sección~\ref{sec:experto}). Sirve, por tanto, para describir conjuntos de escenas y no para valorar una escena
 concreta. Estima cobertura, no conteo: distingue roca de no-roca y no separa bloques, de modo
 que no sustituye a E2. Con esas reservas, que la imagen sola permita aproximar la cobertura
 sugiere que el indicador podría calcularse sin anotación humana, posibilidad que el
@@ -1025,8 +1028,8 @@ Sección~\ref{sec:hipotesis} con la evidencia de este capítulo.
       puntos \cDescAnotIC{} a la anotación; positiva en las tres variantes, pero con el
       \textit{bootstrap} por sol su intervalo incluye el cero en la muestra principal
       \cTempAnotIC{} y lo excluye por poco en la de bloques de prueba \cTempAnotPruebaIC.
-      & Se rechaza con reservas para la cobertura: efecto de la fuente pequeño e incierto,
-      muy inferior a la diferencia bruta; no contrastada para el conteo \\
+      & No concluyente para la cobertura: efecto de la fuente pequeño, positivo en las tres
+      variantes, pero distinguible de cero por sol solo en una; no contrastada para el conteo \\
     H4 & Sin asociación lineal ni monótona ($r = \cDepCCPearson$, $\rho = \cDepCCSpearman$);
       dependencia no lineal débil (correlación de distancia \cDepCCDcor, $p \cDepCCDcorP$;
       $p \cTempDcorP$ por desplazamiento circular) en forma de U invertida; los tramos de
@@ -1043,9 +1046,9 @@ cuantitativos y no solo como insumo de entrenamiento, con límites distintos par
 indicador.
 
 La cobertura es el indicador sólido. Se calcula para el \cPctCobCalc{} de las escenas, es
-reproducible y no está gobernada por la fracción de escena etiquetada. Su valor, sin embargo,
-depende de quién anotó: aplicada a máscaras de experto produciría coberturas algo menores, y
-la comparación directa con esas máscaras está dominada por el hecho de que cubren escenas
+reproducible y no se encontró evidencia de que esté gobernada por la fracción de escena
+etiquetada. Su valor puede depender de quién anotó, pero ese efecto es pequeño e incierto, y la
+comparación directa con las máscaras de experto está dominada por el hecho de que cubren escenas
 mucho menos rocosas. Las coberturas reportadas describen, por tanto, el terreno tal como lo
 registra la anotación colaborativa, y son adecuadas para comparar escenas del mismo conjunto.
 
@@ -1188,9 +1191,9 @@ medida que se exige mayor acuerdo (Tabla~\ref{tab:gold}).
 \begin{table}[htbp]
   \centering
   \caption[Presencia de roca grande según la fuente de etiqueta]{Presencia de roca grande
-    según la fuente de etiqueta y el nivel de acuerdo exigido. La cobertura mediana se
-    calcula aquí sobre todas las escenas del conjunto —no solo sobre las que contienen
-    roca—, por lo que difiere de la reportada en la Tabla~\ref{tab:validacion}.}
+    según la fuente de etiqueta y el nivel de acuerdo exigido. La cobertura mediana y el conteo
+    medio se calculan aquí sobre todas las escenas de cada conjunto —no solo sobre las que
+    contienen roca ni solo sobre la población de E2—, por lo que difiere de la reportada en la Tabla~\ref{tab:validacion}.}
   \label{tab:gold}
   \begin{tabular}{lrrrr}
     \toprule

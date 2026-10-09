@@ -99,7 +99,8 @@ def fig_quality(df, n):
 
 
 def fig_coverage(df, n):
-    rb = df[df.rock_coverage_pct.fillna(0) > 0]
+    e1 = poblaciones.poblacion_e1(df)
+    rb = e1[e1.rock_coverage_pct > 0]
     bins = np.linspace(0, 100, 41)
     fig, ax = plt.subplots(1, 2, figsize=(9.5, 3.4))
     for a, col, color, lab in [(ax[0], "rock_coverage_pct", ROCK, "sobre píxeles etiquetados"),
@@ -111,7 +112,7 @@ def fig_coverage(df, n):
 
 
 def fig_cov_vs_valid(df, n):
-    rb = df[df.rock_coverage_pct.notna() & df.frac_valid.notna()]
+    rb = poblaciones.poblacion_e1(df)
     fig, ax = plt.subplots(figsize=(5.6, 4.4))
     hb = ax.hexbin(rb.frac_valid, rb.rock_coverage_pct, gridsize=42,
                    cmap="magma_r", mincnt=1, bins="log")
@@ -166,7 +167,7 @@ def fig_scenes(df, n):
 
 def fig_secuencia(df, n, n_bins=40):
     """Tramos de igual número de imágenes, en orden de reloj de nave (escenas con etiqueta útil)."""
-    d = df[df.quality_flag.isin(["ok", "no_bigrock", "no_rock"])].sort_values("sclk").copy()
+    d = poblaciones.poblacion_secuencia(df).copy()
     d["tramo"] = pd.qcut(d.sclk, q=n_bins, labels=False, duplicates="drop") + 1
     g = d.groupby("tramo")
     presence = g.apply(lambda x: (x.n_bigrock > 0).mean() * 100, include_groups=False)

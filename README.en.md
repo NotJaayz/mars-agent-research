@@ -48,7 +48,7 @@ documents this.
 |---|---|---|
 | **H1** | Coverage is derived reproducibly and is not determined by the labelled fraction of the scene | Supported, with weak residual dependence |
 | **H2** | The count approximates the number of rocks an observer distinguishes in the annotated region, without one-directional bias | Rejected (exploratory evaluation, one observer) |
-| **H3** | The indicators do not depend on the annotation source | Rejected with reservations for coverage: a small and uncertain source effect, far below the raw difference |
+| **H3** | The indicators do not depend on the annotation source | Inconclusive for coverage: a small source effect, positive in every variant but distinguishable from zero by sol in only one |
 | **H4** | Coverage and count carry different information | Supported: different information, **not** statistical independence |
 
 ---
@@ -376,13 +376,12 @@ With the frozen parameters the procedure never exceeds 9 rocks; the observer saw
 12 scenes. **It is not a calibration artefact**: across the 36 combinations of prominence,
 smoothing and minimum area tested, the procedure falls below the observer in 23 to 29 scenes.
 
-**Why.** Two causes, neither fixable with thresholds:
-
-- **The annotation is not exhaustive**: in 36 of 60 scenes big rock is less than 20 % of the
-  labelled rock (median 9.1 %); the rest was annotated as bedrock.
-- **Some regions lack the geometric information to separate instances**: the watershed only
-  cuts where the region narrows. A polygon enclosing a field of contiguous blocks has nowhere
-  to cut.
+**Why.** The observer counted within the same region as the procedure, so the disagreement is
+explained mainly by **regions lacking the geometric information needed to separate instances**:
+the watershed only cuts where the region narrows, and a polygon enclosing a field of touching
+blocks offers nowhere to cut. Apart from that disagreement, **the annotation is not exhaustive**
+(in 36 of 60 scenes big rock is less than 20 % of labelled rock; median 9.1 %): not even an exact
+count of the region would equal the rocks in the scene.
 
 ![Undercounting mechanism](outputs/figures/tesis/Figura_28_mecanismo_subconteo.png)
 
@@ -571,8 +570,11 @@ make pruebas
 
 The trained model (~170 MB) is not stored in git: download it from the published release
 [modelo-deeplab-v2](https://github.com/NotJaayz/mars-agent-research/releases/tag/modelo-deeplab-v2) and copy it to `outputs/`. Its SHA-256 fingerprint is in
-`outputs/segmentacion_metricas.json`. The document's numbers are never typed by hand:
+`outputs/segmentacion_metricas.json`. The document's result figures are not typed by hand:
 `scripts/generar_cifras.py` extracts them from `outputs/` and writes `tesis/cifras.tex`.
+Two files are frozen outputs of the previous model, kept only for the comparison with the random
+split and not regenerated: `outputs/segmentacion_metricas_reparto_aleatorio.json` and
+`outputs/fuente_anotacion_resumen_modelo_anterior.json`.
 
 ---
 

@@ -36,7 +36,7 @@ dependencies:
   # --- Pruebas y entorno de trabajo ---
   - pytest=9.1.1
   - jupyterlab
-  - ipykernel
+  - ipykernel=7.3.0
   - requests=2.34.2
 
   - pip:

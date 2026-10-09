@@ -321,7 +321,7 @@ horizonte. El Anexo~\ref{app:calibracion} las identifica.
 
 \paragraph{Alternativas consideradas.} Se partió de una separación mínima entre máximos de
 \SI{5}{\px} con suavizado $\sigma = 1$, que producía sobresegmentación severa —una sola escena
-generaba ciento cuarenta y dos semillas, la mayoría a lo largo de una banda alargada—. Se probaron separaciones de \num{15} y
+generaba \cCalSemillasA{} semillas, la mayoría a lo largo de una banda alargada—. Se probaron separaciones de \num{15} y
 \num{20} píxeles con $\sigma = 3$; la primera preservaba las separaciones reales de los cúmulos
 y recortaba los máximos espurios, y la segunda empezaba a fusionar bloques distintos. Persistía
 una subdivisión residual de las losas continuas, que se resolvió sustituyendo la separación
@@ -333,7 +333,7 @@ rocas, \cCalNMuchas{} escenas), pero también lo redujo en un \cCalRedNorm{} en 
 escenas restantes, de las que solo \cCalNormSinCambio{} conservaron su conteo. Una verificación
 preliminar, hecha sobre unas pocas escenas, había sugerido que el criterio no alteraba las
 escenas normales; la reconstrucción completa no lo sostiene. El criterio de prominencia rebajó el
-conteo de forma general, lo que es coherente con el subconteo que revela la validación humana
+conteo de forma general, lo que es coherente con el subconteo que sugiere la validación humana
 (Sección~\ref{sec:validacion-manual}).
 
 \paragraph{Reconstrucción.} Un guion del repositorio reconstruye la calibración a partir de un
@@ -354,7 +354,7 @@ se optimizaron.
 2026, como consta en el historial del repositorio, antes de recoger ninguna respuesta de la
 validación humana. Ninguna de las seis escenas de calibración forma parte de la muestra de
 validación definitiva. Cuando la reconstrucción posterior mostró que el criterio de
-prominencia no era selectivo (más abajo), se mantuvo $h = 1$: reajustarlo después de la
+prominencia no era selectivo, se mantuvo $h = 1$: reajustarlo después de la
 validación habría supuesto calibrar con la muestra de evaluación.
 
 \paragraph{Sensibilidad.} Para comprobar que las conclusiones no dependen de ese ajuste, se
@@ -426,7 +426,9 @@ de la ejecución final, incluidas las bibliotecas de aprendizaje profundo, y se 
 registro exacto de todos los paquetes instalados. Un \textbf{único comando} regenera en orden
 los resultados, las evaluaciones, las figuras y todas las cifras de resultados de este
 documento, que no se escriben a mano: un guion las extrae de los archivos de resultados y las
-inserta en el texto. Por último, \cPruebasN{} \textbf{pruebas automáticas} verifican las reglas deterministas en que descansan
+inserta en el texto. Las únicas excepciones son unos pocos datos de diseño o de inspección
+puntual —el tamaño de la ronda piloto o la frecuencia del contorno hueco en una muestra de
+escenas—, que se citan con su origen. Por último, \cPruebasN{} \textbf{pruebas automáticas} verifican las reglas deterministas en que descansan
 los indicadores —que los píxeles sin etiqueta quedan fuera del denominador, que solo la roca
 grande entra en el conteo, que una máscara vacía no tiene cobertura, que una escena casi vacía
 no entra en el resumen del conteo, que dos bloques unidos por un estrangulamiento se separan y
@@ -541,7 +543,9 @@ población de E1, y la composición del terreno alterna por tramos a lo largo de
 dependencia los intervalos por escena salen demasiado estrechos y los valores $p$ demasiado
 pequeños. Por eso los contrastes principales se repiten con dos procedimientos que la respetan.
 El \textbf{\textit{bootstrap} por sol} remuestrea soles completos, con todas sus escenas, en
-lugar de escenas sueltas. La \textbf{prueba por desplazamiento circular} ordena las escenas por
+lugar de escenas sueltas; el sol se obtiene dividiendo el reloj de nave por la duración de un sol
+(\num{88775} s), de modo que agrupa las imágenes en intervalos de un sol de reloj de nave, sin
+recurrir al número de sol oficial de la misión. La \textbf{prueba por desplazamiento circular} ordena las escenas por
 reloj de nave y desplaza una variable respecto de la otra: cada serie conserva su
 autocorrelación y solo se rompe la relación entre ambas; se excluyen los desplazamientos
 menores del \SI{5}{\percent} de la serie.
@@ -632,7 +636,7 @@ Tabla~\ref{tab:deeplab-config} para que el experimento sea reproducible.
   \endhead
     Arquitectura & DeepLabV3 con red troncal ResNet-50 \citep{chen2017deeplab}, con cabeza
       auxiliar \\
-    Pesos iniciales & Preentrenados de \texttt{torchvision} (\texttt{DEFAULT}); ambas cabezas se
+    Pesos iniciales & Preentrenados de \texttt{torchvision} (\texttt{DEFAULT}, que corresponde a \texttt{COCO\_WITH\_VOC\_LABELS\_V1}); ambas cabezas se
       sustituyen por capas de dos clases \\
     Clases & Roca (lecho rocoso y roca grande) y no-roca; los píxeles sin etiqueta se ignoran \\
     Población elegible & Máscaras colaborativas con bandera \texttt{ok}, \texttt{no\_bigrock} o

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Panel de análisis de terreno marciano — aplicación de escritorio.
 
-Producto final del trabajo: interfaz gráfica que reúne los indicadores por imagen, el
+Demostrador del Anexo A.5: interfaz gráfica que reúne los indicadores por imagen, las
 reglas heurísticas de priorización y un explorador de escenas, sin necesidad de ejecutar código
 ni de conocer el detalle del procedimiento.
 
@@ -220,13 +220,14 @@ class Panel(ctk.CTk):
         self._titulo(v, "Resumen",
                      "Indicadores derivados de las anotaciones por píxel de la cámara de "
                      "navegación del rover Curiosity.")
-        df, ok = self.df, self.df[self.df.quality_flag == "ok"]
+        from src import poblaciones
+        df, ok = self.df, poblaciones.poblacion_e2(self.df)
         rb = df[df.rock_coverage_pct.fillna(0) > 0]
 
         fila = ctk.CTkFrame(v, fg_color=FONDO); fila.pack(fill="x", pady=(0, 16))
         for val, et in [(_miles(len(df)), "imágenes analizadas"),
                         (_miles(len(rb)), "con roca visible"),
-                        (_miles(int(df.n_rocks.sum())), "rocas contadas"),
+                        (_miles(poblaciones.resumen_e2(df)["n_rocas"]), "rocas contadas"),
                         (_miles(int((df.nivel_prioridad != "sin_prioridad").sum())), "con alguna regla de prioridad"),
                         (str(int((df.nivel_prioridad == "alta").sum())), "en prioridad alta")]:
             self._kpi(fila, val, et).pack(side="left", expand=True, fill="both", padx=4)
@@ -311,7 +312,7 @@ class Panel(ctk.CTk):
         izq.pack(side="left", fill="y", padx=(0, 12)); izq.pack_propagate(False)
         self.tabla = ttk.Treeview(izq, columns=("id", "niv", "n"), show="headings",
                                   style="Oscuro.Treeview", height=26)
-        for c, t, w in (("id", "Imagen", 214), ("niv", "Nivel", 74), ("n", "Alertas", 58)):
+        for c, t, w in (("id", "Imagen", 214), ("niv", "Nivel", 74), ("n", "Reglas", 58)):
             self.tabla.heading(c, text=t); self.tabla.column(c, width=w, anchor="w")
         sb = ttk.Scrollbar(izq, orient="vertical", command=self.tabla.yview)
         self.tabla.configure(yscrollcommand=sb.set)

@@ -8,8 +8,9 @@
 La pregunta era qué indicadores cuantitativos de cobertura y organización de la roca pueden
 derivarse de forma reproducible de las máscaras de AI4Mars, y cuáles son sus límites de validez
 frente a diferencias en la anotación y al juicio humano. La respuesta tiene tres partes: la
-cobertura sí puede derivarse de forma reproducible; el conteo de rocas individuales, no, y ese
-resultado negativo es en sí mismo un hallazgo; y el propio conjunto de datos presenta
+cobertura sí puede derivarse de forma reproducible e interpretarse como medida de la roca
+anotada; el conteo de rocas individuales es reproducible, pero no es una estimación válida del
+número de rocas, y ese resultado negativo es en sí mismo un hallazgo; y el propio conjunto de datos presenta
 inconsistencias que delimitan lo que cualquiera de los dos indicadores puede afirmar.
 
 La \textbf{cobertura de roca visible} puede derivarse de forma reproducible para prácticamente
@@ -17,9 +18,9 @@ todo el subconjunto. Pudo calcularse en \cNCobCalc{} de las \cNEscenas{} escenas
 (\cPctCobCalc); \cNCobPos{} escenas (\cPctCobPos{} del total) presentaron cobertura de roca
 mayor que cero, y entre ellas la mediana sobre píxeles etiquetados fue del \cCobMedVal. No se
 encontró evidencia de que sus valores altos se expliquen por una menor fracción de escena
-etiquetada. Su límite de validez es la fuente de la anotación: con máscaras de especialista el
-valor sería algo menor, de modo que las coberturas describen el terreno tal como lo registra la
-anotación colaborativa.
+etiquetada. Su límite de validez es la muestra y la anotación de las que procede: las coberturas
+describen el terreno tal como lo registra la anotación colaborativa, y el posible efecto de
+quién anota es pequeño e incierto frente al de la composición de las imágenes.
 
 El \textbf{conteo de rocas} es el resultado negativo del trabajo: \textbf{contar rocas
 individuales a partir de estas máscaras no es sencillo}, y el procedimiento no lo consigue más
@@ -79,11 +80,12 @@ a continuación.
 \subsection{Sobre las hipótesis}
 
 La Tabla~\ref{tab:contraste-hipotesis} recoge el dictamen de cada hipótesis. \textbf{H1} se
-sostiene: la cobertura es reproducible y no está gobernada por la fracción etiquetada, aunque
-persiste una dependencia no lineal débil. \textbf{H2} se rechaza, en una evaluación
-exploratoria: el conteo subestima de forma sistemática frente al observador. \textbf{H3} se
-rechaza con reservas: hay un efecto de la fuente de la anotación, pequeño e incierto, muy
-inferior a la diferencia bruta entre fuentes, que procede sobre todo de las imágenes.
+sostiene: la cobertura es reproducible y no se encontró evidencia de que esté gobernada por la
+fracción etiquetada, aunque persiste una dependencia no lineal débil. \textbf{H2} se rechaza, en una evaluación
+exploratoria: el conteo subestima de forma sistemática frente al observador. El
+contraste de \textbf{H3} no es concluyente: el efecto de la fuente de la anotación es positivo
+en todas las variantes, pero pequeño y, al agrupar las imágenes por sol, solo se distingue de
+cero en una de ellas; la diferencia bruta entre fuentes procede sobre todo de las imágenes.
 \textbf{H4} se sostiene: cobertura y conteo aportan información distinta, sin ser
 independientes.
 
@@ -134,7 +136,7 @@ experto el IoU medio baja a \cExpMIoU{} y el modelo sobreestima la cobertura en 
 puntos de media \cBAExpMediaIC, lo que es compatible con que haya heredado el criterio de la
 anotación con que se entrenó, aunque estos datos no permiten demostrarlo.
 
-Frente al experto, el modelo presenta por tanto un sesgo positivo. El error absoluto medio es de
+Frente al experto, el modelo presenta por tanto un error sistemático positivo. El error absoluto medio es de
 \cBAExpMAE{} puntos, los límites de acuerdo abarcan unos sesenta y cinco puntos porcentuales y el
 error depende del tramo de cobertura, con sobreestimación en las coberturas intermedias y
 subestimación en las de cobertura total. El modelo describe conjuntos de escenas, no escenas
@@ -191,7 +193,8 @@ de leer sus máscaras como medidas.
 
 \paragraph{Un diagnóstico de los límites de validez de las máscaras de AI4Mars.} Es el aporte
 principal. El trabajo establece qué puede y qué no puede inferirse de esas máscaras: la
-cobertura se deriva de forma reproducible y no está gobernada por la fracción etiquetada; el
+cobertura se deriva de forma reproducible y no se encontró evidencia de que esté gobernada por
+la fracción etiquetada; el
 conteo de instancias queda limitado sobre todo por la representación semántica y la granularidad
 de las etiquetas, junto con otros factores; y la comparación entre
 fuentes de anotación está dominada por una diferencia de composición entre las muestras de
@@ -224,8 +227,8 @@ para decisiones de navegación.
 \subsection{Para el uso de los resultados de este trabajo}
 
 Las coberturas deben emplearse para \textbf{comparar escenas del mismo conjunto}, no como
-estimaciones absolutas de la abundancia de roca, y teniendo presente que una anotación de
-especialista produciría valores algo menores.
+estimaciones absolutas de la abundancia de roca, y teniendo presente que describen la anotación
+colaborativa de este conjunto.
 
 El conteo debe acompañarse siempre de su bandera de calidad y leerse como número de bloques
 delimitados en la clase roca grande, no como número de rocas de la escena. Un cero puede

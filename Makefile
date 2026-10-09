@@ -63,11 +63,13 @@ evaluacion-modelo:
 # 7. Comparación con el modelo fundacional y exploración de vetas.
 comparaciones:
 	$(PY) scripts/compare_sam.py --n 50
+	$(PY) scripts/scan_geology.py
 	$(PY) scripts/explore_vein_detection.py
 
 # 8. Reglas heurísticas de priorización.
 priorizacion:
 	$(PY) scripts/run_priorizacion.py
+	$(PY) scripts/make_dashboard.py
 
 # 9. Figuras del documento (se copian a tesis/images/).
 figuras:
