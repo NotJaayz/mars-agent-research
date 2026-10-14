@@ -211,7 +211,7 @@ lineas('#c_secuencia', [
 
 /* --- catálogo de reglas --- */
 $('#t_catalogo').innerHTML =
-  '<thead><tr><th>Alerta</th><th>Criterio</th><th>Justificación</th></tr></thead><tbody>' +
+  '<thead><tr><th>Regla</th><th>Criterio</th><th>Justificación</th></tr></thead><tbody>' +
   D.catalogo.map(r => `<tr>
      <td><strong>${r.titulo}</strong><br><span class="sev">peso ${r.peso}/3</span></td>
      <td>${r.criterio}</td><td>${r.motivo}</td></tr>`).join('') + '</tbody>';

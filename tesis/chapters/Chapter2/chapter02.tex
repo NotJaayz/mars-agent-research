@@ -66,9 +66,17 @@ anotación colaborativa: cada imagen fue etiquetada por unas diez personas para 
 acuerdo, y las etiquetas individuales se fusionaron exigiendo un consenso mínimo por píxel.
 El conjunto incluye además del orden de \num{1500} etiquetas de validación elaboradas por
 planificadores de travesías y científicos de la misión, destinadas a evaluar modelos frente a
-una referencia de especialista; para la cámara de navegación de \textit{Curiosity}, la versión
-0.6 contiene \cNGold{} imágenes con máscara de especialista, que son las que emplea este
-trabajo. Los autores motivan el conjunto señalando que los vehículos
+una referencia de especialista. Los autores documentan cómo eligieron esas imágenes: buscaron
+aproximadamente el \SI{1}{\percent} del conjunto de entrenamiento, las tomaron de ubicaciones
+distribuidas entre las principales clases de terreno cartografiadas desde la órbita, con un
+número aproximadamente igual de imágenes por clase, y retiraron después a mano las de baja
+calidad, las muy parecidas entre sí y las que mostraban mucho del propio rover. Es, por tanto,
+una muestra equilibrada entre unidades del terreno, no una muestra aleatoria de la distribución
+de entrenamiento. Cada imagen la etiquetaron tres especialistas, que solo marcaron lo que
+identificaban con seguridad, sin buscar cubrir toda la imagen, y las tres etiquetas se fusionan
+en tres niveles según cuántos especialistas deben coincidir en cada píxel. Para la cámara de
+navegación de \textit{Curiosity}, el artículo informa de 323 imágenes, y la versión 0.6 contiene
+\cNGold{} con máscara de especialista, que son las que emplea este trabajo. Los autores motivan el conjunto señalando que los vehículos
 autónomos en Marte se conducían todavía con sistemas clásicos de visión artificial, y que la
 segmentación semántica beneficiaría la seguridad y la productividad de las misiones. Este
 trabajo emplea la versión 0.6 \citep{swan2022ai4marsdata}.
@@ -296,6 +304,20 @@ de datos más usados en aprendizaje automático contienen en promedio al menos u
 \SI{3.3}{\percent} de etiquetas erróneas, suficiente para alterar la comparación entre
 modelos, y recomendaron evaluarlos sobre conjuntos de prueba correctamente etiquetados.
 
+Sobre el propio AI4Mars hay dos antecedentes directos. El primero es el de sus autores
+\citep{swan2021ai4mars}, que analizaron el acuerdo entre los tres especialistas de cada imagen:
+la roca grande y el lecho rocoso tienen una proporción mayor de píxeles marcados por uno o dos
+de ellos, lo que interpretaron como una ambigüedad inherente a la definición de esas clases o a
+la forma de etiquetarlas. Calcularon además una puntuación de acuerdo entre las etiquetas
+colaborativas de una misma imagen y revisaron con preferencia las de menor acuerdo. El segundo
+es Mars-Bench \citep{purohit2025marsbench}, un banco de pruebas de veinte conjuntos de datos
+orbitales y de superficie para evaluar modelos fundacionales en tareas científicas de Marte. Sus
+autores excluyeron AI4Mars tras una revisión experta que identificó errores de anotación, al
+considerar que una anotación colaborativa no era adecuada para un dominio tan especializado como
+la ciencia planetaria. La literatura ya había señalado, por tanto, ambigüedad y problemas de
+anotación en AI4Mars, aunque sin cuantificar cómo afectan a los indicadores que pueden
+derivarse de sus máscaras.
+
 \paragraph{Aporte y límite para este trabajo.} Esta línea justifica examinar la anotación en
 lugar de darla por buena, y ofrece el procedimiento: contrastar contra una referencia de
 especialista. Los estudios revisados comparan las fuentes sobre el mismo material; en AI4Mars
@@ -387,8 +409,9 @@ instancias de roca y si emplean una máscara de segmentación como dato de entra
   \citet{castano2007oasis} & Rover FIDO en análogo & Ciencia autónoma & Roca &
     Detección y análisis a bordo & Ciclo autónomo cerrado demostrado & Sí, automática & No \\
   \citet{swan2021ai4mars} & \num{35000} imágenes de tres rovers & Conjunto de entrenamiento &
-    Píxel & Anotación colaborativa con consenso & Primer conjunto a gran escala, según sus autores & No &
-    Produce las máscaras \\
+    Píxel & Anotación colaborativa con consenso; conjunto de experto equilibrado entre unidades
+    de terreno orbital & Primer conjunto a gran escala, según sus autores; acuerdo entre
+    especialistas menor en roca grande y lecho rocoso & No & Produce las máscaras \\
   \citet{liu2023rockformer} & Imágenes marcianas etiquetadas & Segmentar roca & Píxel &
     Transformador en U & Mejora del acuerdo con la máscara & No & Como verdad \\
   \citet{xiong2023marsformer} & Imágenes marcianas etiquetadas & Segmentar roca & Píxel &
@@ -401,10 +424,14 @@ instancias de roca y si emplean una máscara de segmentación como dato de entra
   \citet{northcutt2021labelerrors} & Diez conjuntos de referencia & Errores en conjuntos de
     prueba & Etiqueta & Aprendizaje confiable y revisión humana &
     \SI{3.3}{\percent} de errores medios; altera comparaciones & No & Audita etiquetas \\
+  \citet{purohit2025marsbench} & Veinte conjuntos orbitales y de superficie de Marte & Evaluar
+    modelos fundacionales & Tarea & Banco de pruebas con revisión experta de los conjuntos &
+    Excluye AI4Mars por errores de anotación hallados en la revisión & No & Audita
+    conjuntos \\
   \textbf{Este trabajo} & \textbf{\cNEscenas{} máscaras MSL NavCam} &
     \textbf{Indicadores derivados de la máscara y sus límites} & \textbf{Imagen} &
     \textbf{Morfología matemática y división de aguas} & \textbf{Cobertura reproducible; el conteo
-    subestima frente a un observador; inconsistencias del conjunto} &
+    subestima frente a un observador; efecto cuantificado de las propiedades del conjunto} &
     \textbf{Sí, aproximado; subestima} & \textbf{Como dato} \\
 \end{longtable}
 \end{spacing}
@@ -414,7 +441,8 @@ La tabla deja ver la estructura del campo. Los estudios que \textbf{cuentan inst
 máscaras de segmentación: cuentan sobre la imagen, a mano o con un detector. Los que usan
 máscaras las tratan \textbf{como verdad} para entrenar y evaluar modelos que clasifican
 píxeles, sin contar instancias. Y los que \textbf{auditan etiquetas} lo hacen sobre
-clasificación de imágenes completas o de objetos discretos, no sobre máscaras de terreno.
+clasificación de imágenes completas o de objetos discretos o, como Mars-Bench, para decidir si
+un conjunto es utilizable, sin medir cómo afectan sus propiedades a lo que se deriva de él.
 
 % =============================================================================
 \section{Brecha identificada}
@@ -422,9 +450,13 @@ clasificación de imágenes completas o de objetos discretos, no sobre máscaras
 
 De la revisión se desprende un espacio poco explorado. En la revisión realizada \textbf{no se
 identificaron trabajos que empleen las máscaras de segmentación de AI4Mars como dato de entrada
-para derivar indicadores cuantitativos del terreno}, ni que examinen los límites de lo que esas
-máscaras permiten inferir. Las máscaras se han usado como respuesta para entrenar modelos, no
-como medición.
+para derivar indicadores cuantitativos del terreno}. Las máscaras se han usado como respuesta
+para entrenar modelos, no como medición. La literatura previa ya había señalado ambigüedad y
+problemas de anotación en AI4Mars: sus autores, al analizar el acuerdo entre especialistas
+\citep{swan2021ai4mars}, y Mars-Bench, al excluirlo de su banco de pruebas
+\citep{purohit2025marsbench}. Lo que no se encontró, y este trabajo aporta, es una
+cuantificación específica de cómo esas propiedades afectan la derivación de indicadores de
+cobertura y conteo.
 
 Ese uso tiene interés por sí mismo y por una razón añadida. Por sí mismo, porque las máscaras
 cubren más de dieciséis mil escenas de la cámara de navegación de \textit{Curiosity}, una
@@ -468,13 +500,16 @@ de lo que surgió al validar.
 \item[H3.] \textbf{Los indicadores derivados no dependen de la fuente de la anotación.}
   Incorporada durante la ejecución, al constatar que el conjunto incluye máscaras de experto.
   El anteproyecto daba las etiquetas colaborativas por fiables. Se contrasta comparando ambas
-  fuentes y separando, mediante un instrumento común, la parte de la diferencia atribuible a
-  las imágenes de la atribuible a la anotación.
+  fuentes y descomponiendo la diferencia, mediante un instrumento común, en una parte asignada
+  a las imágenes y otra asignada a la anotación.
 
-\item[H4.] \textbf{Cobertura y conteo aportan información distinta sobre el terreno.} Implícita
-  en el diseño de dos indicadores: si uno fuera función del otro, bastaría con uno. Se
-  contrasta con medidas de dependencia y con la fracción de la varianza de cada indicador que
-  explica el otro.
+\item[H4.] \textbf{Cobertura y conteo son propiedades no redundantes de las máscaras de
+  AI4Mars.} Implícita en el diseño de dos indicadores: si uno fuera función del otro, bastaría
+  con uno. Se refiere a lo que registra la anotación —cuánta superficie se etiquetó como roca y
+  en cuántas regiones separables se etiquetó la roca grande— y no al terreno, porque que dos
+  indicadores no sean redundantes no implica que el conteo estime el número de rocas visibles,
+  cuestión que contrasta H2. Se contrasta con medidas de dependencia y con la fracción de la
+  varianza de cada indicador que explica el otro.
 
 \end{description}
 

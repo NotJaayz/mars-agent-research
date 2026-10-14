@@ -24,12 +24,14 @@ pixels, and no evidence was found that high values are explained by the labelled
 scene. The count, applied to the \cFlagOk{} eligible scenes, yielded \cNRocas{} rocks. The two
 indicators show practically no linear association ($r = \cDepCCPearson$), although non-linear
 measures detect a weak dependence. In the \cNGold{} expert masks included in the dataset, which
-cover other images, the median coverage of scenes with rock is \cGoldCobMedPos. A trained
-segmenter, used as a common instrument on a sample from each source, attributes \cDescImgPct{}
-of the difference in mean coverage between the samples to the expert scenes being far less
-rocky, and the remaining \cDescAnotPct{} —about two percentage points, with an interval that
-includes zero once the grouping of images by sol is taken into account— to the annotation
-source.
+cover other images, the median coverage of scenes with rock is \cGoldCobMedPos. In a
+descriptive decomposition based on a trained segmenter, used as a common instrument on a sample
+from each source, approximately \cDescImgPct{} of the difference in mean coverage is assigned to
+differences between the image samples —the expert scenes, sampled in a balanced way across
+terrain units, are far less rocky— and the remaining \cDescAnotPct{}, about two percentage
+points, to the annotation source. This proportion is conditional on the model used and is not a
+causal estimate, and the interval of the annotation component includes zero once the grouping
+of images by sol is taken into account.
 An exploratory evaluation with one observer, who counted the rocks within the region annotated
 as big rock, suggests systematic undercounting: the procedure falls below the observer in
 \cVAbajo{} of \cVN{} scenes and above in \cVArriba{} (weighted kappa \cVKappaPond). It
@@ -38,12 +40,13 @@ of visible rocks: a single polygon often groups several blocks, and the class co
 of the rock in the scene.
 
 The result is therefore negative for counting: counting individual rocks from these masks is not
-straightforward. It is, instead, diagnostic for the dataset, whose inconsistencies —expert scenes
-of very different composition, a small and uncertain difference in annotation criteria, a
-big-rock class on which not even experts agree, and partial annotation of blocks— are documented with
-quantitative evidence. The work also delivers a results set with one row per image and
-twenty-eight columns, and an evaluation design that separates the effect of annotation from that
-of the images.
+straightforward. It is, instead, diagnostic for the dataset. Previous work had already pointed
+to ambiguity and annotation problems in AI4Mars; this work quantifies how its properties —expert
+scenes of very different composition by sampling design, a small and uncertain difference in
+annotation criteria, a big-rock class with low agreement among experts, and partial annotation
+of blocks— affect the coverage and count indicators. The work also delivers a results set with one row per image and
+twenty-nine columns, and an evaluation design that descriptively decomposes the difference between
+sources into a part assigned to the images and a part assigned to the annotation.
 
 \vspace{0.4cm}
 \noindent

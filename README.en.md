@@ -46,10 +46,14 @@ documents this.
 
 | | Hypothesis | Outcome |
 |---|---|---|
-| **H1** | Coverage is derived reproducibly and is not determined by the labelled fraction of the scene | Supported, with weak residual dependence |
-| **H2** | The count approximates the number of rocks an observer distinguishes in the annotated region, without one-directional bias | Rejected (exploratory evaluation, one observer) |
-| **H3** | The indicators do not depend on the annotation source | Inconclusive for coverage: a small source effect, positive in every variant but distinguishable from zero by sol in only one |
-| **H4** | Coverage and count carry different information | Supported: different information, **not** statistical independence |
+| **H1** | Coverage is derived reproducibly and is not determined by the labelled fraction of the scene | The results are compatible with H1; the labelled fraction does not appear to explain most of the overall variation, although a weak non-linear dependence remains |
+| **H2** | The count approximates the number of rocks an observer distinguishes in the annotated region, without one-directional bias | The exploratory evaluation (one observer) does not support H2 and shows a marked tendency to undercount relative to the observer |
+| **H3** | The indicators do not depend on the annotation source | Inconclusive for coverage: the component assigned to the source is small and positive in every variant and consensus level; distinguishable from zero by sol in four of the six sample–level combinations, but not in the main sample at levels 1 and 2 |
+| **H4** | Coverage and count are non-redundant properties of the AI4Mars masks | The analyses support treating coverage and count as non-redundant properties of the AI4Mars masks; they are **not** independent |
+
+The original proposal did not state statistical hypotheses; these were made explicit later, so
+the verdicts describe how compatible the data are with each one and are not confirmatory
+tests.
 
 ---
 
@@ -68,7 +72,10 @@ documents this.
   3 labellers and **2-of-3 agreement** per pixel. Without that agreement the pixel is left
   unlabelled.
 - **Test** (used for validation): **322 masks from NASA JPL specialists**, requiring
-  **100% agreement**, in three levels of strictness.
+  **100% agreement**, in three levels of strictness (level K requires at least K of the three
+  experts to label the pixel). According to the dataset paper, the images were chosen with
+  roughly the same number per terrain class mapped from orbit and then pruned by hand: it is a
+  **balanced sample across terrain units**, not a random sample of the training set.
 
 The rover body and everything beyond 30 metres are masked as *unlabelled*.
 
@@ -290,8 +297,10 @@ dependence —few rocks at very low coverage (partly by construction, since big 
 coverage numerator), a peak between 10 % and 50 %, and little big rock to count in scenes at
 full coverage, whose rock is labelled almost entirely as bedrock—. Coverage bands explain
 **5.6 %** of the count variance. The dependence survives control for sequential structure
-(circular shift: distance correlation p = 0.026). The two indicators carry different
-information, although the relationship between them is not nil.
+(circular shift: distance correlation p = 0.026). The analyses support treating the two
+indicators as non-redundant properties of the masks, although the relationship between them is
+not nil. (Mutual information is estimated with `scikit-learn`, which returns nats, and is
+converted to bits by dividing by ln 2.)
 
 ### Terrain composition and acquisition sequence (E3)
 
@@ -322,22 +331,28 @@ same code and parameters:
 ![Coverage by source](outputs/figures/tesis/Figura_19_validacion_experto.png)
 
 **The difference cannot simply be attributed to annotation**: the two sources cover different
-images, and AI4Mars does not distribute crowdsourced masks for the expert images. To separate
-the effects, a **common instrument** was used: the trained segmenter (a fixed function of the
+images, and AI4Mars does not distribute crowdsourced masks for the expert images. To decompose
+the difference, a **common instrument** was used: the trained segmenter (a fixed function of the
 image) applied to the labellable region of 593 crowdsourced scenes not used in its training or
 validation and of the 322 expert ones.
 
 ![Common instrument](outputs/figures/tesis/Figura_30_instrumento_comun.png)
 
-| Decomposition of the mean difference | p.p. | 95 % CI by scene | 95 % CI by sol |
+| Descriptive decomposition of the mean difference | p.p. | 95 % CI by scene | 95 % CI by sol |
 |---|---:|---|---|
 | Total difference according to labels | +20.4 | | |
-| Attributable to the **images** | **+18.2 (89 %)** | [+12.4; +23.8] | |
-| Attributable to the **annotation** | **+2.2 (11 %)** | [+0.02; +4.54] | [−1.0; +5.5] |
+| Assigned to the **image** samples | **+18.2 (89 %)** | [+12.4; +23.8] | |
+| Assigned to the **annotation** source | **+2.2 (11 %)** | [+0.02; +4.54] | [−1.0; +5.5] |
+
+In the descriptive decomposition based on the common segmenter, approximately 89 % of the
+difference is assigned to differences between the image samples. **This proportion is
+conditional on the model used and is not a causal estimate.**
 
 1. **The expert mask set consists of far less rocky scenes**: measured by the same instrument,
-   its median coverage is 5.8 % versus 72.5 %. This is a property of the dataset relevant to
-   anyone evaluating against that set.
+   its median coverage is 5.8 % versus 72.5 %. This is what its design leads one to expect
+   —roughly balanced sampling across orbital terrain classes and manual pruning (Swan et al.,
+   2021)— rather than a random sample of the training set, and it is relevant to anyone
+   evaluating against that set.
 2. The annotation component is small, positive in every variant and **uncertain**: +3.2
    [+1.0; +5.4] if the crowdsourced sample is drawn only from the test blocks, and +4.4
    [+2.1; +6.5] with the previous model. The expert images are concentrated in 48 sols; with a
@@ -347,6 +362,22 @@ validation and of the 322 expert ones.
    mechanism to be identified causally.
 3. The mechanism of a denominator reduced by unlabelled soil **finds no support**: the labelled
    fraction is the same in both sources (p = 0.24).
+
+**Consensus level of the reference.** The main analysis uses level 1 because it is the only one
+whose labelled fraction resembles that of the crowdsourced masks (median 0.59 versus 0.58; it
+drops to 0.48 and 0.36 at levels 2 and 3) and because it keeps every image (at level 3, 35 are
+left unlabelled). Repeated with the three levels (`scripts/sensibilidad_nivel_experto.py`,
+without re-running the model):
+
+| Expert reference | Expert coverage: median with rock (mean) | Crowd − expert difference: medians (means) | Assigned to images | Assigned to annotation [CI by sol] |
+|---|---:|---:|---:|---|
+| Level 1 (322) | 46.1 % (32.9 %) | +50.7 (+20.4) | +18.2 (89 %) | +2.2 [−1.0; +5.5] |
+| Level 2 (321) | 58.5 % (32.9 %) | +38.3 (+20.4) | +18.4 (90 %) | +2.0 [−1.1; +5.3] |
+| Level 3 (287) | 77.4 % (31.6 %) | +19.4 (+21.7) | +18.0 (83 %) | +3.7 [+0.5; +7.0] |
+
+The part assigned to the images does not change with the level. The annotation part does: at
+level 3 it rises and its by-sol interval excludes zero, in slightly more than half because that
+level leaves 35 images out. With the test-block sample it excludes zero at all three levels.
 
 The decomposition assumes that the instrument's error is the same in both samples. A common bias
 cancels out in the subtraction; what would bias it is an error that depends on scene
@@ -396,7 +427,7 @@ count of the region would equal the rocks in the scene.
 and big rock 2.5 %. On the **same** 322 images, the share of scenes with big rock falls from
 16.5 % to 1.6 % as agreement among experts is tightened: only 20 % of its pixels survive, versus
 44 % for bedrock and over 67 % for soil and sand. It is the class with the least consensus among
-experts too. The evidence indicates that the main limitation for instance counting
+experts too, as the dataset authors had already noted (Swan et al., 2021). The evidence indicates that the main limitation for instance counting
 comes from the semantic representation and the granularity of the labels, rather than from an
 evident lack of image resolution (consensus, perspective, scale, occlusion and parametrisation
 also play a part).
@@ -447,7 +478,10 @@ lr 1e-4, batch 4, 512 px, 6 epochs; no augmentation; seed 0). Design fixed befor
 
 **Information leakage.** A previous version, with a random per-image split, had 75 test images
 less than a minute from a training image and gave a mean IoU of 0.940 and a correlation of
-0.971: practically the same as the block split. That proximity did not inflate performance.
+0.971. The aggregate metrics of the earlier random split were similar to those of the block
+split. Since the test sets are not identical, this comparison cannot quantify how much the
+proximity between images would have mattered; as a precaution, the final analysis uses only the
+temporal split.
 
 **Against the expert** (mean IoU 0.836; correlation 0.924):
 
@@ -487,7 +521,7 @@ the base rate but recovers less than 7 % of vein pixels; colour does not help.
 
 ---
 
-## 9. Repository structure
+## 8. Repository structure
 
 ```
 ├── src/                         computation modules
@@ -534,7 +568,7 @@ the base rate but recovers less than 7 % of vein pixels; colour does not help.
 ├── tesis/                       LaTeX document (institutional template)
 ├── docs/                        earlier working documentation
 ├── outputs/
-│   ├── results.csv              24 indicators + 4 eligibility columns × 16,064 scenes
+│   ├── results.csv              25 indicators + 4 eligibility columns × 16,064 scenes
 │   ├── split_deeplab_manifiesto.csv  block and partition of each scene for the segmenter
 │   ├── figures/tesis/           document figures
 │   └── validacion_manual_v2/    human-validation responses
@@ -546,7 +580,7 @@ the base rate but recovers less than 7 % of vein pixels; colour does not help.
 
 ---
 
-## 10. Reproducing
+## 9. Reproducing
 
 ```bash
 # 1. Environment (final-run versions; exact record in requirements-lock.txt)
@@ -578,7 +612,7 @@ split and not regenerated: `outputs/segmentacion_metricas_reparto_aleatorio.json
 
 ---
 
-## 11. Scope and limitations
+## 10. Scope and limitations
 
 **Scope.** MSL NavCam (*Curiosity*), training labels. MER, Perseverance and MastCam are out
 of scope. The project does not generate new masks, model terrain evolution over time, or use
@@ -593,6 +627,10 @@ elevation data.
 - **A single observer** in the count validation: conclusions about H2 are exploratory.
 - **The count** measures geometrically separable instances within the *big rock* class, not the
   number of visible rocks.
+- **Prior work.** Previous literature had already pointed to ambiguity and annotation problems
+  in AI4Mars (Swan et al., 2021; Purohit et al., 2025, *Mars-Bench*, which excluded it after an
+  expert review); this work provides a specific quantification of how those properties affect
+  the derivation of coverage and count indicators.
 
 ---
 

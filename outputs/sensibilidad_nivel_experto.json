@@ -1,0 +1,198 @@
+{
+ "metodo": {
+  "n_boot": 2000,
+  "semilla": 0,
+  "instrumento": "cob_modelo_reg de outputs/fuente_anotacion*.csv, sin reejecutar"
+ },
+ "niveles": {
+  "nivel1": {
+   "comparacion_directa": {
+    "n_escenas": 322,
+    "n_con_etiqueta": 322,
+    "n_con_roca": 214,
+    "frac_valid_mediana": 0.5893999999999999,
+    "cob_mediana_con_roca": 46.1222,
+    "dif_mediana": 50.692699999999995,
+    "ic95_dif_mediana": [
+     35.95536,
+     64.68919499999998
+    ],
+    "mann_whitney_p": 7.379467706493605e-30
+   },
+   "descomposicion_general": {
+    "n_experto": 322,
+    "n_soles_experto": 48,
+    "cob_etiqueta_experto_media": 32.92290699108144,
+    "cob_etiqueta_experto_mediana": 12.500322120606675,
+    "total": 20.42680342393433,
+    "imagenes": 18.22339315443046,
+    "anotacion": 2.203410269503869,
+    "pct_imagenes": 89.2131420478541,
+    "pct_anotacion": 10.786857952145889,
+    "ic95_imagenes": [
+     12.159772409440832,
+     24.154447108156603
+    ],
+    "ic95_anotacion": [
+     -0.12850412898448094,
+     4.481588053439652
+    ],
+    "ic95_anotacion_sol": [
+     -0.9193942777690883,
+     5.583738121933897
+    ],
+    "anotacion_nivel1_mismas_imagenes": 2.2034102695038698
+   },
+   "descomposicion_prueba": {
+    "n_experto": 322,
+    "n_soles_experto": 48,
+    "cob_etiqueta_experto_media": 32.92290699108144,
+    "cob_etiqueta_experto_mediana": 12.500322120606675,
+    "total": 30.262077693329175,
+    "imagenes": 27.048411528475732,
+    "anotacion": 3.213666164853462,
+    "pct_imagenes": 89.38055014787749,
+    "pct_anotacion": 10.61944985212257,
+    "ic95_imagenes": [
+     21.202942075953818,
+     33.008433836245544
+    ],
+    "ic95_anotacion": [
+     1.0677465459726172,
+     5.275335473808727
+    ],
+    "ic95_anotacion_sol": [
+     0.338044411544707,
+     6.351276915061062
+    ],
+    "anotacion_nivel1_mismas_imagenes": 3.213666164853463
+   }
+  },
+  "nivel2": {
+   "comparacion_directa": {
+    "n_escenas": 322,
+    "n_con_etiqueta": 321,
+    "n_con_roca": 193,
+    "frac_valid_mediana": 0.4755,
+    "cob_mediana_con_roca": 58.5346,
+    "dif_mediana": 38.2803,
+    "ic95_dif_mediana": [
+     20.8171175,
+     57.324885
+    ],
+    "mann_whitney_p": 6.407244126381376e-16
+   },
+   "descomposicion_general": {
+    "n_experto": 321,
+    "n_soles_experto": 48,
+    "cob_etiqueta_experto_media": 32.92431289649418,
+    "cob_etiqueta_experto_mediana": 7.674825781213476,
+    "total": 20.425397518521592,
+    "imagenes": 18.422338830079475,
+    "anotacion": 2.0030586884421098,
+    "pct_imagenes": 90.19329397811838,
+    "pct_anotacion": 9.80670602188159,
+    "ic95_imagenes": [
+     12.275701334078347,
+     24.39956600481111
+    ],
+    "ic95_anotacion": [
+     -0.2622657107839543,
+     4.2910024230936035
+    ],
+    "ic95_anotacion_sol": [
+     -1.0916661393975218,
+     5.251872303452025
+    ],
+    "anotacion_nivel1_mismas_imagenes": 2.190077459264712
+   },
+   "descomposicion_prueba": {
+    "n_experto": 321,
+    "n_soles_experto": 48,
+    "cob_etiqueta_experto_media": 32.92431289649418,
+    "cob_etiqueta_experto_mediana": 7.674825781213476,
+    "total": 30.260671787916436,
+    "imagenes": 27.247357204124746,
+    "anotacion": 3.013314583791703,
+    "pct_imagenes": 90.04214247155295,
+    "pct_anotacion": 9.957857528447095,
+    "ic95_imagenes": [
+     21.394265055411505,
+     33.41428809257267
+    ],
+    "ic95_anotacion": [
+     0.8235534619652377,
+     5.132840696442938
+    ],
+    "ic95_anotacion_sol": [
+     0.0681515513821988,
+     6.008289767694806
+    ],
+    "anotacion_nivel1_mismas_imagenes": 3.2003333546143056
+   }
+  },
+  "nivel3": {
+   "comparacion_directa": {
+    "n_escenas": 322,
+    "n_con_etiqueta": 287,
+    "n_con_roca": 146,
+    "frac_valid_mediana": 0.3567,
+    "cob_mediana_con_roca": 77.42645,
+    "dif_mediana": 19.38844999999999,
+    "ic95_dif_mediana": [
+     8.370277500000007,
+     37.02564249999998
+    ],
+    "mann_whitney_p": 5.481763159526308e-05
+   },
+   "descomposicion_general": {
+    "n_experto": 287,
+    "n_soles_experto": 48,
+    "cob_etiqueta_experto_media": 31.61448523558564,
+    "cob_etiqueta_experto_mediana": 0.7882917627147031,
+    "total": 21.73522517943013,
+    "imagenes": 18.04635041892238,
+    "anotacion": 3.688874760507743,
+    "pct_imagenes": 83.02812724480607,
+    "pct_anotacion": 16.971872755193882,
+    "ic95_imagenes": [
+     11.938236542147846,
+     23.91100981324397
+    ],
+    "ic95_anotacion": [
+     1.2444788183729238,
+     6.121158485955078
+    ],
+    "ic95_anotacion_sol": [
+     0.4693160468817404,
+     7.0074982519931925
+    ],
+    "anotacion_nivel1_mismas_imagenes": 3.047698450607191
+   },
+   "descomposicion_prueba": {
+    "n_experto": 287,
+    "n_soles_experto": 48,
+    "cob_etiqueta_experto_media": 31.61448523558564,
+    "cob_etiqueta_experto_mediana": 0.7882917627147031,
+    "total": 31.570499448824975,
+    "imagenes": 26.87136879296765,
+    "anotacion": 4.699130655857337,
+    "pct_imagenes": 85.11543770957915,
+    "pct_anotacion": 14.884562290420888,
+    "ic95_imagenes": [
+     20.524834936117713,
+     32.58276443036897
+    ],
+    "ic95_anotacion": [
+     2.452046067738052,
+     7.062227279851476
+    ],
+    "ic95_anotacion_sol": [
+     1.7216013190419936,
+     7.735785936792072
+    ],
+    "anotacion_nivel1_mismas_imagenes": 4.057954345956785
+   }
+  }
+ }
+}

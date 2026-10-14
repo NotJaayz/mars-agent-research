@@ -44,10 +44,14 @@ validación, y la tesis lo documenta.
 
 | | Hipótesis | Resultado |
 |---|---|---|
-| **H1** | La cobertura se deriva de forma reproducible y no está determinada por la fracción de escena etiquetada | Se sostiene, con dependencia residual débil |
-| **H2** | El conteo aproxima el número de rocas que un observador distingue en la región anotada, sin sesgo en una dirección | Se rechaza (evaluación exploratoria, un observador) |
-| **H3** | Los indicadores no dependen de la fuente de la anotación | No concluyente para la cobertura: efecto de la fuente pequeño, positivo en todas las variantes pero distinguible de cero por sol solo en una |
-| **H4** | Cobertura y conteo aportan información distinta | Se sostiene: información distinta, **no** independencia estadística |
+| **H1** | La cobertura se deriva de forma reproducible y no está determinada por la fracción de escena etiquetada | Los resultados son compatibles con H1; no se observa que la fracción etiquetada explique principalmente la variación global, aunque persiste dependencia no lineal débil |
+| **H2** | El conteo aproxima el número de rocas que un observador distingue en la región anotada, sin sesgo en una dirección | La evaluación exploratoria (un observador) no brinda apoyo a H2 y muestra una tendencia marcada al subconteo frente al observador |
+| **H3** | Los indicadores no dependen de la fuente de la anotación | No concluyente para la cobertura: componente asignada a la fuente pequeña y positiva en todas las variantes y niveles de consenso; distinguible de cero por sol en cuatro de las seis combinaciones de muestra y nivel, pero no en la muestra principal con los niveles 1 y 2 |
+| **H4** | Cobertura y conteo son propiedades no redundantes de las máscaras de AI4Mars | Los análisis respaldan tratar cobertura y conteo como propiedades no redundantes de las máscaras de AI4Mars; **no** son independientes |
+
+El anteproyecto no formuló hipótesis estadísticas; estas se explicitaron después, de modo que
+los dictámenes describen la compatibilidad de los datos con cada una y no son contrastes
+confirmatorios.
 
 ---
 
@@ -66,7 +70,11 @@ validación, y la tesis lo documenta.
   mínimo 3 anotadores y **acuerdo de 2 de 3** por píxel. Sin ese acuerdo, el píxel queda
   sin etiqueta.
 - **Prueba** (las que se usan para validar): **322 máscaras de especialistas de NASA JPL**,
-  con **100 % de acuerdo** exigido, en tres niveles de exigencia.
+  con **100 % de acuerdo** exigido, en tres niveles de exigencia (el nivel K exige que al menos
+  K de los tres especialistas marquen el píxel). Según el artículo del conjunto, las imágenes se
+  eligieron con un número aproximadamente igual por cada clase de terreno cartografiada desde
+  la órbita y se depuraron a mano: es una **muestra equilibrada entre unidades del terreno**,
+  no una muestra aleatoria del entrenamiento.
 
 Se enmascara como *sin etiqueta* el cuerpo del rover y todo lo que esté a más de 30 metros.
 
@@ -290,8 +298,10 @@ construcción, porque la roca grande está en el numerador de la cobertura), má
 y el 50 %, y poca roca grande que contar en las escenas de cobertura total, cuya roca está
 etiquetada casi toda como lecho rocoso—. Los tramos de cobertura explican el **5,6 %** de la
 varianza del conteo. La dependencia resiste el control de la estructura secuencial
-(desplazamiento circular: correlación de distancia p = 0,026). Los dos indicadores aportan
-información distinta, aunque la relación entre ambos no es nula.
+(desplazamiento circular: correlación de distancia p = 0,026). Los análisis respaldan tratar
+los dos indicadores como propiedades no redundantes de las máscaras, aunque la relación entre
+ambos no es nula. (La información mutua se estima con `scikit-learn`, que la da en nats, y se
+convierte a bits dividiendo por ln 2.)
 
 ### Composición del terreno y secuencia de adquisición (E3)
 
@@ -323,21 +333,27 @@ entrenamiento. Con el mismo código y los mismos parámetros:
 
 **La diferencia no puede atribuirse sin más a la anotación**: las dos fuentes cubren imágenes
 distintas, y AI4Mars no distribuye máscara colaborativa para las imágenes de experto. Para
-separar los efectos se usó un **instrumento común**: el segmentador entrenado (una función fija
-de la imagen) aplicado a la región anotable de 593 escenas colaborativas no usadas en su
+descomponer la diferencia se usó un **instrumento común**: el segmentador entrenado (una función
+fija de la imagen) aplicado a la región anotable de 593 escenas colaborativas no usadas en su
 entrenamiento ni en su validación y de las 322 de experto.
 
 ![Instrumento común](outputs/figures/tesis/Figura_30_instrumento_comun.png)
 
-| Descomposición de la diferencia de medias | p.p. | IC 95 % por escena | IC 95 % por sol |
+| Descomposición descriptiva de la diferencia de medias | p.p. | IC 95 % por escena | IC 95 % por sol |
 |---|---:|---|---|
 | Diferencia total según la etiqueta | +20,4 | | |
-| Atribuible a las **imágenes** | **+18,2 (89 %)** | [+12,4; +23,8] | |
-| Atribuible a la **anotación** | **+2,2 (11 %)** | [+0,02; +4,54] | [−1,0; +5,5] |
+| Asignado a las muestras de **imágenes** | **+18,2 (89 %)** | [+12,4; +23,8] | |
+| Asignado a la fuente de la **anotación** | **+2,2 (11 %)** | [+0,02; +4,54] | [−1,0; +5,5] |
+
+En la descomposición descriptiva basada en el segmentador común, aproximadamente el 89 % de la
+diferencia queda asignado a diferencias entre las muestras de imágenes. **Esta proporción es
+condicional al modelo empleado y no constituye una estimación causal.**
 
 1. **El conjunto de máscaras de experto está compuesto por escenas mucho menos rocosas**: medido
-   por el mismo instrumento, su cobertura mediana es del 5,8 % frente al 72,5 %. Es una
-   propiedad del dataset pertinente para cualquiera que evalúe contra ese conjunto.
+   por el mismo instrumento, su cobertura mediana es del 5,8 % frente al 72,5 %. Es lo esperable
+   de su diseño —muestreo aproximadamente equilibrado entre clases de terreno orbital y
+   depuración manual (Swan et al., 2021)—, no una muestra aleatoria del entrenamiento, y es
+   pertinente para cualquiera que evalúe contra ese conjunto.
 2. La componente de anotación es pequeña, positiva en todas las variantes e **incierta**: +3,2
    [+1,0; +5,4] si la muestra colaborativa se toma solo de los bloques de prueba, y +4,4
    [+2,1; +6,5] con el modelo anterior. Las imágenes de experto se concentran en 48 soles; con
@@ -347,6 +363,22 @@ entrenamiento ni en su validación y de las 322 de experto.
    identificar causalmente ese mecanismo.
 3. El mecanismo de un denominador reducido por suelo sin etiquetar **no encuentra apoyo**: la
    fracción etiquetada es igual en ambas fuentes (p = 0,24).
+
+**Nivel de consenso de la referencia.** El análisis principal usa el nivel 1 porque es el único
+cuya fracción etiquetada se parece a la de las máscaras colaborativas (mediana 0,59 frente a
+0,58; baja a 0,48 y 0,36 en los niveles 2 y 3) y porque conserva todas las imágenes (con el
+nivel 3, 35 quedan sin etiqueta). Repetido con los tres niveles
+(`scripts/sensibilidad_nivel_experto.py`, sin volver a ejecutar el modelo):
+
+| Referencia experta | Cobertura de experto: mediana con roca (media) | Diferencia colaborativa − experto: medianas (medias) | Asignado a imágenes | Asignado a la anotación [IC por sol] |
+|---|---:|---:|---:|---|
+| Nivel 1 (322) | 46,1 % (32,9 %) | +50,7 (+20,4) | +18,2 (89 %) | +2,2 [−1,0; +5,5] |
+| Nivel 2 (321) | 58,5 % (32,9 %) | +38,3 (+20,4) | +18,4 (90 %) | +2,0 [−1,1; +5,3] |
+| Nivel 3 (287) | 77,4 % (31,6 %) | +19,4 (+21,7) | +18,0 (83 %) | +3,7 [+0,5; +7,0] |
+
+La parte asignada a las imágenes no cambia con el nivel. La de anotación sí: con el nivel 3 sube
+y su intervalo por sol excluye el cero, en algo más de la mitad porque ese nivel deja fuera 35
+imágenes. Con la muestra de bloques de prueba lo excluye en los tres niveles.
 
 La descomposición supone que el error del instrumento es el mismo en las dos muestras. Un sesgo
 común se cancela al restar; lo que la sesgaría es que el error dependa de la composición de la
@@ -397,7 +429,8 @@ etiquetada; mediana 9,1 %): ni un conteo exacto de la región equivaldría a las
 etiquetada y la roca grande el 2,5 %. Sobre las **mismas** 322 imágenes, la proporción de
 escenas con roca grande cae del 16,5 % al 1,6 % al endurecer el acuerdo entre especialistas:
 solo se conserva el 20 % de sus píxeles, frente al 44 % del lecho rocoso y más del 67 % del suelo y
-la arena. Es la clase que menos consenso reúne también entre ellos. La evidencia indica que la
+la arena. Es la clase que menos consenso reúne también entre ellos, como ya señalaban los
+autores del conjunto (Swan et al., 2021). La evidencia indica que la
 principal limitación del conteo de instancias proviene de la representación semántica y de la
 granularidad de las etiquetas, más que de una falta de resolución evidente de las imágenes
 (intervienen también consenso, perspectiva, escala, oclusión y parametrización).
@@ -450,8 +483,10 @@ entrenar:
 
 **Fuga de información.** Una versión anterior, con reparto al azar por imagen, tenía 75 imágenes
 de prueba a menos de un minuto de una de entrenamiento y daba un IoU medio de 0,940 y una
-correlación de 0,971: prácticamente lo mismo que el reparto por bloques. Aquella proximidad no
-inflaba el desempeño.
+correlación de 0,971. Las métricas agregadas del reparto anterior al azar fueron similares a las
+obtenidas con el reparto por bloques. Dado que los conjuntos de prueba no son idénticos, esta
+comparación no permite cuantificar cuánto habría influido la proximidad entre imágenes; por
+precaución, el análisis final utiliza exclusivamente el reparto temporal.
 
 **Frente al experto** (IoU medio 0,836; correlación 0,924):
 
@@ -491,7 +526,7 @@ la tasa base pero recupera menos del 7 % de los píxeles de veta; el color no ap
 
 ---
 
-## 9. Estructura del repositorio
+## 8. Estructura del repositorio
 
 ```
 ├── src/                         módulos de cálculo
@@ -538,7 +573,7 @@ la tasa base pero recupera menos del 7 % de los píxeles de veta; el color no ap
 ├── tesis/                       documento en LaTeX (plantilla institucional)
 ├── docs/                        documentación de trabajo anterior
 ├── outputs/
-│   ├── results.csv              24 columnas + 4 de elegibilidad × 16 064 escenas
+│   ├── results.csv              25 columnas + 4 de elegibilidad × 16 064 escenas
 │   ├── split_deeplab_manifiesto.csv  bloque y partición de cada escena en el segmentador
 │   ├── figures/tesis/           figuras del documento
 │   └── validacion_manual_v2/    respuestas de la validación humana
@@ -550,7 +585,7 @@ la tasa base pero recupera menos del 7 % de los píxeles de veta; el color no ap
 
 ---
 
-## 10. Reproducir
+## 9. Reproducir
 
 ```bash
 # 1. Entorno (versiones de la ejecución final; registro exacto en requirements-lock.txt)
@@ -583,7 +618,7 @@ comparación con el reparto al azar y no se regeneran:
 
 ---
 
-## 11. Alcance y limitaciones
+## 10. Alcance y limitaciones
 
 **Alcance.** MSL NavCam (*Curiosity*), etiquetas de entrenamiento. Quedan fuera MER,
 Perseverance y MastCam. El proyecto no genera máscaras nuevas, no modela evolución temporal
@@ -600,6 +635,10 @@ ni usa datos de elevación.
   exploratorias.
 - **El conteo** mide instancias geométricamente separables en la clase *big rock*, no el número
   de rocas visibles.
+- **Antecedentes.** La literatura previa ya había señalado ambigüedad y problemas de anotación
+  en AI4Mars (Swan et al., 2021; Purohit et al., 2025, *Mars-Bench*, que lo excluyó tras una
+  revisión experta); este trabajo aporta una cuantificación específica de cómo esas propiedades
+  afectan la derivación de indicadores de cobertura y conteo.
 
 ---
 

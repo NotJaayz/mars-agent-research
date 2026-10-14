@@ -266,8 +266,9 @@ la subdivisión excesiva, que produce fragmentos convexos y afecta a muchas más
 \subsection{Relación entre cobertura y conteo (H4)}
 \label{sec:dependencia}
 
-La hipótesis H4 sostiene que los dos indicadores aportan información distinta. Un coeficiente
-de Pearson próximo a cero no basta para afirmarlo, porque solo excluye la asociación lineal.
+La hipótesis H4 plantea que cobertura y conteo son propiedades no redundantes de las máscaras.
+Un coeficiente de Pearson próximo a cero no basta para afirmarlo, porque solo excluye la
+asociación lineal.
 La Tabla~\ref{tab:dependencia} reúne las medidas de dependencia descritas en la
 Sección~\ref{sec:evaluacion} para este par y para el control del denominador.
 
@@ -403,7 +404,9 @@ El orden temporal se obtiene del \textbf{reloj de nave}, el contador de a bordo 
 identificador de cada imagen incluye tras el prefijo de cámara y que se registra en la columna
 \texttt{sclk} del conjunto de resultados. Ordenando por ese contador las \cSecN{} escenas con
 etiqueta útil —banderas \texttt{ok}, \texttt{no\_bigrock} y \texttt{no\_rock}— y agrupándolas
-en \cSecTramos{} tramos de \cSecPorTramo{} imágenes, se observa (Figura~\ref{fig:secuencia})
+en \cSecTramos{} tramos consecutivos de tamaño casi igual —\cSecTramosMin{} de \cSecPorTramo{}
+imágenes y \cSecTramosMax{} de \cSecPorTramoMax, porque la división no es exacta—, se observa
+(Figura~\ref{fig:secuencia})
 una \textbf{alternancia entre tramos predominantemente rocosos y tramos dominados por el
 suelo}: la cobertura media va del \cSecMediaMin{} al \cSecMediaMax{} según el tramo, y en
 \cSecTramosSuelo{} tramos el suelo supera la mitad de lo etiquetado, mientras que la arena no
@@ -417,8 +420,8 @@ también la media.
   \includegraphics[width=\textwidth]{Figura_18_variacion_secuencia.png}
   \caption[Variación a lo largo de la secuencia de adquisición]{Cobertura y presencia de roca
     grande a lo largo de la secuencia de adquisición, en \cSecTramos{} tramos de
-    \cSecPorTramo{} imágenes ordenados por el reloj de nave, sobre las \cSecN{} escenas con
-    etiqueta útil.}
+    \cSecPorTramo{} o \cSecPorTramoMax{} imágenes ordenados por el reloj de nave, sobre las
+    \cSecN{} escenas con etiqueta útil.}
   \label{fig:secuencia}
 \end{figure}
 
@@ -456,9 +459,23 @@ ajustable. El Anexo~\ref{app:extension} documenta las reglas, su distribución y
 \label{sec:experto}
 
 El conjunto incluye \cNGold{} máscaras etiquetadas por especialistas con acuerdo del
-\SI{100}{\percent}, sobre imágenes que \textbf{no} forman parte del conjunto de entrenamiento;
-salvo indicación, se usa el nivel 1, el menos exigente.
-Se ejecutó sobre ellas el mismo procedimiento, sin modificar ningún parámetro
+\SI{100}{\percent}, sobre imágenes que \textbf{no} forman parte del conjunto de entrenamiento.
+Se publican en tres niveles: un píxel entra en el nivel $K$ si al menos $K$ especialistas lo
+etiquetaron y todos coinciden en la clase. Los autores consideran el nivel 3 el de mayor
+confianza, pero también el más escaso, y señalan que los otros dos sirven para conocer el
+desempeño en las regiones de menor confianza \citep{swan2021ai4mars}.
+
+El análisis principal usa el nivel 1, el menos exigente, por dos razones. La primera es que es el
+único cuya fracción etiquetada es comparable a la de las máscaras colaborativas: su mediana es
+de \cNivUnoFrac, frente a \cFracValidMed{} en las colaborativas, y baja a \cNivDosFrac{} y
+\cNivTresFrac{} en los niveles 2 y 3, de modo que con ellos la comparación mezclaría la fuente de
+la anotación con la densidad del etiquetado. La segunda es que conserva todas las imágenes,
+mientras que en el nivel 3 \cNivTresSinEtiq{} quedan sin ningún píxel etiquetado. Endurecer el
+nivel cambia además la composición de lo etiquetado, porque el consenso no retira píxeles por
+igual en todas las clases (Sección~\ref{sec:limite-conteo}). Más adelante, en esta misma
+sección, se repite el contraste con los niveles 2 y 3 (Tabla~\ref{tab:nivel-experto}).
+
+Se ejecutó sobre las máscaras de experto el mismo procedimiento, sin modificar ningún parámetro
 (Tabla~\ref{tab:validacion}, Figura~\ref{fig:validacion}).
 
 \begin{table}[htbp]
@@ -501,7 +518,7 @@ colaborativa, de modo que no es posible comparar las dos fuentes sobre las misma
 diferencia de cobertura puede deberse a que cada grupo anote de forma distinta o a que las dos
 muestras contengan terreno distinto.
 
-\paragraph{Instrumento común.} Para separar ambos efectos se aplicó el segmentador entrenado,
+\paragraph{Instrumento común.} Para descomponer la diferencia se aplicó el segmentador entrenado,
 que es una función fija de la imagen, a la región anotable de \cFANColab{} escenas
 colaborativas no vistas en su entrenamiento y de las \cFANExp{} de experto, según el diseño de
 la Sección~\ref{sec:evaluacion}. La Tabla~\ref{tab:instrumento} y la
@@ -510,8 +527,9 @@ Figura~\ref{fig:instrumento} presentan el resultado.
 \begin{table}[htbp]
   \centering
   \caption[Descomposición de la diferencia entre fuentes]{Cobertura según la etiqueta y según
-    el instrumento común, en las dos muestras de imágenes, y descomposición de la diferencia
-    de medias. Intervalos por \textit{bootstrap}.}
+    el instrumento común, en las dos muestras de imágenes, y descomposición descriptiva de la
+    diferencia de medias. La asignación es condicional al segmentador empleado y no constituye
+    una estimación causal. Intervalos por \textit{bootstrap} sobre escenas.}
   \label{tab:instrumento}
   \small
   \begin{tabular}{lcc}
@@ -523,10 +541,10 @@ Figura~\ref{fig:instrumento} presentan el resultado.
     Cobertura según el instrumento, media (mediana)     & \cFARegMediaColab{} (\cFARegMedColab)   & \cFARegMediaExp{} (\cFARegMedExp) \\
     Etiqueta menos instrumento, media                   & \cResColab{} p.p. & \cResExp{} p.p. \\
     \midrule
-    \multicolumn{3}{l}{\textit{Descomposición de la diferencia de medias entre muestras}} \\
+    \multicolumn{3}{l}{\textit{Descomposición descriptiva de la diferencia de medias entre muestras}} \\
     Diferencia total según la etiqueta  & \multicolumn{2}{c}{\cDescTotal{} p.p.} \\
-    Atribuible a las imágenes           & \multicolumn{2}{c}{\cDescImg{} p.p. \cDescImgIC{} (\cDescImgPct)} \\
-    Atribuible a la anotación           & \multicolumn{2}{c}{\cDescAnot{} p.p. \cDescAnotIC{} (\cDescAnotPct)} \\
+    Asignado a las muestras de imágenes & \multicolumn{2}{c}{\cDescImg{} p.p. \cDescImgIC{} (\cDescImgPct)} \\
+    Asignado a la fuente de la anotación & \multicolumn{2}{c}{\cDescAnot{} p.p. \cDescAnotIC{} (\cDescAnotPct)} \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -536,8 +554,9 @@ Figura~\ref{fig:instrumento} presentan el resultado.
   \includegraphics[width=\textwidth]{Figura_30_instrumento_comun.png}
   \caption[Instrumento común sobre las dos muestras]{Izquierda: distribución acumulada de la
     cobertura que el segmentador asigna a la región anotable de cada escena, sin usar la
-    anotación de las escenas evaluadas. Derecha: descomposición de la diferencia de cobertura media entre las
-    dos muestras, con intervalos del \SI{95}{\percent}.}
+    anotación de las escenas evaluadas. Derecha: descomposición descriptiva de la diferencia de
+    cobertura media entre las dos muestras, condicional al segmentador, con intervalos del
+    \SI{95}{\percent} por escena.}
   \label{fig:instrumento}
 \end{figure}
 
@@ -545,22 +564,24 @@ El instrumento común reproduce la mayor parte de la diferencia sin usar la anot
 escenas evaluadas.
 Medidas por el mismo segmentador, las imágenes de la muestra de experto tienen una cobertura
 mediana del \cFARegMedExp{} frente al \cFARegMedColab{} de la muestra colaborativa: \textbf{el
-conjunto de máscaras de experto está compuesto por escenas mucho menos rocosas}. De la
-diferencia total de medias, \cDescImg{} puntos —el \cDescImgPct— se asocian con la composición
-de las muestras de imágenes y \cDescAnot{} puntos —el \cDescAnotPct— con la fuente de las
-etiquetas. Esta segunda componente es pequeña y su intervalo apenas excluye el cero; deja de
-excluirlo cuando se tiene en cuenta la agrupación de las imágenes por sol, como se detalla a
+conjunto de máscaras de experto está compuesto por escenas mucho menos rocosas}. En la
+descomposición descriptiva basada en el segmentador común, aproximadamente el \cDescImgPct{} de
+la diferencia —\cDescImg{} de sus \cDescTotal{} puntos— queda asignado a diferencias entre las
+muestras de imágenes, y \cDescAnot{} puntos —el \cDescAnotPct— a la fuente de las etiquetas.
+Esta proporción es condicional al modelo empleado y no constituye una estimación causal. La
+componente de anotación es pequeña y su intervalo por escena queda en el límite del cero; deja
+de excluirlo cuando se tiene en cuenta la agrupación de las imágenes por sol, como se detalla a
 continuación. Ambas
 anotaciones asignan algo menos de roca que el instrumento, la colaborativa \cResColab{} puntos y
 la de experto \cResExp: la diferencia entre ambos residuos es la componente de anotación.
 
-\paragraph{Sensibilidad.} La conclusión no depende de la muestra ni del instrumento concretos.
+\paragraph{Sensibilidad.} El reparto no depende de la muestra ni del instrumento concretos.
 Tomando la muestra colaborativa solo de los bloques temporales de prueba ($n = \cFPNColab$), a más
 de un sol de cualquier imagen de entrenamiento, la componente de imágenes es el \cFPDescImgPct{}
 y la de anotación \cFPDescAnot{} puntos \cFPDescAnotIC. Con el segmentador de una versión
-anterior, entrenado con un reparto al azar por imagen, la descomposición atribuía a las imágenes
+anterior, entrenado con un reparto al azar por imagen, la descomposición asignaba a las imágenes
 el \cFVDescImgPct{} y a la anotación \cFVDescAnot{} puntos \cFVDescAnotIC. En todas las
-variantes la mayor parte de la diferencia procede de las imágenes, y la estimación de la
+variantes la mayor parte de la diferencia queda asignada a las imágenes, y la estimación de la
 componente de anotación es pequeña y positiva, entre \cDescAnot{} y \cFVDescAnot{} puntos según
 la muestra y el instrumento.
 
@@ -571,12 +592,90 @@ de anotación se amplía a \cTempAnotIC{} en la muestra principal, que incluye e
 imágenes domina en todos los casos; la de anotación es positiva en todas las variantes, pero su
 magnitud es incierta y, con la muestra principal, no se distingue de cero.
 
-Las imágenes de experto no proceden de un periodo distinto de la misión: la mediana de la
-distancia, en reloj de nave, a la imagen de entrenamiento más próxima es de \cFugaExpSoles{}
-soles, y \cFugaExpSol{} de las \cNGold{} están a menos de un sol de una imagen de entrenamiento.
-La diferencia de composición probablemente refleja, por tanto, cómo se seleccionaron las
-escenas del conjunto de prueba de AI4Mars, algo que la documentación del conjunto no especifica y este trabajo no
-puede determinar.
+\paragraph{Nivel de consenso de la referencia.} La Tabla~\ref{tab:nivel-experto} repite la
+comparación y la descomposición con los tres niveles de las máscaras de experto. El instrumento
+no se vuelve a aplicar: su cobertura sobre la región anotable no depende de la máscara, y lo
+único que cambia con el nivel es la cobertura según la etiqueta y qué imágenes conservan algún
+píxel etiquetado.
+
+\begin{table}[htbp]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
+  \caption[Sensibilidad al nivel de consenso de la referencia experta]{Contraste entre fuentes
+    según el nivel de consenso de las máscaras de experto. Cobertura de experto: mediana en las
+    escenas con roca y, entre paréntesis, media en la muestra del instrumento común. Diferencia
+    colaborativa--experto: de medianas en las escenas con roca y, entre paréntesis, de medias en
+    la muestra del instrumento, que es la que se descompone. Componentes en puntos porcentuales;
+    el de anotación, con su intervalo del \SI{95}{\percent} por \textit{bootstrap} por sol. El
+    nivel 1 es el análisis principal y reproduce sus cifras; los intervalos de los niveles 2 y 3
+    se calculan con el mismo procedimiento y número de remuestras, y repetir el remuestreo los
+    mueve en torno a una décima.}
+  \label{tab:nivel-experto}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{1.6cm}>{\raggedright\arraybackslash}p{1.9cm}%
+    >{\raggedright\arraybackslash}p{2.1cm}>{\raggedright\arraybackslash}p{2.0cm}%
+    >{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.3cm}}
+    \toprule
+    \textbf{Referencia experta} & \textbf{Cobertura de experto} & \textbf{Diferencia
+      colaborativa--experto} & \textbf{Componente asignado a imágenes} & \textbf{Componente
+      asignado a la anotación} & \textbf{Conclusión} \\
+    \midrule
+    Nivel 1 \newline ($n = \cNGold$) & \cGoldCobMedPos{} (\cNivUnoCobMedia) & \cFuenteDifMed{}
+      (\cDescTotal) & \cDescImg{} (\cDescImgPct) & \cDescAnot{} \newline \cTempAnotIC
+      & La mayor parte queda asignada a las imágenes; anotación pequeña, no distinguible de
+      cero \\ \addlinespace
+    Nivel 2 \newline ($n = \cNivDosN$) & \cNivDosCobMed{} (\cNivDosCobMedia) & \cNivDosDifMed{}
+      (\cNivDosTotal) & \cNivDosImg{} (\cNivDosImgPct) & \cNivDosAnot{} \newline \cNivDosAnotSolIC
+      & Igual que con el nivel 1 \\ \addlinespace
+    Nivel 3 \newline ($n = \cNivTresN$) & \cNivTresCobMed{} (\cNivTresCobMedia) & \cNivTresDifMed{}
+      (\cNivTresTotal) & \cNivTresImg{} (\cNivTresImgPct) & \cNivTresAnot{} \newline
+      \cNivTresAnotSolIC & La mayor parte queda asignada a las imágenes; anotación algo mayor y
+      distinguible de cero \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Al endurecer el consenso hay menos escenas de experto con roca —\cNivUnoNRoca, \cNivDosNRoca{} y
+\cNivTresNRoca— y, entre ellas, la cobertura mediana sube, porque las que conservan roca son las
+más rocosas; por eso la diferencia de medianas con las colaborativas se reduce de
+\cFuenteDifMed{} a \cNivTresDifMed{} puntos. La descomposición, que compara medias sobre toda la
+muestra, es más estable: la parte asignada a las imágenes se mantiene entre el
+\cNivTresImgPct{} y el \cNivDosImgPct{} de la diferencia. La componente de anotación es
+prácticamente la misma con los niveles 1 y 2, y con el nivel 3 sube a \cNivTresAnot{} puntos y su
+intervalo por sol excluye el cero. De ese aumento, algo más de la mitad procede de las
+\cNivTresSinEtiq{} imágenes que el nivel 3 deja sin etiqueta —con la etiqueta del nivel 1, las
+imágenes restantes ya dan \cNivTresAnotMismas{} puntos— y el resto, del consenso más estricto
+sobre las mismas imágenes. Con la muestra de bloques de prueba, la componente de anotación es de
+\cFPDescAnot, \cNivDosAnotPrueba{} y \cNivTresAnotPrueba{} puntos según el nivel, y su
+intervalo por sol excluye el cero en los tres (\cTempAnotPruebaIC, \cNivDosAnotPruebaSolIC{} y
+\cNivTresAnotPruebaSolIC).
+
+El nivel elegido no cambia, por tanto, la conclusión principal —la mayor parte de la diferencia
+queda asignada a las imágenes—, pero sí la lectura de la componente de anotación: con el nivel
+más exigente, la evidencia de un efecto pequeño y positivo de la fuente es más firme. Esa
+diferencia no puede atribuirse sin más al criterio de los especialistas, porque el nivel 3
+también cambia qué imágenes y qué píxeles entran en la comparación.
+
+\paragraph{Diseño del conjunto de experto.} Las imágenes de experto no proceden de un periodo
+distinto de la misión: la mediana de la distancia, en reloj de nave, a la imagen de
+entrenamiento más próxima es de \cFugaExpSoles{} soles, y \cFugaExpSol{} de las \cNGold{} están
+a menos de un sol de una imagen de entrenamiento. La diferencia de composición procede del modo
+en que se construyó el conjunto, que sus autores documentan \citep{swan2021ai4mars}. Buscaron
+un conjunto de aproximadamente el \SI{1}{\percent} del de entrenamiento y, para que representara
+la diversidad del terreno, tomaron las imágenes de ubicaciones distribuidas entre las
+principales clases de terreno cartografiadas desde la órbita: siete unidades geológicas de gran
+escala, dos de ellas arenosas. De cada clase seleccionaron un número aproximadamente igual de
+imágenes de la cámara de navegación, y después retiraron a mano las de baja calidad, las muy
+parecidas entre sí y las que mostraban mucho del propio rover.
+
+\textbf{Esta diferencia debe interpretarse a la luz del diseño del conjunto experto de AI4Mars,
+construido mediante muestreo aproximadamente balanceado entre clases de terreno orbital y
+posterior depuración manual, y no como una muestra aleatoria de la distribución de
+entrenamiento.} Un muestreo así da a cada unidad del terreno un peso parecido, con independencia
+de cuántas imágenes tomara el rover en ella, de modo que es de esperar que la composición
+difiera de la del entrenamiento. Lo que este trabajo añade es la magnitud de esa diferencia y su
+efecto sobre la comparación entre fuentes; no puede determinar, en cambio, cuánto procede de
+cada paso del diseño.
 
 La descomposición tiene un supuesto que conviene explicitar: que el error del instrumento sea
 el mismo en las dos muestras. Un sesgo común a ambas —por ejemplo, que el segmentador asigne
@@ -591,9 +690,9 @@ experto que entra en la descomposición. La cifra de \cDescAnot{} puntos debe le
 como una estimación aproximada cuyo sentido de sesgo no puede determinarse con estos datos.
 
 \paragraph{Interpretación.} Dado que el mismo cálculo se aplicó a ambas fuentes, la diferencia
-observada no puede atribuirse a la implementación de la fórmula; según el instrumento común, se
-asocia principalmente con la composición de las muestras de imágenes y, en menor medida, con la
-fuente de las etiquetas. La componente de anotación, si existe, es compatible con la hipótesis de un
+observada no puede atribuirse a la implementación de la fórmula; en la descomposición
+descriptiva basada en el instrumento común, se asocia principalmente con la composición de las
+muestras de imágenes y, en menor medida, con la fuente de las etiquetas. La componente de anotación, si existe, es compatible con la hipótesis de un
 \textbf{sesgo de saliencia} en la anotación colaborativa —que las regiones visualmente
 prominentes, como la roca, reciban una anotación más consistente o completa—, pero el diseño
 del estudio no permite identificar causalmente ese mecanismo: no se midieron la atención, la
@@ -842,7 +941,7 @@ escenas de esos bloques que el umbral de fracción etiquetada había excluido.
 \end{table}
 
 El desempeño sobre la distribución natural es muy próximo al de la muestra equilibrada, de modo
-que el equilibrio artificial de la prueba no infla las cifras. Las escenas con menos del
+que el equilibrio artificial de la prueba no altera apreciablemente las cifras. Las escenas con menos del
 \SI{20}{\percent} de superficie etiquetada, en cambio, se segmentan claramente peor —error
 absoluto medio de \cSegExcMAE{} puntos—: la exclusión no solo protege la función de pérdida,
 también delimita el dominio en que el modelo es fiable.
@@ -864,9 +963,10 @@ cualquier escena de los bloques de entrenamiento, usadas o no, la distancia mín
 imagen, tenía \cAleMinuto{} imágenes de prueba (\cAleMinutoPct) a menos de un minuto de una de
 entrenamiento, y obtenía un IoU medio de \cAleMIoU, una correlación de la cobertura de \cAleR{}
 y un error absoluto medio de \cAleMAE{} puntos, frente a \cSegMIoU, \cSegRCob{} y \cSegMAE{} con
-el reparto por bloques. Que el IoU y la correlación sean prácticamente iguales indica que aquella
-proximidad no inflaba de forma apreciable el desempeño, aunque el error absoluto es algo mayor
-con el reparto por bloques y los dos conjuntos de prueba no son los mismos. La
+el reparto por bloques. Las métricas agregadas del reparto anterior al azar fueron similares a
+las obtenidas con el reparto por bloques. Dado que los conjuntos de prueba no son idénticos,
+esta comparación no permite cuantificar cuánto habría influido la proximidad entre imágenes;
+por precaución, el análisis final utiliza exclusivamente el reparto temporal. La
 Tabla~\ref{tab:fuga} muestra además que, dentro de la prueba, el IoU y la correlación dependen
 poco de la distancia al entrenamiento, mientras que el error crece algo por encima de cincuenta
 soles.
@@ -1009,7 +1109,7 @@ Sección~\ref{sec:hipotesis} con la evidencia de este capítulo.
   \small
   \caption{Contraste de las hipótesis de trabajo.}
   \label{tab:contraste-hipotesis}
-  \begin{tabular}{p{1.0cm}p{8.6cm}p{3.6cm}}
+  \begin{tabular}{p{0.8cm}>{\raggedright\arraybackslash}p{7.6cm}>{\raggedright\arraybackslash}p{4.9cm}}
     \toprule
     \textbf{Hip.} & \textbf{Evidencia} & \textbf{Dictamen} \\
     \midrule
@@ -1018,23 +1118,30 @@ Sección~\ref{sec:hipotesis} con la evidencia de este capítulo.
       \textit{bootstrap} por sol \cTempFCIC; dependencia no lineal débil (correlación de
       distancia \cDepFCDcor); la cobertura por tramos de fracción no sigue el patrón que
       produciría el artefacto del denominador.
-      & Se sostiene, con dependencia residual débil \\
+      & Los resultados son compatibles con H1; no se observa que la fracción etiquetada explique
+      principalmente la variación global, aunque persiste dependencia no lineal débil \\
     H2 & Kappa ponderado \cVKappaPond{} \cVKappaPondIC; \cVAbajo{} escenas por debajo del
       observador y \cVArriba{} por encima; subconteo en las \cSenN{} combinaciones de
       parámetros.
-      & Se rechaza, en una evaluación exploratoria \\
-    H3 & Diferencia de medianas de \cFuenteDifMed{} puntos entre fuentes. El instrumento común
-      atribuye el \cDescImgPct{} de la diferencia de medias a las imágenes y \cDescAnot{}
-      puntos \cDescAnotIC{} a la anotación; positiva en las tres variantes, pero con el
-      \textit{bootstrap} por sol su intervalo incluye el cero en la muestra principal
-      \cTempAnotIC{} y lo excluye por poco en la de bloques de prueba \cTempAnotPruebaIC.
-      & No concluyente para la cobertura: efecto de la fuente pequeño, positivo en las tres
-      variantes, pero distinguible de cero por sol solo en una; no contrastada para el conteo \\
+      & La evaluación exploratoria no brinda apoyo a H2 y muestra una tendencia marcada al
+      subconteo frente al observador \\
+    H3 & Diferencia de medianas de \cFuenteDifMed{} puntos entre fuentes. En la descomposición
+      descriptiva, el \cDescImgPct{} de la diferencia de medias queda asignado a las imágenes y
+      \cDescAnot{} puntos \cDescAnotIC{} a la anotación. La componente de anotación es positiva
+      en todas las variantes y niveles de consenso; con el \textit{bootstrap} por sol su
+      intervalo incluye el cero en la muestra principal con los niveles 1 y 2 (\cTempAnotIC{} y \cNivDosAnotSolIC) y
+      lo excluye con el nivel 3 \cNivTresAnotSolIC{} y en la muestra de bloques de prueba
+      \cTempAnotPruebaIC.
+      & No concluyente para la cobertura: componente asignada a la fuente pequeña y positiva en
+      todas las variantes; distinguible de cero por sol en cuatro de las seis combinaciones de
+      muestra y nivel, pero no en la muestra principal con los niveles 1 y 2; no contrastada
+      para el conteo \\
     H4 & Sin asociación lineal ni monótona ($r = \cDepCCPearson$, $\rho = \cDepCCSpearman$);
       dependencia no lineal débil (correlación de distancia \cDepCCDcor, $p \cDepCCDcorP$;
       $p \cTempDcorP$ por desplazamiento circular) en forma de U invertida; los tramos de
       cobertura explican el \cEtaConteo{} de la varianza del conteo.
-      & Se sostiene: información distinta, no independencia \\
+      & Los análisis respaldan tratar cobertura y conteo como propiedades no redundantes de las
+      máscaras de AI4Mars \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -1048,15 +1155,15 @@ indicador.
 La cobertura es el indicador sólido. Se calcula para el \cPctCobCalc{} de las escenas, es
 reproducible y no se encontró evidencia de que esté gobernada por la fracción de escena
 etiquetada. Su valor puede depender de quién anotó, pero ese efecto es pequeño e incierto, y la
-comparación directa con las máscaras de experto está dominada por el hecho de que cubren escenas
-mucho menos rocosas. Las coberturas reportadas describen, por tanto, el terreno tal como lo
+diferencia con las máscaras de experto queda asignada, en la descomposición descriptiva, sobre
+todo a que cubren escenas mucho menos rocosas. Las coberturas reportadas describen, por tanto, el terreno tal como lo
 registra la anotación colaborativa, y son adecuadas para comparar escenas del mismo conjunto.
 
 El conteo es el indicador limitado. Cuenta de forma reproducible las instancias que la
 geometría de la máscara permite separar, pero no el número de rocas que un observador
-distingue. Cobertura y conteo aportan información distinta —conocer uno informa muy poco sobre
-el otro—, de modo que reportarlos por separado está justificado, aunque entre ellos persista
-una dependencia débil.
+distingue. Cobertura y conteo son propiedades no redundantes de las máscaras —conocer uno
+informa muy poco sobre el otro—, de modo que reportarlos por separado está justificado, aunque
+entre ellos persista una dependencia débil.
 
 \subsection{Diagnóstico de los modos de error del conteo}
 \label{sec:diagnostico}
@@ -1215,7 +1322,12 @@ conserva el \cConsBig{} de sus píxeles, frente al \cConsBed{} del lecho rocoso,
 del suelo y el \cConsSand{} de la arena. Ningún píxel cambia de clase entre niveles —solo puede
 conservarla o quedar sin etiqueta—, de modo que la comparación no muestra con qué clase se
 confunde la roca grande, sino que pocos especialistas la marcan en los mismos píxeles: es la
-clase más difícil de delimitar también para ellos.
+clase más difícil de delimitar también para ellos. No es un hallazgo enteramente nuevo. Los
+autores del conjunto ya observaron que la roca grande y el lecho rocoso tienen una proporción
+mayor de píxeles marcados por uno o dos de los tres especialistas, y lo interpretaron como una
+ambigüedad inherente a la definición de esas clases o a la forma de etiquetarlas
+\citep{swan2021ai4mars}. La comparación entre niveles cuantifica esa ambigüedad por clase y
+muestra su consecuencia para el conteo.
 
 La evidencia indica que la principal limitación observada para el conteo de instancias proviene
 de la representación semántica y de la granularidad de las etiquetas, más que de una falta de
@@ -1252,50 +1364,69 @@ superponen y que ningún ajuste del procedimiento resuelve por sí solo:
     acuerdo con el observador una vez corregido el número de métodos probados.
 \end{enumerate}
 
-\subsection{Síntesis: inconsistencias del conjunto de datos}
+\subsection{Síntesis: propiedades, heterogeneidades y limitaciones del conjunto de datos}
 \label{sec:inconsistencias}
 
-El examen de las máscaras reveló además varias inconsistencias en el propio conjunto de datos,
+El examen de las máscaras puso de manifiesto, además, varios rasgos del propio conjunto de datos
 que condicionan cualquier indicador derivado de él y cualquier evaluación que lo tome como
-referencia. La Tabla~\ref{tab:inconsistencias} las reúne con su evidencia y su consecuencia.
+referencia. No son todos de la misma naturaleza. Algunos son propiedades deliberadas del diseño
+muestral o del protocolo de anotación; otros reflejan incertidumbre, ambigüedad o heterogeneidad
+de la anotación; y solo las escenas casi sin etiquetar y los artefactos son anomalías de calidad
+en sentido estricto. La Tabla~\ref{tab:inconsistencias} reúne cada hallazgo con su
+clasificación, su evidencia y su consecuencia.
 
 \begin{table}[htbp]
   \centering
-  \small
-  \caption[Inconsistencias del conjunto de datos]{Inconsistencias del conjunto de datos AI4Mars
-    (cámara de navegación de \textit{Curiosity}) identificadas en este trabajo.}
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \caption[Propiedades, heterogeneidades y limitaciones de AI4Mars]{Propiedades,
+    heterogeneidades y limitaciones de AI4Mars relevantes para los indicadores derivados
+    (cámara de navegación de \textit{Curiosity}).}
   \label{tab:inconsistencias}
-  \begin{tabular}{p{3.6cm}p{5.4cm}p{5.0cm}}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{2.5cm}%
+    >{\raggedright\arraybackslash}p{4.9cm}>{\raggedright\arraybackslash}p{3.8cm}}
     \toprule
-    \textbf{Inconsistencia} & \textbf{Evidencia} & \textbf{Consecuencia} \\
+    \textbf{Hallazgo} & \textbf{Clasificación} & \textbf{Evidencia} & \textbf{Consecuencia} \\
     \midrule
-    Composición distinta entre las escenas de entrenamiento y las de especialista
+    Composición distinta entre entrenamiento y experto
+      & Diseño muestral; cambio de distribución
       & Medida por un mismo instrumento, cobertura mediana del \cFARegMedExp{} frente al
-        \cFARegMedColab; el \cDescImgPct{} de la diferencia entre fuentes procede de las
-        imágenes (Sección~\ref{sec:experto})
+        \cFARegMedColab; en la descomposición descriptiva, el \cDescImgPct{} de la diferencia
+        entre fuentes queda asignado a las imágenes. El conjunto experto se muestreó de forma
+        aproximadamente equilibrada entre clases de terreno orbital \citep{swan2021ai4mars}
+        (Sección~\ref{sec:experto})
       & Una caída de desempeño al pasar de un conjunto al otro mezcla el cambio de anotación
         con el de terreno \\
     Posible diferencia de criterio entre voluntarios y especialistas
-      & Componente de anotación positiva en todas las variantes, de \cDescAnot{} a
-        \cFVDescAnot{} puntos, pero incierta: con el \textit{bootstrap} por sol su intervalo
-        incluye el cero en la muestra principal \cTempAnotIC
+      & Posible diferencia de criterio; evidencia incierta
+      & Componente de anotación positiva en todas las variantes y niveles, de \cNivDosAnot{} a
+        \cNivTresAnotPrueba{} puntos; con el \textit{bootstrap} por sol su intervalo incluye el
+        cero en la muestra principal con los niveles 1 y 2 (\cTempAnotIC{} y \cNivDosAnotSolIC)
+        (Tabla~\ref{tab:nivel-experto})
       & Las coberturas son relativas a la fuente que anotó; la diferencia es pequeña frente a
         la de composición \\
-    Escaso consenso sobre la roca grande
+    Bajo consenso en la roca grande
+      & Incertidumbre o ambigüedad de anotación
       & Sobre las mismas \cNGold{} imágenes, las escenas con roca grande pasan del
         \cGoldUnoBig{} al \cGoldTresBig{} al exigir acuerdo entre especialistas; solo el
-        \cConsBig{} de sus píxeles se conserva, frente al \cConsBed{} del lecho rocoso
+        \cConsBig{} de sus píxeles se conserva, frente al \cConsBed{} del lecho rocoso. Los
+        autores del conjunto ya señalaron esa ambigüedad \citep{swan2021ai4mars}
         (Sección~\ref{sec:limite-conteo})
       & El conteo depende de qué se decidió llamar roca grande \\
-    Anotación no exhaustiva de la roca grande
-      & En \cVNoExhN{} de \cVN{} escenas, menos del \SI{20}{\percent} de la roca etiquetada;
-        mediana del \cVNoExhMed{} (Sección~\ref{sec:anotacion-parcial})
+    Cobertura parcial de las etiquetas
+      & Propiedad del protocolo de anotación
+      & Las etiquetas colaborativas son dispersas a propósito y los especialistas no buscaban
+        etiquetar toda la imagen \citep{swan2021ai4mars}; en \cVNoExhN{} de \cVN{} escenas, la
+        roca grande es menos del \SI{20}{\percent} de la roca etiquetada, mediana del
+        \cVNoExhMed{} (Sección~\ref{sec:anotacion-parcial})
       & El conteo no puede estimar las rocas presentes \\
-    Granularidad variable del trazado
+    Granularidad variable de las regiones
+      & Heterogeneidad de anotación
       & Polígonos que delimitan cada bloque junto a polígonos que envuelven campos enteros,
         ilustrados con dos ejemplos (Figura~\ref{fig:mecanismo})
       & El mismo procedimiento acierta o subcuenta según cómo se trazó \\
-    Escenas casi sin etiquetar
+    Escenas casi sin etiquetar y artefactos
+      & Anomalías o problemas de calidad
       & \cFlagNull{} escenas con más del \SI{95}{\percent} sin etiqueta; \cNNullBig{} con roca
         grande, entre ellas los artefactos de anotación
       & Deben excluirse del conteo \\
@@ -1303,10 +1434,14 @@ referencia. La Tabla~\ref{tab:inconsistencias} las reúne con su evidencia y su 
   \end{tabular}
 \end{table}
 
-Ninguna de estas inconsistencias invalida el conjunto para el propósito con que se creó
-—entrenar segmentadores de terreno para la navegación—, pero todas limitan su uso como medida
-cuantitativa del terreno y como referencia de evaluación. Documentarlas es, a juicio de este
-trabajo, su aporte más transferible.
+La literatura previa ya había señalado ambigüedad y problemas de anotación en AI4Mars: sus
+autores, al analizar el acuerdo entre especialistas \citep{swan2021ai4mars}, y Mars-Bench, que
+lo excluyó de su banco de pruebas tras una revisión experta que encontró errores de anotación
+\citep{purohit2025marsbench}. Esta tesis aporta una cuantificación específica de cómo esas
+propiedades afectan la derivación de indicadores de cobertura y conteo. Ninguno de estos rasgos
+invalida el conjunto para el propósito con que se creó —entrenar segmentadores de terreno para la
+navegación—, pero todos limitan su uso como medida cuantitativa del terreno y como referencia de
+evaluación.
 
 \subsection{Limitaciones}
 
@@ -1332,9 +1467,16 @@ muestra principal. Los demás intervalos, como los del segmentador o los de la v
 calcularon por escena y deben leerse como aproximados.
 
 \paragraph{Muestras distintas en el contraste de fuentes.} Las máscaras colaborativas y las de
-experto cubren imágenes distintas. El instrumento común permite separar ambos efectos, pero
-descansa en un segmentador entrenado con etiquetas colaborativas, lo que hace aproximada la
-componente atribuida a la anotación.
+experto cubren imágenes distintas. El instrumento común permite una descomposición descriptiva
+de los dos efectos, condicional al segmentador: descansa en un modelo entrenado con etiquetas
+colaborativas cuyo error cambia con el tramo de cobertura, lo que hace aproximadas las dos
+componentes e impide leerlas como estimaciones causales.
+
+\paragraph{Nivel de consenso de la referencia.} El contraste principal usa el nivel 1 de las
+máscaras de experto. Con el nivel 3, el más exigente, la componente de anotación aumenta y su
+intervalo por sol excluye el cero (Tabla~\ref{tab:nivel-experto}), en parte porque ese nivel
+deja fuera imágenes y píxeles; la elección del nivel condiciona, por tanto, la lectura de esa
+componente, aunque no la de la componente de imágenes.
 
 \paragraph{Dominio del segmentador.} El segmentador se entrenó y evaluó sobre escenas con al
 menos un \SI{20}{\percent} de superficie etiquetada; fuera de ese dominio su error se triplica.

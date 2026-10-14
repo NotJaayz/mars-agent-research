@@ -59,6 +59,7 @@ evaluacion-modelo:
 	$(PY) scripts/eval_fuente_anotacion.py --muestra prueba
 	$(PY) scripts/eval_modelo_detalle.py
 	$(PY) scripts/sensibilidad_dependencia_temporal.py
+	$(PY) scripts/sensibilidad_nivel_experto.py
 
 # 7. Comparación con el modelo fundacional y exploración de vetas.
 comparaciones:

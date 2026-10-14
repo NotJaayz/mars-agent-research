@@ -101,7 +101,10 @@ def main():
     tq = pd.qcut(sq.sclk, q=40, labels=False, duplicates="drop")
     gq = sq.groupby(tq)
     pres = gq.apply(lambda x: 100 * (x.n_bigrock > 0).mean(), include_groups=False)
-    m("cSecN", n(len(sq))); m("cSecTramos", n(tq.nunique())); m("cSecPorTramo", n(len(sq) // 40))
+    tam = tq.value_counts()
+    m("cSecN", n(len(sq))); m("cSecTramos", n(tq.nunique())); m("cSecPorTramo", n(tam.min()))
+    m("cSecPorTramoMax", n(tam.max())); m("cSecTramosMax", n((tam == tam.max()).sum()))
+    m("cSecTramosMin", n((tam == tam.min()).sum()))
     m("cSecMediaMax", p(gq.rock_coverage_pct.mean().max())); m("cSecMediaMin", p(gq.rock_coverage_pct.mean().min()))
     m("cSecBigMin", p(pres.min())); m("cSecBigMax", p(pres.max()))
     m("cSecTramosSuelo", n((gq.pct_soil.mean() > 50).sum())); m("cSecTramosArena", n((gq.pct_sand.mean() > 50).sum()))
@@ -435,6 +438,21 @@ def main():
     for k, nom in (("roca_grande", "Big"), ("lecho_rocoso", "Bed"), ("suelo", "Soil"), ("arena", "Sand")):
         m(f"cCons{nom}", p(ce[k]["pct_conserva_nivel3"], 0))
     assert all(v["pct_cambia_de_clase"] == 0 for v in ce.values())
+    # Sensibilidad del contraste entre fuentes al nivel de consenso de las máscaras de experto.
+    sn = json.load(open("outputs/sensibilidad_nivel_experto.json"))["niveles"]
+    for k, nom in (("nivel1", "Uno"), ("nivel2", "Dos"), ("nivel3", "Tres")):
+        dr, dg, dp = sn[k]["comparacion_directa"], sn[k]["descomposicion_general"], sn[k]["descomposicion_prueba"]
+        m(f"cNiv{nom}NRoca", n(dr["n_con_roca"])); m(f"cNiv{nom}Frac", f(dr["frac_valid_mediana"]))
+        m(f"cNiv{nom}CobMed", p(dr["cob_mediana_con_roca"])); m(f"cNiv{nom}DifMed", s(dr["dif_mediana"]))
+        m(f"cNiv{nom}N", n(dg["n_experto"])); m(f"cNiv{nom}CobMedia", p(dg["cob_etiqueta_experto_media"]))
+        m(f"cNiv{nom}Total", s(dg["total"])); m(f"cNiv{nom}Img", s(dg["imagenes"]))
+        m(f"cNiv{nom}ImgPct", p(dg["pct_imagenes"], 0)); m(f"cNiv{nom}Anot", s(dg["anotacion"]))
+        m(f"cNiv{nom}AnotSolIC", ic(*dg["ic95_anotacion_sol"], 1, True))
+        m(f"cNiv{nom}AnotPrueba", s(dp["anotacion"])); m(f"cNiv{nom}AnotPruebaSolIC", ic(*dp["ic95_anotacion_sol"], 1, True))
+        m(f"cNiv{nom}AnotMismas", s(dg["anotacion_nivel1_mismas_imagenes"]))
+        m(f"cNiv{nom}SinEtiq", n(dr["n_escenas"] - dr["n_con_etiqueta"]))
+    # El nivel 1 es el análisis principal: mismas cifras puntuales que la descomposición publicada.
+    assert abs(sn["nivel1"]["descomposicion_general"]["anotacion"] - de["anotacion"]) < 1e-9
     # Sensibilidad a la dependencia entre imágenes (bootstrap por sol, desplazamiento circular).
     tp = json.load(open("outputs/sensibilidad_dependencia_temporal.json"))
     fc, cc, fs = tp["fraccion_cobertura"], tp["cobertura_conteo"], tp["fuente_anotacion"]

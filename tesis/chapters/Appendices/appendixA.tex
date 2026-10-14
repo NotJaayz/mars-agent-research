@@ -3,7 +3,7 @@
 
 \section{Esquema del conjunto de resultados}
 
-El archivo tabular de resultados contiene una fila por imagen y veintiocho columnas,
+El archivo tabular de resultados contiene una fila por imagen y veintinueve columnas,
 organizadas en seis grupos. La Tabla~\ref{tab:esquema} las describe.
 
 \begin{spacing}{1}
@@ -27,7 +27,10 @@ organizadas en seis grupos. La Tabla~\ref{tab:esquema} las describe.
     \midrule
     Cobertura (E1) & \texttt{rock\_coverage\_pct}  & Roca sobre píxeles etiquetados. \\
                    & \texttt{coverage\_total\_pct} & Roca sobre la imagen completa. \\
-                   & \texttt{frac\_valid}          & Fracción de escena etiquetada. \\
+                   & \texttt{frac\_valid}          & Fracción de escena etiquetada, redondeada a cuatro
+                     decimales; puede valer cero con algún píxel etiquetado. \\
+                   & \texttt{n\_valid\_pixels}     & Número exacto de píxeles etiquetados, denominador de
+                     la cobertura; es cero solo si la escena no tiene etiqueta. \\
     \midrule
     Composición    & \texttt{pct\_soil}       & Proporción de suelo. \\
                    & \texttt{pct\_bedrock}    & Proporción de lecho rocoso. \\

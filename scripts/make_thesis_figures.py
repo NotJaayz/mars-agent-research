@@ -180,9 +180,11 @@ def fig_secuencia(df, n, n_bins=40):
     ax[0].legend(fontsize=8, loc="upper right", ncol=2)
     ax[1].plot(x, presence, "-s", color=BLUE, ms=3.2)
     ax[1].fill_between(x, presence, alpha=0.15, color=BLUE)
+    tam = g.size()
+    por_tramo = str(tam.min()) if tam.min() == tam.max() else f"{tam.min()} o {tam.max()}"
     ax[1].set(ylabel="imágenes con\nroca grande (%)",
               xlabel=f"tramo de la secuencia de adquisición, en orden de reloj de nave "
-                     f"({len(d) // n_bins} imágenes por tramo)")
+                     f"({por_tramo} imágenes por tramo)")
     ax[1].set_xticks([1] + list(range(5, n_bins + 1, 5)))
     ax[1].set_xlim(0.5, n_bins + 0.5)
     fig.tight_layout()
@@ -296,7 +298,7 @@ def fig_fuente(n):
     ax[0].set(xlabel="cobertura de roca según el segmentador (%)",
               ylabel="proporción acumulada de escenas", xlim=(0, 100), ylim=(0, 1.02))
     ax[0].legend(fontsize=7.5, loc="lower right")
-    nombres = ["diferencia total", "por las imágenes", "por la anotación"]
+    nombres = ["diferencia total", "asignado a las imágenes", "asignado a la anotación"]
     vals = [de["total"], de["imagenes"], de["anotacion"]]
     err = [[0, de["imagenes"] - de["ic95_imagenes"][0], de["anotacion"] - de["ic95_anotacion"][0]],
            [0, de["ic95_imagenes"][1] - de["imagenes"], de["ic95_anotacion"][1] - de["anotacion"]]]

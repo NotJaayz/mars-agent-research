@@ -36,7 +36,7 @@ UMBRAL_MOSTLY_NULL = 0.95
 #         conteo y geometría de rocas (E2) · calidad · elegibilidad.
 RESULT_COLUMNS = [
     "image_id", "rover", "camera", "eye", "sclk",
-    "rock_coverage_pct", "coverage_total_pct", "frac_valid",
+    "rock_coverage_pct", "coverage_total_pct", "frac_valid", "n_valid_pixels",
     "pct_soil", "pct_bedrock", "pct_sand", "pct_bigrock",
     "dominant_class", "scene_type",
     "n_bigrock", "n_rocks", "n_raw_components",
@@ -130,6 +130,7 @@ def process_image(
         "rock_coverage_pct": _r(coverage_pct),
         "coverage_total_pct": _r(details["coverage_total_pct"]),
         "frac_valid": _r(details["frac_valid"]),
+        "n_valid_pixels": int(details["n_valid"]),
         "pct_soil": comp["pct_soil"],
         "pct_bedrock": comp["pct_bedrock"],
         "pct_sand": comp["pct_sand"],

@@ -45,8 +45,9 @@
 \begin{idea}
 \noindent\textbf{En una frase.} Existen unos mapas de Marte que alguien pintó a mano, y que
 hasta ahora solo se usaban para enseñarle a una inteligencia artificial a reconocer el
-terreno. Esta tesis los usa para otra cosa: \textbf{medir}. Y al medirlos, descubre que esos
-mapas tienen inconsistencias que, en la revisión realizada, no se habían documentado.
+terreno. Esta tesis los usa para otra cosa: \textbf{medir}. Y al medirlos, cuantifica cómo
+algunas propiedades de esos mapas —varias ya señaladas por otros investigadores— cambian lo que
+se puede medir con ellos.
 \end{idea}
 
 \section{El problema: las rocas estorban}
@@ -153,10 +154,13 @@ directamente la foto, sin mirar ningún mapa pintado, y se le pidió que midiera
 esa diferencia está en las fotos.
 
 \smallskip
-\noindent El resultado: \textbf{casi nueve de cada diez puntos de diferencia se deben a que las
-fotos de los especialistas tienen mucha menos roca}. La parte atribuible a la forma de pintar
-es pequeña, de 2 a 4 puntos de porcentaje, e incierta: cuando se tiene en cuenta que muchas fotos
-se tomaron el mismo día, ni siquiera se puede asegurar que sea distinta de cero.
+\noindent El resultado: en ese reparto, \textbf{casi nueve de cada diez puntos de diferencia
+quedan asignados a que las fotos de los especialistas tienen mucha menos roca}. Era de esperar:
+esas fotos se eligieron a propósito para cubrir por igual tipos de terreno muy distintos, no al
+azar. Es un reparto aproximado, que depende del programa usado, y no una medida de causa y
+efecto. La parte asignada a la forma de pintar es pequeña, de 2 a 5 puntos de porcentaje, e
+incierta: cuando se tiene en cuenta que muchas fotos se tomaron el mismo día, en el cálculo
+principal ni siquiera se puede asegurar que sea distinta de cero (en otras variantes, sí).
 \end{idea}
 
 \subsection*{2. El problema del conteo no son las fotos}
@@ -174,7 +178,8 @@ principal está en cómo se pintaron los mapas:
 Y no es solo cosa de voluntarios: cuando a los especialistas se les exige ponerse de acuerdo
 entre ellos, la categoría «roca suelta» casi desaparece. Es la categoría en la que menos
 coinciden: solo uno de cada cinco de sus píxeles sobrevive cuando se exige que tres
-especialistas estén de acuerdo, frente a casi la mitad en el lecho rocoso.
+especialistas estén de acuerdo, frente a casi la mitad en el lecho rocoso. Los creadores del
+conjunto ya lo habían notado; la tesis lo mide categoría por categoría.
 
 \subsection*{3. El conteo se queda corto}
 
@@ -213,7 +218,8 @@ sirven para decidir por dónde va el rover: no están calibradas para eso.
 
 Muchos trabajos de investigación usan los mapas de especialistas de AI4Mars como referencia
 para medir qué tan bien funcionan sus programas. Esta tesis muestra que esas fotos de
-referencia tienen mucha menos roca que las de entrenamiento: quien compare contra ellas debe
+referencia, por cómo se eligieron, tienen mucha menos roca que las de entrenamiento: quien
+compare contra ellas debe
 tenerlo en cuenta, porque si no, confundirá el cambio de fotos con el cambio de quién pintó.
 
 \section{Lo que esta tesis NO hace}

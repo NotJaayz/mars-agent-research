@@ -486,7 +486,7 @@ Capítulo~\ref{cap:resultados} carece de un objetivo, una técnica y una métric
 
   \textbf{E3.} Caracterizar la composición y la variación
   & ¿Cómo cambian los indicadores según la composición del terreno y a lo largo de la
-    secuencia de adquisición? ¿Aportan información distinta? (H4)
+    secuencia de adquisición? ¿Son propiedades no redundantes de las máscaras? (H4)
   & Estadística descriptiva, tipología de escenas por clase dominante, agregación por
     tramos del reloj de nave
   & Conjunto de resultados propio y metadatos del identificador de imagen
@@ -501,7 +501,7 @@ Capítulo~\ref{cap:resultados} carece de un objetivo, una técnica y una métric
     de biblioteca
   & Código propio
   & Archivo tabular con un indicador por imagen, más código y guiones de ejecución
-  & \cNEscenas{} filas × 28 columnas en \texttt{results.csv}; reejecución íntegra idéntica \\
+  & \cNEscenas{} filas × 29 columnas en \texttt{results.csv}; reejecución íntegra idéntica \\
   \addlinespace
 
   \textbf{E5.} Establecer los límites de validez
@@ -510,7 +510,7 @@ Capítulo~\ref{cap:resultados} carece de un objetivo, una técnica y una métric
     error y comparación con aprendizaje automático
   & Máscaras de experto del propio conjunto (\cNGold); máscaras de rover y distancia;
     conteo de un observador (\cVN{} escenas)
-  & Separación de los efectos de imagen y de anotación; atribución de los límites del conteo
+  & Descomposición descriptiva de la diferencia entre fuentes; atribución de los límites del conteo
   & Descomposición con instrumento común; kappa del conteo con IC; IoU y error con signo del
     segmentador frente a ambas referencias \\
 
@@ -567,7 +567,9 @@ Por eso la relación entre cobertura y conteo se mide con un conjunto de estadí
 capturan formas de dependencia cada vez más generales: Pearson para la asociación lineal,
 Spearman y Kendall para la monótona, la \textbf{correlación de distancia}
 \citep{szekely2007dcor} —que vale cero si y solo si las variables son independientes— y la
-\textbf{información mutua}, estimada por vecinos próximos \citep{kraskov2004mi}. Se añade una
+\textbf{información mutua}, estimada por vecinos próximos \citep{kraskov2004mi} con la
+implementación de \texttt{scikit-learn}, que la devuelve en nats; aquí se expresa en bits,
+dividiendo por $\ln 2$. Se añade una
 prueba chi-cuadrado sobre la tabla de contingencia por tramos y la \textbf{razón de correlación}
 $\eta^2$, que mide qué fracción de la varianza de un indicador explica el otro sin suponer
 ninguna forma funcional. La implementación propia de la correlación de distancia se verificó
@@ -577,16 +579,16 @@ Pearson no detecta.
 \paragraph{4. Contraste entre fuentes de anotación (H3).} Las máscaras colaborativas y las de
 especialista cubren imágenes \textbf{distintas}. Una diferencia entre sus coberturas puede
 deberse, por tanto, a que cada grupo anote de forma distinta o a que las dos muestras contengan
-terreno distinto, y con las etiquetas solas ambos efectos no pueden separarse. Para separarlos se
+terreno distinto, y con las etiquetas solas ambos efectos no pueden separarse. Para descomponer la diferencia se
 introduce un \textbf{instrumento común}: el segmentador entrenado, que es una función fija de la
 imagen, se aplica a la \textbf{región anotable} de cada escena —todo lo que no es el cuerpo del
 rover ni está a más de \SI{30}{\metre}, según las máscaras de rover y de distancia que distribuye
 el propio conjunto—, idéntica con independencia de quién anotó. La diferencia de cobertura entre
-muestras se descompone entonces en una parte atribuible a las imágenes —la que el instrumento
-reproduce sin usar la anotación de las escenas evaluadas— y un residuo atribuible a la
-anotación. Como el instrumento se entrenó con etiquetas colaborativas, la descomposición supone
-que su error es el mismo en ambas muestras; el Capítulo~\ref{cap:resultados} discute ese
-supuesto. La comparación directa de las distribuciones se contrasta con la prueba de
+muestras se descompone entonces, de forma descriptiva, en una parte asignada a las imágenes —la
+que el instrumento reproduce sin usar la anotación de las escenas evaluadas— y un residuo
+asignado a la anotación. La descomposición es condicional al instrumento y no constituye una
+estimación causal: como el segmentador se entrenó con etiquetas colaborativas, supone que su
+error es el mismo en ambas muestras, y el Capítulo~\ref{cap:resultados} discute ese supuesto. La comparación directa de las distribuciones se contrasta con la prueba de
 Mann--Whitney y con intervalos para la diferencia de medianas. La muestra colaborativa se toma
 al azar entre las imágenes que el segmentador no vio al entrenar, excluidas las de validación;
 como puede incluir escenas próximas en el tiempo a imágenes de entrenamiento, se repite como
@@ -809,7 +811,7 @@ lo que la limita a una evaluación exploratoria.
 
 \paragraph{Se añadieron tres frentes no previstos.} El contraste con aprendizaje automático se
 incorporó al constatar que el procedimiento necesitaba una referencia de contraste, y resultó
-decisivo para separar el efecto de la anotación del de las imágenes. El diagnóstico de los
+decisivo para descomponer la diferencia entre fuentes de anotación. El diagnóstico de los
 modos de error del conteo surgió al examinar las escenas en que el conteo era nulo. Las reglas heurísticas de
 priorización y la aplicación de consulta descritas en el Anexo~\ref{app:extension} surgieron
 de la ejecución y no figuraban en el cronograma.

@@ -32,7 +32,7 @@ PROPIOS = {
     "Mars", "Martian", "Moon", "Earth", "Curiosity", "Spirit", "Opportunity", "Perseverance",
     "Zhurong", "InSight", "Viking", "Gusev", "Gale", "Arequipa", "Peru", "Serengeti", "Mastcam",
     "Python", "NumPy", "SciPy", "Tianwen-1", "Chang'E-3", "Chang’E-3", "Chang'e-3", "Jackknife",
-    "Oasis", "Kappa", "U-Net", "RSU-Net",
+    "Oasis", "Kappa", "U-Net", "RSU-Net", "Mars-Bench",
 }
 # Nombres propios de varias palabras (misiones, instrumentos, proyectos, lugares).
 FRASES = [

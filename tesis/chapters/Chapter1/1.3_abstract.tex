@@ -22,12 +22,14 @@ la fracción de escena etiquetada. El conteo, aplicado a las \cFlagOk{} escenas 
 \cNRocas{} rocas. Ambos indicadores presentan una asociación lineal prácticamente nula
 ($r = \cDepCCPearson$), aunque medidas no lineales detectan una dependencia débil. En las
 \cNGold{} máscaras de especialista del propio conjunto, que recaen sobre otras imágenes, la
-cobertura mediana de las escenas con roca es del \cGoldCobMedPos. Un segmentador entrenado,
-usado como instrumento común sobre una muestra de cada fuente, atribuye el \cDescImgPct{} de la
-diferencia de cobertura media entre las muestras a que las escenas de especialista son mucho
-menos rocosas, y el \cDescAnotPct{} restante —unos dos puntos porcentuales, con un intervalo
-que incluye el cero cuando se tiene en cuenta la agrupación de las imágenes por sol— a la fuente
-de la anotación. Una evaluación exploratoria con un observador, que contó las rocas dentro de la región
+cobertura mediana de las escenas con roca es del \cGoldCobMedPos. En una descomposición
+descriptiva basada en un segmentador entrenado, usado como instrumento común sobre una muestra de
+cada fuente, aproximadamente el \cDescImgPct{} de la diferencia de cobertura media queda asignado
+a diferencias entre las muestras de imágenes —las escenas de especialista, muestreadas de forma
+equilibrada entre unidades del terreno, son mucho menos rocosas— y el \cDescAnotPct{} restante,
+unos dos puntos porcentuales, a la fuente de la anotación. Esta proporción es condicional al
+modelo empleado y no constituye una estimación causal, y el intervalo de la componente de
+anotación incluye el cero cuando se tiene en cuenta la agrupación de las imágenes por sol. Una evaluación exploratoria con un observador, que contó las rocas dentro de la región
 anotada como roca grande, sugiere un subconteo sistemático: el procedimiento queda por debajo del
 observador en \cVAbajo{} de \cVN{} escenas y por encima en \cVArriba{} (kappa ponderado de
 \cVKappaPond). Cuenta de forma reproducible las instancias geométricamente separables dentro de
@@ -35,12 +37,15 @@ esa clase, pero no el número de rocas visibles: un mismo polígono agrupa a men
 y la clase cubre solo una parte de la roca de la escena.
 
 El resultado es, por tanto, negativo para el conteo: contar rocas individuales con estas
-máscaras no es sencillo. Es, en cambio, diagnóstico para el conjunto de datos, cuyas
-inconsistencias —escenas de especialista de composición muy distinta, una diferencia de
-criterio entre anotaciones pequeña e incierta, una clase roca grande en la que ni los
-especialistas coinciden y una anotación parcial de los bloques— se documentan con evidencia cuantitativa. El trabajo
-entrega además un conjunto de resultados con una fila por imagen y veintiocho columnas, y un
-diseño de evaluación que separa el efecto de la anotación del de las imágenes.
+máscaras no es sencillo. Es, en cambio, diagnóstico para el conjunto de datos. La literatura ya
+había señalado ambigüedad y problemas de anotación en AI4Mars; este trabajo cuantifica cómo sus
+propiedades —escenas de especialista de composición muy distinta por diseño muestral, una
+diferencia de criterio entre anotaciones pequeña e incierta, una clase roca grande con bajo
+consenso entre especialistas y una anotación parcial de los bloques— afectan a los indicadores
+de cobertura y conteo. El trabajo
+entrega además un conjunto de resultados con una fila por imagen y veintinueve columnas, y un
+diseño de evaluación que descompone de forma descriptiva la diferencia entre fuentes en una parte
+asignada a las imágenes y otra asignada a la anotación.
 
 \vspace{0.4cm}
 \noindent
