@@ -106,8 +106,8 @@ def boot_dif(y, xm, xe, alfa, n=4000, seed=0):
 
 
 def main():
-    d = (pd.read_csv("outputs/validacion_manual_v2/plantilla.csv", dtype={"banda": str})
-           .merge(pd.read_csv("outputs/validacion_manual_v2/clave.csv"), on="id"))
+    d = (pd.read_csv("outputs/validacion_manual_v3/plantilla.csv", dtype={"banda": str})
+           .merge(pd.read_csv("outputs/validacion_manual_v3/clave.csv"), on="id"))
     res = {}
     for r in d.itertuples():
         reg_f = mu.big_rock_mask(mu.read_mask(config.MSL_NCAM_LABELS_TRAIN / f"{r.image_id}.png"))

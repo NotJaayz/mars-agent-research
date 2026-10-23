@@ -45,6 +45,7 @@ analisis:
 validacion:
 	$(PY) scripts/eval_validation.py --dir outputs/validacion_manual
 	$(PY) scripts/eval_validation.py --dir outputs/validacion_manual_v2
+	$(PY) scripts/eval_validation.py --dir outputs/validacion_manual_v3
 	$(PY) scripts/eval_metodos_imagen.py
 
 # 5. Segmentador DeepLabV3 (reparto por bloques temporales; ~2 h en Apple M4 Pro).

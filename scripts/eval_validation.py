@@ -163,8 +163,9 @@ def main() -> None:
     # Cada ronda escribe su propia figura: la ronda 1 (Figura 23) se cita en el documento
     # y no debe quedar sobrescrita por una ronda posterior.
     n_fig = 26 if BANDAS is BANDAS_V2 else 23
-    out = Path(f"outputs/figures/tesis/Figura_{n_fig}_validacion_manual"
-               f"{'_v2' if BANDAS is BANDAS_V2 else ''}.png")
+    ronda = d.name.rsplit("_", 1)[-1]
+    sufijo = f"_{ronda}" if ronda in ("v2", "v3") else ""
+    out = Path(f"outputs/figures/tesis/Figura_{n_fig}_validacion_manual{sufijo}.png")
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, dpi=200, bbox_inches="tight")
     print(f"\nFigura -> {out}")

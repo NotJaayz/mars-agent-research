@@ -27,12 +27,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src import config, mask_utils as mu, rock_count as rc  # noqa: E402
 
 OUT = Path("outputs/figures/tesis")
-CLAVE = Path("outputs/validacion_manual_v2/clave.csv")
+CLAVE = Path("outputs/validacion_manual_v3/clave.csv")
 
 # Dos escenas de la validación: la primera con acuerdo, la segunda con subconteo grave.
 CASOS = [
     ("W26", "Coincide con\nel observador", "observador: 4–9 · procedimiento: 9", "#1E6B45"),
-    ("W48", "Subcuenta", "observador: 25–49 · procedimiento: 3", "#C0392B"),
+    ("W41", "Subcuenta", "observador: 4–9 · procedimiento: 1", "#C0392B"),
 ]
 
 

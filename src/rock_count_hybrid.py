@@ -20,7 +20,7 @@ Sigue siendo procesamiento clásico: no entrena ningún modelo.
 
 RESULTADO MEDIDO (60 escenas con conteo humano)
 ----------------------------------------------
-Evaluado contra ``outputs/validacion_manual_v2`` con ``scripts/eval_metodos_imagen.py``
+Evaluado contra ``outputs/validacion_manual_v3`` con ``scripts/eval_metodos_imagen.py``
 (relieve «grad»), con el parámetro elegido por validación cruzada dejando una escena fuera
 y la diferencia con E2 contrastada por bootstrap, al 95 % y con corrección de Bonferroni:
 

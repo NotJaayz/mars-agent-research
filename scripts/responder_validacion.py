@@ -154,7 +154,14 @@ class App(tk.Tk):
             self.lbl_img.config(image="", text=f"No se encuentra {ruta.name}", fg=ROJO)
             return
         with Image.open(ruta) as im:
-            self._img_tk = ImageTk.PhotoImage(im.convert("RGB"))
+            im = im.convert("RGB")
+            # La ventana no se redimensiona: si la imagen no cabe en la pantalla junto con
+            # los botones, se reduce entera (nunca se recorta).
+            esc = min(1.0, (self.winfo_screenwidth() - 80) / im.width,
+                      (self.winfo_screenheight() - 380) / im.height)
+            if esc < 1.0:
+                im = im.resize((round(im.width * esc), round(im.height * esc)), Image.LANCZOS)
+            self._img_tk = ImageTk.PhotoImage(im)
         self.lbl_img.config(image=self._img_tk, text="", width=0, height=0)
         self.lbl_prog.config(text=f"Escena {n_ok + 1} de {len(self.filas)}")
 

@@ -35,8 +35,8 @@ def banda(n):
 
 
 def main():
-    d = (pd.read_csv("outputs/validacion_manual_v2/plantilla.csv", dtype={"banda": str})
-           .merge(pd.read_csv("outputs/validacion_manual_v2/clave.csv"), on="id"))
+    d = (pd.read_csv("outputs/validacion_manual_v3/plantilla.csv", dtype={"banda": str})
+           .merge(pd.read_csv("outputs/validacion_manual_v3/clave.csv"), on="id"))
     regiones = {r.id: mu.big_rock_mask(mu.read_mask(config.MSL_NCAM_LABELS_TRAIN / f"{r.image_id}.png"))
                 for r in d.itertuples()}
     y = d.banda.tolist()

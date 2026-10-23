@@ -51,6 +51,7 @@ def p(x, d=1):
 
 def ic(lo, hi, d=2, signo=False):
     g = s if signo else f
+    lo, hi = (0.0 if round(v, d) == 0 else v for v in (lo, hi))   # evita «-0,00»
     return f"[{g(lo, d)}; {g(hi, d)}]"
 
 
@@ -267,9 +268,9 @@ def main():
         m(f"cFTCero{L}", p(100 * (g == 0).mean())); m(f"cFTCien{L}", p(100 * (g == 100).mean()))
         m(f"cFTMedRoca{L}", p(g[g > 0].median()))
 
-    # --- Validación humana (ronda definitiva) --------------------------------------------
-    v = (pd.read_csv("outputs/validacion_manual_v2/plantilla.csv", dtype={"banda": str})
-           .merge(pd.read_csv("outputs/validacion_manual_v2/clave.csv"), on="id"))
+    # --- Validación humana (segunda ronda del conteo, la que se reporta) ------------------
+    v = (pd.read_csv("outputs/validacion_manual_v3/plantilla.csv", dtype={"banda": str})
+           .merge(pd.read_csv("outputs/validacion_manual_v3/clave.csv"), on="id"))
     def b6(x): return ("0" if x == 0 else "1-3" if x <= 3 else "4-9" if x <= 9 else "10-24" if x <= 24 else "25-49" if x <= 49 else "50+")
     v["ba"] = v.auto.map(b6); idx = {b: i for i, b in enumerate(BANDAS6)}
     dv = v.ba.map(idx) - v.banda.map(idx)
@@ -306,12 +307,34 @@ def main():
     m("cVNoExhN", n((v.frbig < 20).sum())); m("cVNoExhMed", p(v.frbig.median()))
     u = v[v.banda == "1-3"]
     m("cVUnaTresN", n(len(u))); m("cVUnaTresZona", p(u.zona.median(), 2)); m("cVUnaTresFr", p(u.frbig.median()))
+    m("cVHumUnaTres", n((v.banda == "1-3").sum())); m("cVAutoUnaTres", n((v.ba == "1-3").sum()))
+    m("cVAzar", p(100 * sum((v.banda == b).mean() * (v.ba == b).mean() for b in BANDAS6), 0))
+    m("cVSiempreUnaTres", p(100 * (v.banda == "1-3").mean(), 0))
+    # Acuerdo según cómo está anotada la roca grande: una sola región o varias (análisis posterior).
+    raw = v.image_id.map(pd.read_csv("outputs/results.csv").set_index("image_id").n_raw_components)
+    for nom, sel in (("Una", raw == 1), ("Varias", raw > 1)):
+        m(f"cVReg{nom}N", n(sel.sum())); m(f"cVReg{nom}Coinc", n(((dv == 0) & sel).sum()))
+        m(f"cVReg{nom}Abajo", n(((dv < 0) & sel).sum())); m(f"cVReg{nom}Arriba", n(((dv > 0) & sel).sum()))
+    # Primera ronda del mismo observador sobre las mismas escenas, y acuerdo entre las dos rondas.
+    v1 = (pd.read_csv("outputs/validacion_manual_v2/plantilla.csv", dtype={"banda": str})
+            .merge(pd.read_csv("outputs/validacion_manual_v2/clave.csv"), on="id"))
+    v1["ba"] = v1.auto.map(b6); dv1 = v1.ba.map(idx) - v1.banda.map(idx)
+    m("cVPrimAcuerdo", p(100 * (dv1 == 0).mean(), 0))
+    m("cVPrimKappaPond", f(cohen_kappa_score(v1.banda, v1.ba, labels=BANDAS6, weights="linear")))
+    m("cVPrimAbajo", n((dv1 < 0).sum())); m("cVPrimArriba", n((dv1 > 0).sum()))
+    dos = v1[["id", "banda"]].merge(v[["id", "banda"]], on="id", suffixes=("_1", "_2"))
+    assert len(dos) == len(v) == len(v1)
+    m("cVIntraKappaPond", f(cohen_kappa_score(dos.banda_1, dos.banda_2, labels=BANDAS6, weights="linear")))
+    m("cVIntraCoinc", n((dos.banda_1 == dos.banda_2).sum()))
+    m("cVRecMenor", n((dos.banda_2.map(idx) < dos.banda_1.map(idx)).sum()))
+    m("cVRecMayor", n((dos.banda_2.map(idx) > dos.banda_1.map(idx)).sum()))
 
     sen = pd.read_csv("outputs/sensibilidad_parametros.csv")
     m("cSenN", n(len(sen))); m("cSenMin", f(sen.kappa_pond.min())); m("cSenMax", f(sen.kappa_pond.max()))
     m("cSenMed", f(sen.kappa_pond.median())); m("cSenAbajo", n((sen.abajo >= 20).sum()))
     m("cSenAbajoMin", n(sen.abajo.min())); m("cSenAbajoMax", n(sen.abajo.max()))
     m("cSenArribaMax", n(sen.arriba.max())); m("cSenDiez", n((sen.max_banda != "4-9").sum()))
+    m("cSenArribaMin", n(sen.arriba.min())); m("cSenMasAbajo", n((sen.abajo > sen.arriba).sum()))
 
     # --- Métodos con imagen dentro de la máscara ----------------------------------------
     em = json.load(open("outputs/eval_metodos_imagen.json"))

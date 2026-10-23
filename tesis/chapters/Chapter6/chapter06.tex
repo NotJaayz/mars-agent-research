@@ -28,9 +28,9 @@ individuales a partir de estas máscaras no es sencillo}, y el procedimiento no 
 que en un sentido acotado: produce un conteo reproducible de las instancias
 geométricamente separables dentro de la clase roca grande, pero ese conteo no puede
 interpretarse como estimación válida del número total de rocas visibles en la escena. La
-evaluación exploratoria con un observador sugiere un subconteo sistemático dentro de la propia
-región anotada, debido sobre todo a regiones que no contienen la información geométrica
-necesaria para separar instancias; y como la clase no cubre toda la roca de la escena, ni
+evaluación exploratoria con un observador muestra un acuerdo bajo y una tendencia al subconteo
+dentro de la propia región anotada, concentrada en las regiones que no contienen la información
+geométrica necesaria para separar instancias; y como la clase no cubre toda la roca de la escena, ni
 siquiera un conteo exacto de esa región equivaldría al número de rocas visibles.
 
 Las \textbf{propiedades y limitaciones del conjunto de datos} completan la respuesta. Las
@@ -87,7 +87,8 @@ anteproyecto no formuló hipótesis estadísticas y estas se explicitaron despu�
 una y no constituyen contrastes confirmatorios. Los resultados son compatibles con \textbf{H1}:
 la cobertura es reproducible y no se observa que la fracción etiquetada explique principalmente
 la variación global, aunque persiste una dependencia no lineal débil. La evaluación exploratoria
-no brinda apoyo a \textbf{H2} y muestra una tendencia marcada al subconteo frente al observador.
+no brinda apoyo a \textbf{H2}: el acuerdo es bajo y, cuando hay desacuerdo, el procedimiento
+tiende a quedar por debajo del observador.
 El contraste de \textbf{H3} no es concluyente: la componente asignada a la fuente de la anotación
 es pequeña y positiva en todas las variantes y niveles de consenso, y al agrupar las imágenes por
 sol se distingue de cero en cuatro de las seis combinaciones de muestra y nivel, pero no en la
@@ -161,11 +162,16 @@ individuales, y estima cobertura, no conteo.
 
 \subsection{Sobre el conteo y el juicio humano}
 
-La evaluación exploratoria por bandas sobre \cVN{} escenas, con un observador, arrojó un acuerdo
-exacto del \cVAcuerdo, con kappa de Cohen de \cVKappa{} y kappa ponderado de \cVKappaPond: un
-acuerdo escaso. El desacuerdo es asimétrico —el procedimiento queda por debajo del observador en
-\cVAbajo{} escenas y por encima en \cVArriba— y no depende del ajuste de los parámetros: en las
-\cSenN{} combinaciones ensayadas el procedimiento subcuenta en al menos \cSenAbajoMin{} escenas.
+La evaluación exploratoria por bandas sobre \cVN{} escenas, con un observador que repitió el
+conteo, arrojó un acuerdo exacto del \cVAcuerdo, con kappa de Cohen de \cVKappa{} y kappa
+ponderado de \cVKappaPond: un acuerdo débil, que además se apoya sobre todo en la banda de una a
+tres rocas, donde el azar ya acierta el \cVAzar. Cuando hay desacuerdo, el procedimiento queda
+más veces por debajo del observador (\cVAbajo{} escenas) que por encima (\cVArriba), aunque la
+diferencia no es significativa, y esa tendencia se mantiene en \cSenMasAbajo{} de las \cSenN{}
+combinaciones de parámetros. El subconteo se concentra en las escenas en que la roca grande es
+una sola región: \cVRegUnaAbajo{} de los \cVAbajo{} casos. La concordancia del observador
+consigo mismo entre sus dos rondas (kappa ponderado de \cVIntraKappaPond) es del mismo orden, lo
+que confirma que esta evaluación es exploratoria.
 
 La evidencia apunta a que la causa principal del subconteo está en la máscara más que en el
 algoritmo. Cuando un polígono envuelve un campo de bloques contiguos, la máscara no contiene la
@@ -280,8 +286,9 @@ procedimiento y cada una de ellas. Hacer dos preguntas por escena, una sobre la 
 otra sobre la escena completa, permitiría además cuantificar cuánto deja fuera la anotación no
 exhaustiva.
 
-\paragraph{Evaluar el conteo basado en la imagen.} El relieve de sombras es el que más se acerca
-al observador, sin superar la corrección por comparaciones múltiples. Su evaluación requiere una
+\paragraph{Evaluar el conteo basado en la imagen.} El relieve combinado, que mezcla la geometría
+de la máscara y el gradiente, es el que más se acerca al observador, aunque sin una diferencia
+demostrable con E2, y el orden de los relieves cambió entre las dos rondas del conteo. Su evaluación requiere una
 muestra independiente de la usada aquí, varios observadores y un control explícito de la
 sobresegmentación que la textura de la imagen introduce.
 

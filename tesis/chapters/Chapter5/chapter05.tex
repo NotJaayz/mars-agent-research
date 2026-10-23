@@ -705,8 +705,9 @@ fuentes (\cFracValidMed{} frente a \cFracValidGold, $p = \cFracValidP$).
 \label{sec:validacion-manual}
 
 La metodología comprometía un contraste entre el conteo automático y un conteo manual, con el
-diseño descrito en la Sección~\ref{sec:evaluacion}. Se realizó en dos rondas: una piloto de
-\num{24} escenas y una definitiva de \cVN{} escenas, que es la que se reporta. Los parámetros
+diseño descrito en la Sección~\ref{sec:evaluacion}. Se hizo una ronda piloto de
+\num{24} escenas y, sobre una muestra definitiva de \cVN{} escenas, dos rondas de conteo; se
+reporta la segunda (véase «Repetición del conteo», más abajo). Los parámetros
 estaban congelados antes de la primera respuesta y ninguna escena de calibración forma parte de
 la muestra definitiva (Sección~\ref{sec:calibracion}). La validación la realizó un único
 observador, el propio autor, de modo que lo que sigue es \textbf{una evaluación exploratoria} y
@@ -722,23 +723,41 @@ imperceptibles—, sustituye el relleno opaco por un tinte tenue que no oculta l
 estratifica la muestra por área de la región en lugar de por la banda del propio
 procedimiento.
 
+\paragraph{Repetición del conteo.} Al revisar las respuestas de la primera ronda, el observador
+consideró que había sobreestimado el número de rocas en las regiones extensas, y repitió el
+conteo de las \cVN{} escenas con identificadores nuevos, en otro orden aleatorio y sin ver el
+resultado automático, con un criterio más estricto de qué cuenta como una roca individual. Esta
+segunda ronda es la que se reporta. Como se hizo conociendo los resultados agregados de la
+primera, no es independiente de ella, y por eso se informan las dos. En la primera, el acuerdo
+exacto fue del \cVPrimAcuerdo{} y el kappa ponderado de \cVPrimKappaPond, con \cVPrimAbajo{}
+escenas por debajo del observador y \cVPrimArriba{} por encima. Entre las dos rondas coinciden
+\cVIntraCoinc{} de las \cVN{} escenas, con un kappa ponderado de \cVIntraKappaPond; la segunda
+banda es menor en \cVRecMenor{} escenas y mayor en \cVRecMayor. La variabilidad del propio
+observador es, por tanto, del mismo orden que su desacuerdo con el procedimiento, lo que refuerza
+el carácter exploratorio de esta validación. Las dos rondas coinciden en lo cualitativo: el
+acuerdo con el procedimiento es bajo y, cuando hay desacuerdo, el procedimiento queda más veces
+por debajo que por encima.
+
 \subsubsection{Resultado}
 
 Sobre las \cVN{} escenas, el acuerdo exacto de banda es del \cVAcuerdo, con coeficiente kappa
 de Cohen de \cVKappa{} (IC~95\,\% \cVKappaIC) y kappa ponderado con pesos lineales de
-\cVKappaPond{} (IC~95\,\% \cVKappaPondIC). Ambos corresponden a un acuerdo \textbf{escaso} en
-la escala de \citet{landis1977}, y el intervalo del kappa simple es compatible con un acuerdo
+\cVKappaPond{} (IC~95\,\% \cVKappaPondIC). Ambos corresponden a un acuerdo \textbf{débil} en
+la escala de \citet{landis1977}, y el intervalo del kappa ponderado llega hasta el acuerdo
 nulo. El acuerdo aparente es engañoso: \cVCoincUnaTres{} de las \cVCoinc{}
-coincidencias se concentran en una sola celda, la de una a tres rocas.
+coincidencias se concentran en una sola celda, la de una a tres rocas, donde el observador
+sitúa \cVHumUnaTres{} escenas y el procedimiento \cVAutoUnaTres. Con esas frecuencias, el
+acuerdo esperado por azar ya es del \cVAzar, y responder siempre «una a tres» acertaría en el
+\cVSiempreUnaTres.
 
-El desacuerdo es \textbf{marcadamente asimétrico}. El procedimiento sitúa la escena en una
-banda inferior a la del observador en \cVAbajo{} casos y superior en solo \cVArriba{}
-($p \cVSignoP$ en la prueba de signos). La Figura~\ref{fig:validacion-manual} muestra la
-matriz de acuerdo.
+El desacuerdo es \textbf{asimétrico}, aunque no de forma significativa. El procedimiento sitúa
+la escena en una banda inferior a la del observador en \cVAbajo{} casos y superior en
+\cVArriba{} ($p = \cVSignoP$ en la prueba de signos). La Figura~\ref{fig:validacion-manual}
+muestra la matriz de acuerdo.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.78\textwidth]{Figura_26_validacion_manual_v2.png}
+  \includegraphics[width=0.78\textwidth]{Figura_26_validacion_manual_v3.png}
   \caption[Acuerdo entre el conteo manual y el automático]{Matriz de acuerdo entre el
     conteo manual por bandas y el automático, sobre \cVN{} escenas. Las tres columnas de
     la derecha están vacías: con los parámetros fijados, el procedimiento no produce en estas
@@ -746,20 +765,23 @@ matriz de acuerdo.
   \label{fig:validacion-manual}
 \end{figure}
 
-El rasgo más visible de esa matriz son las \textbf{tres columnas vacías}. En ninguna de las
-\cVN{} escenas el procedimiento devuelve más de \cVMaxAuto{} rocas, mientras que el observador
-identificó diez o más en \cVHumDiez{} de ellas y veinticinco o más en \cVHumVeinti. Sumando las
-escenas, el procedimiento cuenta \cVRocasAuto{} rocas donde el observador distingue al menos
-\cVRocasHumMin{} —el límite inferior de sus bandas—, es decir, \cVRazon{} veces más.
+El rasgo más visible de esa matriz son las \textbf{tres columnas vacías}: en ninguna de las
+\cVN{} escenas el procedimiento devuelve más de \cVMaxAuto{} rocas, y el observador identificó
+diez o más en solo \cVHumDiez{} de ellas. En el agregado no hay un déficit claro: el
+procedimiento cuenta \cVRocasAuto{} rocas en total, dentro del intervalo de \cVRocasHumMin{} a
+\cVRocasHumMax{} que permiten las bandas del observador. El desacuerdo está en el reparto entre
+escenas: el procedimiento se queda corto en unas y cuenta de más en otras, y los dos errores
+tienen causas distintas (Sección~\ref{sec:anotacion-parcial}).
 
 \paragraph{Sensibilidad a los parámetros.} Para descartar que el resultado dependa de la
 calibración se repitió la comparación con las \cSenN{} combinaciones de prominencia, suavizado
 y área mínima descritas en la Sección~\ref{sec:calibracion}. El kappa ponderado oscila entre
-\cSenMin{} y \cSenMax, con mediana de \cSenMed; en todas las combinaciones el procedimiento
-queda por debajo del observador en entre \cSenAbajoMin{} y \cSenAbajoMax{} escenas, y por
-encima en no más de \cSenArribaMax. Solo \cSenDiez{} combinaciones, las más permisivas,
-alcanzan alguna vez la banda de diez a veinticuatro rocas. El subconteo no es, por tanto, un
-artefacto del ajuste de los umbrales.
+\cSenMin{} y \cSenMax, con mediana de \cSenMed; el procedimiento queda por debajo del
+observador en entre \cSenAbajoMin{} y \cSenAbajoMax{} escenas y por encima en entre
+\cSenArribaMin{} y \cSenArribaMax, y en \cSenMasAbajo{} de las \cSenN{} combinaciones queda más
+veces por debajo que por encima. Solo \cSenDiez{} combinaciones, las más permisivas,
+alcanzan alguna vez la banda de diez a veinticuatro rocas. Ni el acuerdo bajo ni la tendencia
+al subconteo son, por tanto, un artefacto del ajuste de los umbrales.
 
 \subsubsection{Por qué el subconteo y qué representa el conteo}
 \label{sec:anotacion-parcial}
@@ -775,9 +797,16 @@ cortar donde la región presenta un estrangulamiento. Cuando el anotador traza u
 que envuelve un campo de bloques contiguos, la región resultante es convexa o casi convexa, y
 la máscara no contiene ningún indicio de dónde termina un bloque y empieza el siguiente. La
 Figura~\ref{fig:mecanismo} contrasta un caso en que el procedimiento coincide con el observador
-y otro en que, sobre una sola región que el observador cuenta entre veinticinco y cuarenta y
-nueve rocas, el procedimiento solo encuentra tres. Como el observador contó dentro de la misma
-región que el procedimiento, este es el mecanismo principal del subconteo medido.
+y otro en que, sobre una sola región que el observador cuenta entre cuatro y nueve rocas, el
+procedimiento solo encuentra una. Como el observador contó dentro de la misma región que el
+procedimiento, este es el mecanismo principal del subconteo medido. Lo confirma un análisis
+hecho después de la validación, que separa las escenas según la máscara limpia de roca grande
+tenga una sola región o varias. Con varias regiones, el procedimiento coincide con el observador
+en \cVRegVariasCoinc{} de \cVRegVariasN{} escenas, queda por debajo en \cVRegVariasAbajo{} y por
+encima en \cVRegVariasArriba. Con una sola región, coincide en \cVRegUnaCoinc{} de
+\cVRegUnaN{}, queda por debajo en \cVRegUnaAbajo{} y nunca por encima: \cVRegUnaAbajo{} de los
+\cVAbajo{} casos de subconteo son regiones de un solo polígono. Como el corte se definió después
+de ver los resultados, se toma como una señal y no como un contraste.
 
 El segundo es que la anotación de roca grande \textbf{no marca todas las rocas de la escena,
 sino algunas}. En \cVNoExhN{} de las \cVN{} escenas, la clase roca grande representa menos del
@@ -805,14 +834,15 @@ la región equivaldría al número de rocas de la escena.
 El procedimiento produce un conteo reproducible de las instancias geométricamente separables
 dentro de la clase roca grande, pero ese conteo no puede interpretarse como estimación válida
 del número total de rocas visibles en la escena. La evaluación exploratoria con un observador
-sugiere un subconteo sistemático dentro de la propia región anotada, debido sobre todo a
-regiones que no contienen la información geométrica necesaria para separar instancias. Y como
+muestra un acuerdo bajo y una tendencia al subconteo dentro de la propia región anotada,
+concentrada en las regiones que no contienen la información geométrica necesaria para separar
+instancias. Y como
 la clase no cubre toda la roca de la escena, ni siquiera un conteo exacto de la región
 equivaldría al número de rocas visibles.
 
 Lo que el resultado sostiene es un uso más débil: ordenar de forma aproximada escenas según
-contengan o no bloques discretos delimitados, sabiendo que el valor queda por debajo de lo que
-un observador contaría. La conclusión debe moderarse además por el diseño de la validación: con
+contengan o no bloques discretos delimitados, sabiendo que el valor tiende a quedar por debajo
+de lo que un observador contaría cuando una región encierra varios bloques. La conclusión debe moderarse además por el diseño de la validación: con
 un único observador no es posible separar el desacuerdo entre algoritmo y persona de la
 variabilidad natural entre personas, y la muestra, estratificada por área de la región, no es
 representativa del subconjunto completo.
@@ -857,15 +887,17 @@ propio resultado. La diferencia con E2 se contrastó por \textit{bootstrap}, pri
   \end{tabular}
 \end{table}
 
-Ningún relieve mejora a E2 de forma demostrable. El de sombras obtiene el mayor acuerdo y su
-intervalo al \SI{95}{\percent} excluye el cero, pero deja de hacerlo al corregir por el número
-de métodos probados. Tampoco lo hace ninguna de sus \cMISombraVarN{} variantes de suavizado y
-radio, cuyos kappas ponderados van de \cMISombraVarMin{} a \cMISombraVarMax: el acuerdo es
-inestable frente a esos parámetros, y la configuración principal está entre las de mayor acuerdo
-de las ensayadas, de modo que la comparación, si acaso, favorece a este relieve. Los cuatro relieves invierten además la dirección del error: todos
-quedan por encima del observador en más escenas que por debajo —el de escala gruesa, en
-\cMIPersistArriba{} de las \cVN—, lo que indica que cortan también en la textura interna de
-las rocas y no solo en sus bordes. Corregir el subconteo con la imagen exige, por tanto,
+Ningún relieve mejora a E2 de forma demostrable: ninguno de los intervalos excluye el cero, ni
+siquiera sin corregir por el número de métodos probados. El combinado, que mezcla a partes
+iguales la geometría de la máscara y el gradiente, obtiene el mayor acuerdo. El de sombras,
+cuyas \cMISombraVarN{} variantes de suavizado y radio se ensayaron aparte, no supera a E2 en
+ninguna de ellas: sus kappas ponderados van de \cMISombraVarMin{} a \cMISombraVarMax, de modo
+que el acuerdo es además inestable frente a esos parámetros. Con la primera ronda del conteo era
+el de sombras el que más se acercaba al observador; que el orden cambie entre rondas muestra lo
+frágiles que son estas diferencias. Los cuatro relieves invierten la dirección del error: todos
+quedan por encima del observador en más escenas que por debajo —el gradiente fino, en
+\cMIGradArriba{} de las \cVN—, lo que indica que cortan también en la textura interna de las
+rocas y no solo en sus bordes. Corregir el subconteo con la imagen exige, por tanto,
 controlar a la vez la sobresegmentación que la propia imagen introduce.
 
 La Figura~\ref{fig:hibrido} ilustra el principio del \textbf{enfoque híbrido} —usar la máscara
@@ -1121,10 +1153,10 @@ Sección~\ref{sec:hipotesis} con la evidencia de este capítulo.
       & Los resultados son compatibles con H1; no se observa que la fracción etiquetada explique
       principalmente la variación global, aunque persiste dependencia no lineal débil \\
     H2 & Kappa ponderado \cVKappaPond{} \cVKappaPondIC; \cVAbajo{} escenas por debajo del
-      observador y \cVArriba{} por encima; subconteo en las \cSenN{} combinaciones de
-      parámetros.
-      & La evaluación exploratoria no brinda apoyo a H2 y muestra una tendencia marcada al
-      subconteo frente al observador \\
+      observador y \cVArriba{} por encima ($p = \cVSignoP$); más casos por debajo en
+      \cSenMasAbajo{} de las \cSenN{} combinaciones de parámetros.
+      & La evaluación exploratoria no brinda apoyo a H2: el acuerdo es bajo y, cuando hay
+      desacuerdo, el procedimiento tiende a quedar por debajo del observador \\
     H3 & Diferencia de medianas de \cFuenteDifMed{} puntos entre fuentes. En la descomposición
       descriptiva, el \cDescImgPct{} de la diferencia de medias queda asignado a las imágenes y
       \cDescAnot{} puntos \cDescAnotIC{} a la anotación. La componente de anotación es positiva
@@ -1357,11 +1389,12 @@ superponen y que ningún ajuste del procedimiento resuelve por sí solo:
     información que separaría los bloques está en la imagen, no en la máscara.
   \item \textbf{La calibración enfrenta un dilema.} Contener la sobresegmentación de las losas
     continuas exige un criterio de semillas más estricto, y ese criterio rebajó el conteo de
-    forma general (Sección~\ref{sec:calibracion}). Ninguna de las \cSenN{} combinaciones de
-    parámetros ensayadas elimina el subconteo.
+    forma general (Sección~\ref{sec:calibracion}). En \cSenMasAbajo{} de las \cSenN{}
+    combinaciones de parámetros ensayadas el procedimiento sigue quedando más veces por debajo
+    que por encima del observador.
   \item \textbf{Usar la imagen no lo resuelve de forma demostrable.} Los relieves derivados de la
     imagen invierten la dirección del error —pasan a sobreestimar—, y ninguno mejora el
-    acuerdo con el observador una vez corregido el número de métodos probados.
+    acuerdo con el observador de forma demostrable.
 \end{enumerate}
 
 \subsection{Síntesis: propiedades, heterogeneidades y limitaciones del conjunto de datos}
@@ -1423,7 +1456,9 @@ clasificación, su evidencia y su consecuencia.
     Granularidad variable de las regiones
       & Heterogeneidad de anotación
       & Polígonos que delimitan cada bloque junto a polígonos que envuelven campos enteros,
-        ilustrados con dos ejemplos (Figura~\ref{fig:mecanismo})
+        ilustrados con dos ejemplos (Figura~\ref{fig:mecanismo}); con varias regiones el conteo
+        coincide con el observador en \cVRegVariasCoinc{} de \cVRegVariasN{} escenas, y con una
+        sola, en \cVRegUnaCoinc{} de \cVRegUnaN
       & El mismo procedimiento acierta o subcuenta según cómo se trazó \\
     Escenas casi sin etiquetar y artefactos
       & Anomalías o problemas de calidad
@@ -1485,8 +1520,9 @@ de prueba cubren solo una parte de la misión.
 
 \paragraph{Subdivisión residual y subconteo.} El criterio de prominencia redujo la
 fragmentación sin eliminarla: el \cPctSubdiv{} de las escenas que cuentan presenta más rocas
-que componentes conectadas. La validación sugiere, sin embargo, que el sesgo neto va en sentido
-opuesto y es de mayor magnitud; ambos efectos coexisten en escenas distintas y no se cancelan.
+que componentes conectadas. La validación sugiere, sin embargo, que entre las escenas en que hay
+desacuerdo predomina el sentido opuesto, el subconteo de las regiones de un solo polígono; ambos
+efectos coexisten en escenas distintas y no se cancelan.
 
 \paragraph{Alcance del subconjunto.} Los resultados corresponden a una cámara de un rover en una
 región. No se extienden sin más a otras misiones, otras cámaras ni otros terrenos.
