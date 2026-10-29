@@ -35,6 +35,7 @@ Todas las cifras del texto proceden de `cifras.tex` y `tabla_error_modelo.tex`, 
 | `config.tex` | Título, autor, tutora (Juliana De Mier Medellin), año y modalidad de grado. |
 | `references.bib` | 66 entradas, generadas por `scripts/generar_bibliografia.py` desde los DOI de `referencias.json`; estilo APA 7 vía `biblatex` + `biber`. |
 | `cifras.tex`, `tabla_error_modelo.tex` | Cifras y tabla generadas por `scripts/generar_cifras.py`. |
+| `tabla_tipo_escena.tex` | Indicadores por tipo de escena, generada por `scripts/tabla_tipo_escena.py`. |
 | `abbreviations.tex` | Abreviaturas y siglas. |
 | `glossary.tex` | Glosario. |
 | `chapters/Chapter1/` | Portada, resúmenes (es/en) e introducción. |

@@ -398,6 +398,39 @@ de la mitad de roca sin alcanzar los dos tercios.
   \label{fig:tipologia}
 \end{figure}
 
+\paragraph{Los indicadores según el tipo de escena.} La Tabla~\ref{tab:tipo-indicadores} cruza
+la tipología con los dos indicadores. La cobertura mediana separa con nitidez los tipos, como
+cabe esperar en parte por construcción, porque la tipología se define a partir de la
+composición: es del \SI{100}{\percent} en las escenas rocosas y nula en las de suelo, y las
+mixtas, que no cumplen ningún criterio, se sitúan en un punto intermedio. Lo que la tipología
+no impone es dónde aparece la roca grande, y ahí la tabla aporta información nueva. Los bloques
+discretos son \textbf{más frecuentes en las escenas mixtas y arenosas que en las rocosas}: más de
+una de cada cuatro escenas mixtas y una de cada cinco arenosas contienen roca grande, frente a
+menos de una de cada seis rocosas. Esas escenas, además, contienen más rocas por escena apta. Una
+lectura plausible es que en las escenas rocosas predomina el afloramiento continuo de lecho
+rocoso, que la anotación registra como una superficie, mientras que los bloques sueltos destacan
+y se delimitan mejor sobre los depósitos de arena y en el terreno heterogéneo. Las escenas rocosas, por ser las más numerosas,
+aportan con todo algo más de la mitad de las rocas contadas.
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption[Indicadores según el tipo de escena]{Indicadores según el tipo de escena. La cobertura
+    y la presencia de roca grande se calculan sobre la población de E1; el conteo, sobre la de E2.
+    Las escenas sin etiqueta no forman parte de E1. Tabla generada por
+    \texttt{scripts/tabla\_tipo\_escena.py} desde el conjunto de resultados.}
+  \label{tab:tipo-indicadores}
+  \begin{tabular}{lrrrrrr}
+    \toprule
+     & \multicolumn{3}{c}{\textbf{Cobertura (E1)}} & \multicolumn{3}{c}{\textbf{Conteo (E2)}} \\
+    \cmidrule(lr){2-4}\cmidrule(lr){5-7}
+    \textbf{Tipo} & \textbf{Escenas} & \textbf{Mediana} & \textbf{Con roca grande} &
+      \textbf{Escenas} & \textbf{Rocas por escena} & \textbf{Rocas} \\
+    \midrule
+\input{tabla_tipo_escena}
+  \end{tabular}
+\end{table}
+
 \subsection{Variación a lo largo de la secuencia de adquisición (E3)}
 
 El orden temporal se obtiene del \textbf{reloj de nave}, el contador de a bordo que el
@@ -436,22 +469,78 @@ Cabe señalar que el subconjunto es casi enteramente de la cámara izquierda del
 —\cNOjoIzq{} imágenes frente a \cNOjoDer{} de la derecha—, por lo que tampoco fue posible
 comparar los indicadores entre los dos ojos del par estéreo.
 
-\subsection{Extensión aplicada: reglas heurísticas de priorización}
+\subsection{Recursos reproducibles (E4)}
+\label{sec:e4}
+
+E4 pregunta si otra persona puede repetir el análisis y obtener los mismos resultados. La
+respuesta es afirmativa, y se apoya en evidencia verificable y no solo en la disponibilidad del
+código. El procedimiento clásico es \textbf{determinista}: una reejecución íntegra en un solo
+núcleo reprodujo de forma idéntica las veintinueve columnas del conjunto de resultados obtenido
+en paralelo (Sección~\ref{sec:herramientas}). Salvo unos pocos datos de diseño o de inspección
+puntual, ninguna cifra de resultados de este documento se escribió a mano: más de quinientas macros generadas por guion desde los archivos de resultados
+alimentan el texto, las tablas y los resúmenes, y las figuras se producen con los mismos
+módulos que calculan los indicadores, de modo que no pueden divergir de ellos. Además,
+\cPruebasN{} pruebas automáticas verifican las reglas deterministas del cálculo, los manifiestos fijan qué
+escenas entran en la calibración, en el reparto del segmentador y en la validación humana, y el
+modelo evaluado se identifica por su huella SHA-256 y se publica como versión descargable.
+
+La reproducción no exige, además, repetir todo el trabajo: la Tabla~\ref{tab:niveles-repro}
+distingue cuatro niveles, cada uno con sus requisitos. Los dos primeros no necesitan el conjunto
+de datos ni el entorno de cálculo, porque los resultados que respaldan el documento están
+versionados en el repositorio público.
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption[Niveles de reproducción]{Niveles de reproducción del trabajo, de menor a mayor
+    exigencia.}
+  \label{tab:niveles-repro}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{2.1cm}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}p{5.4cm}>{\raggedright\arraybackslash}p{2.8cm}}
+    \toprule
+    \textbf{Nivel} & \textbf{Requisitos} & \textbf{Qué se reproduce} & \textbf{Tiempo} \\
+    \midrule
+    1. Consulta & Un navegador & Panel de consulta autocontenido: resumen, reglas de
+      priorización y escenas priorizadas (Figura~\ref{fig:panel}) & Inmediato \\
+    2. Documento & Compilador \LaTeX{} y Biber & Este documento, con todas sus cifras y tablas,
+      desde las fuentes y los resultados versionados & Minutos \\
+    3. Análisis & Entorno declarado y AI4Mars & \texttt{make resultados}: indicadores de las
+      \cNEscenas{} escenas, evaluaciones, figuras y cifras, con el modelo publicado & Unos
+      17~min de cálculo \\
+    4. Completo & Lo anterior y unidad gráfica & \texttt{make todo}, incluido el reentrenamiento
+      del segmentador & Unos \cSegMinTotal{}~min más \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Extensión aplicada: priorización y consulta de los resultados}
 \label{sec:extension}
 
-Como extensión aplicada, y fuera del núcleo de la pregunta de investigación, los indicadores se
-tradujeron en seis reglas heurísticas de priorización con umbrales explícitos, y se construyó
-una aplicación de escritorio para consultar el conjunto de resultados. Aplicadas al conjunto,
-las reglas sitúan \cPrioAlta{} escenas en prioridad alta, \cPrioMedia{} en media y
-\cPrioBaja{} en baja; las \cPrioSin{} restantes no activan ninguna de las reglas que elevan
-la prioridad, aunque pueden activar alguna de las informativas.
+Como extensión aplicada, los indicadores se tradujeron en seis reglas heurísticas de
+priorización con umbrales explícitos y se pusieron al alcance de quien no programa mediante dos
+herramientas de consulta. Aplicadas al conjunto, las reglas sitúan \cPrioAlta{} escenas en
+prioridad alta, \cPrioMedia{} en media y \cPrioBaja{} en baja; las \cPrioSin{} restantes no
+activan ninguna de las reglas que elevan la prioridad, aunque pueden activar alguna de las
+informativas. Su función es ordenar escenas para revisión con un criterio visible y ajustable:
+cada regla declara su umbral y su motivación, y no están calibradas para decisiones de
+navegación.
 
-Estas reglas \textbf{no evalúan la transitabilidad ni la seguridad de la navegación} ni están
-calibradas para ello. Sin escala métrica no puede inferirse la altura de un bloque, la
-transitabilidad, el daño potencial a las ruedas ni la probabilidad de atrapamiento a partir de
-porcentajes de píxeles, y no existe para este subconjunto un registro de incidentes contra el
-que validarlas. Su función es ordenar escenas para revisión con un criterio visible y
-ajustable. El Anexo~\ref{app:extension} documenta las reglas, su distribución y la aplicación.
+La primera herramienta es una \textbf{aplicación de escritorio} con cuatro vistas —resumen,
+priorización, explorador de escenas y geología—, que para cada escena muestra la imagen
+original, la anotación del terreno y las rocas detectadas. La segunda es un \textbf{panel web
+autocontenido} (Figura~\ref{fig:panel}): un único archivo que se abre con doble clic, sin
+servidor, conexión ni instalación, y que incrusta los indicadores, el catálogo de reglas y las
+escenas priorizadas. Ambas leen los mismos archivos de resultados que respaldan este documento,
+de modo que cualquier reejecución del procedimiento se refleja en ellas sin pasos adicionales.
+El Anexo~\ref{app:extension} documenta las reglas, su distribución y las herramientas.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{Figura_panel_consulta.png}
+  \caption[Panel de consulta de los resultados]{Panel de consulta autocontenido generado desde
+    el conjunto de resultados: resumen del subconjunto, escenas por nivel de prioridad, reglas
+    activadas y catálogo de reglas con su criterio y su justificación.}
+  \label{fig:panel}
+\end{figure}
 
 \section{Evaluación y validación}
 
@@ -480,12 +569,12 @@ Se ejecutó sobre las máscaras de experto el mismo procedimiento, sin modificar
 
 \begin{table}[htbp]
   \centering
-  \caption[Indicadores según la fuente de etiqueta]{Indicadores según la fuente de etiqueta.
+  \caption[Indicadores y variables según la fuente de etiqueta]{Indicadores y variables descriptivas según la fuente de etiqueta.
     Las dos columnas corresponden a imágenes distintas.}
   \label{tab:validacion}
   \begin{tabular}{lcc}
     \toprule
-    \textbf{Indicador} & \textbf{Colaborativas} & \textbf{Experto} \\
+    \textbf{Indicador o variable} & \textbf{Colaborativas} & \textbf{Experto} \\
      & ($n = \cNEscenas$) & ($n = \cNGold$) \\
     \midrule
     Cobertura mediana (escenas con roca)          & \cCobMedVal     & \cGoldCobMedPos \\
@@ -569,7 +658,7 @@ descomposición descriptiva basada en el segmentador común, aproximadamente el 
 la diferencia —\cDescImg{} de sus \cDescTotal{} puntos— queda asignado a diferencias entre las
 muestras de imágenes, y \cDescAnot{} puntos —el \cDescAnotPct— a la fuente de las etiquetas.
 Esta proporción es condicional al modelo empleado y no constituye una estimación causal. La
-componente de anotación es pequeña y su intervalo por escena queda en el límite del cero; deja
+componente de anotación es pequeña y su intervalo por escena roza el cero; deja
 de excluirlo cuando se tiene en cuenta la agrupación de las imágenes por sol, como se detalla a
 continuación. Ambas
 anotaciones asignan algo menos de roca que el instrumento, la colaborativa \cResColab{} puntos y
@@ -608,9 +697,9 @@ píxel etiquetado.
     colaborativa--experto: de medianas en las escenas con roca y, entre paréntesis, de medias en
     la muestra del instrumento, que es la que se descompone. Componentes en puntos porcentuales;
     el de anotación, con su intervalo del \SI{95}{\percent} por \textit{bootstrap} por sol. El
-    nivel 1 es el análisis principal y reproduce sus cifras; los intervalos de los niveles 2 y 3
-    se calculan con el mismo procedimiento y número de remuestras, y repetir el remuestreo los
-    mueve en torno a una décima.}
+    nivel 1 es el análisis principal. Todos los intervalos se calculan con el mismo procedimiento
+    y número de remuestras, y como proceden de una repetición del remuestreo distinta de la del
+    texto, pueden diferir de los citados en él en torno a una décima.}
   \label{tab:nivel-experto}
   \begin{tabular}{>{\raggedright\arraybackslash}p{1.6cm}>{\raggedright\arraybackslash}p{1.9cm}%
     >{\raggedright\arraybackslash}p{2.1cm}>{\raggedright\arraybackslash}p{2.0cm}%
@@ -742,7 +831,7 @@ por debajo que por encima.
 
 Sobre las \cVN{} escenas, el acuerdo exacto de banda es del \cVAcuerdo, con coeficiente kappa
 de Cohen de \cVKappa{} (IC~95\,\% \cVKappaIC) y kappa ponderado con pesos lineales de
-\cVKappaPond{} (IC~95\,\% \cVKappaPondIC). Ambos corresponden a un acuerdo \textbf{débil} en
+\cVKappaPond{} (IC~95\,\% \cVKappaPondIC). Ambos corresponden a un acuerdo \textbf{aceptable} en
 la escala de \citet{landis1977}, y el intervalo del kappa ponderado llega hasta el acuerdo
 nulo. El acuerdo aparente es engañoso: \cVCoincUnaTres{} de las \cVCoinc{}
 coincidencias se concentran en una sola celda, la de una a tres rocas, donde el observador
@@ -780,7 +869,7 @@ y área mínima descritas en la Sección~\ref{sec:calibracion}. El kappa pondera
 observador en entre \cSenAbajoMin{} y \cSenAbajoMax{} escenas y por encima en entre
 \cSenArribaMin{} y \cSenArribaMax, y en \cSenMasAbajo{} de las \cSenN{} combinaciones queda más
 veces por debajo que por encima. Solo \cSenDiez{} combinaciones, las más permisivas,
-alcanzan alguna vez la banda de diez a veinticuatro rocas. Ni el acuerdo bajo ni la tendencia
+alcanzan alguna vez la banda de diez a veinticuatro rocas. Ni el acuerdo modesto ni la tendencia
 al subconteo son, por tanto, un artefacto del ajuste de los umbrales.
 
 \subsubsection{Por qué el subconteo y qué representa el conteo}
@@ -799,8 +888,8 @@ la máscara no contiene ningún indicio de dónde termina un bloque y empieza el
 Figura~\ref{fig:mecanismo} contrasta un caso en que el procedimiento coincide con el observador
 y otro en que, sobre una sola región que el observador cuenta entre cuatro y nueve rocas, el
 procedimiento solo encuentra una. Como el observador contó dentro de la misma región que el
-procedimiento, este es el mecanismo principal del subconteo medido. Lo confirma un análisis
-hecho después de la validación, que separa las escenas según la máscara limpia de roca grande
+procedimiento, este es el mecanismo principal del subconteo medido. Lo sugiere un análisis
+exploratorio hecho después de la validación, que separa las escenas según la máscara limpia de roca grande
 tenga una sola región o varias. Con varias regiones, el procedimiento coincide con el observador
 en \cVRegVariasCoinc{} de \cVRegVariasN{} escenas, queda por debajo en \cVRegVariasAbajo{} y por
 encima en \cVRegVariasArriba. Con una sola región, coincide en \cVRegUnaCoinc{} de
@@ -834,7 +923,7 @@ la región equivaldría al número de rocas de la escena.
 El procedimiento produce un conteo reproducible de las instancias geométricamente separables
 dentro de la clase roca grande, pero ese conteo no puede interpretarse como estimación válida
 del número total de rocas visibles en la escena. La evaluación exploratoria con un observador
-muestra un acuerdo bajo y una tendencia al subconteo dentro de la propia región anotada,
+muestra un acuerdo modesto y una tendencia al subconteo dentro de la propia región anotada,
 concentrada en las regiones que no contienen la información geométrica necesaria para separar
 instancias. Y como
 la clase no cubre toda la roca de la escena, ni siquiera un conteo exacto de la región
@@ -931,7 +1020,7 @@ evaluación con más observadores y una muestra independiente queda como trabajo
 imágenes con roca grande, restringiendo sus regiones a la zona etiquetada como roca grande. El
 acuerdo con el conteo clásico, medido por bandas, es del \cSamAcuerdo, con correlación de rangos de
 \cSamRho{} y un error absoluto medio de \cSamMAE{} rocas (Figura~\ref{fig:matriz-acuerdo}). Ese
-acuerdo se mide frente al conteo clásico, que subcuenta, y no frente al observador: indica cuánto
+acuerdo se mide frente al conteo clásico, que tiende a subcontar, y no frente al observador: indica cuánto
 se parecen los dos métodos, no cuál de ellos acierta. El modelo tiende a subdividir una misma roca según su textura interna y, en otras escenas, a no
 detectar bloques de bajo contraste.
 
@@ -1164,10 +1253,9 @@ Sección~\ref{sec:hipotesis} con la evidencia de este capítulo.
       intervalo incluye el cero en la muestra principal con los niveles 1 y 2 (\cTempAnotIC{} y \cNivDosAnotSolIC) y
       lo excluye con el nivel 3 \cNivTresAnotSolIC{} y en la muestra de bloques de prueba
       \cTempAnotPruebaIC.
-      & No concluyente para la cobertura: componente asignada a la fuente pequeña y positiva en
-      todas las variantes; distinguible de cero por sol en cuatro de las seis combinaciones de
-      muestra y nivel, pero no en la muestra principal con los niveles 1 y 2; no contrastada
-      para el conteo \\
+      & Apoyo parcial a H3: la componente asignada a la fuente es pequeña y positiva en todas las
+      variantes, y se distingue de cero por sol en cuatro de las seis combinaciones de muestra y
+      nivel; no es concluyente en la muestra principal con los niveles 1 y 2 \\
     H4 & Sin asociación lineal ni monótona ($r = \cDepCCPearson$, $\rho = \cDepCCSpearman$);
       dependencia no lineal débil (correlación de distancia \cDepCCDcor, $p \cDepCCDcorP$;
       $p \cTempDcorP$ por desplazamiento circular) en forma de U invertida; los tramos de
@@ -1177,6 +1265,78 @@ Sección~\ref{sec:hipotesis} con la evidencia de este capítulo.
     \bottomrule
   \end{tabular}
 \end{table}
+
+\subsection{Contraste con los métodos actuales}
+\label{sec:contraste-metodos}
+
+La investigación reciente sobre AI4Mars se ha concentrado en segmentadores profundos cada vez
+más precisos o más ligeros (Sección~\ref{sec:revision}). Este trabajo aplicó dos de esas
+familias a los mismos datos —un modelo fundacional sin entrenamiento específico y un segmentador
+entrenado con las propias máscaras—, lo que permite contrastarlas con el procedimiento clásico
+sobre una base común. La Tabla~\ref{tab:contraste-metodos} resume el contraste con lo medido en
+este trabajo.
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption[Contraste entre el procedimiento clásico y los métodos de aprendizaje
+    automático]{Contraste entre el procedimiento clásico y los dos métodos de aprendizaje
+    automático aplicados a los mismos datos. Todas las entradas proceden de este trabajo.}
+  \label{tab:contraste-metodos}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{3.9cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{3.5cm}}
+    \toprule
+    \textbf{Criterio} & \textbf{Procedimiento clásico (este trabajo)} &
+      \textbf{Modelo fundacional (FastSAM)} & \textbf{Segmentador entrenado (DeepLabV3)} \\
+    \midrule
+    Datos de entrenamiento & Ninguno & Ninguno específico; preentrenado con imágenes
+      terrestres & Miles de máscaras de AI4Mars \\
+    Equipo & Procesador convencional, un solo núcleo & Unidad gráfica & Unidad gráfica \\
+    Costo medido & Unos diecisiete minutos para las \cNEscenas{} escenas & --- & Unos
+      \cSegMinTotal{} minutos de entrenamiento, antes de la inferencia \\
+    Parámetros & Siete, con significado geométrico explícito & Millones de pesos aprendidos &
+      Decenas de millones de pesos aprendidos \\
+    Reproducibilidad & Determinista; reejecución idéntica verificada & Depende de los pesos
+      publicados & No determinista bit a bit; se identifica por su huella \\
+    Qué entrega & Cobertura y número de rocas por escena & Regiones sin clase, según textura y
+      contraste & Cobertura por píxel; no separa rocas \\
+    Auditabilidad & Cada decisión se remonta a un parámetro y a una regla & Interna, no
+      inspeccionable & Interna, no inspeccionable \\
+    Resultado observado & Conteo con acuerdo aceptable con el observador (kappa ponderado
+      \cVKappaPond) & Acuerdo del \cSamAcuerdo{} con el conteo clásico; subdivide rocas por su
+      textura & mIoU de \cSegMIoU{} en prueba; sesgo medio de \cBAExpMedia{} puntos frente al
+      experto \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Ventajas del procedimiento clásico.} El contraste no indica que el procedimiento
+clásico sea más preciso que un segmentador profundo en toda tarea, sino que, para el propósito
+de este trabajo —derivar indicadores auditables a partir de un conjunto ya anotado—, reúne
+cuatro propiedades que los métodos de aprendizaje automático no ofrecen a la vez:
+\begin{itemize}
+  \item \textbf{Cuenta instancias.} Es el único de los tres que entrega directamente el número de
+    rocas por escena: el segmentador entrenado distingue roca de no-roca pero no separa bloques,
+    y el modelo fundacional produce regiones sin clase que subdividen una misma roca según su
+    textura.
+  \item \textbf{Es transparente.} Cada roca contada se explica por siete parámetros con
+    significado geométrico y una secuencia de operaciones conocida; cuando el conteo falla, el
+    fallo puede atribuirse a una etapa concreta, como hace el diagnóstico de los modos de error.
+    Un segmentador profundo concentra esas decisiones en decenas de millones de pesos.
+  \item \textbf{Es barato y determinista.} Procesa el subconjunto completo en un procesador
+    convencional, sin unidad gráfica ni conjunto de entrenamiento, y una reejecución reproduce
+    los resultados de forma idéntica, mientras que el entrenamiento del segmentador no es
+    reproducible bit a bit en la unidad gráfica empleada.
+  \item \textbf{No hereda el criterio de la anotación.} No aprende de las máscaras, sino que las
+    mide; por eso sirve de referencia para evaluar a los modelos que sí aprenden de ellas. El
+    segmentador entrenado, en cambio, sobreestima la cobertura frente al experto de forma
+    compatible con haber heredado el criterio de la anotación colaborativa.
+\end{itemize}
+
+Los métodos de aprendizaje automático conservan, a su vez, una ventaja que el procedimiento
+clásico no puede igualar: el segmentador estima la cobertura a partir de la imagen sola, sin
+anotación humana. Ambos enfoques resultan, por tanto, complementarios: el clásico como línea de
+base auditable y como instrumento para medir lo que registra la anotación, y el aprendido como
+vía para extender los indicadores a imágenes sin máscara.
 
 \subsection{Interpretación de los indicadores}
 
@@ -1314,8 +1474,8 @@ ella hay \cNArtefactoOk. Es la razón principal para excluir esa bandera del con
   \label{fig:diag-artefacto}
 \end{figure}
 
-La anotación en forma de contorno hueco se midió sobre una muestra de \num{600} escenas con
-roca grande y resultó \textbf{rara}: una región de las \num{1019} examinadas. Se reporta por
+La anotación en forma de contorno hueco se midió, mediante una inspección puntual realizada
+durante el diagnóstico, sobre una muestra de \num{600} escenas con roca grande y resultó \textbf{rara}: una región de las \num{1019} examinadas. Se reporta por
 completitud, pero no justifica un filtro adicional.
 
 \subsection{El límite del conteo: representación semántica y granularidad}
@@ -1459,7 +1619,7 @@ clasificación, su evidencia y su consecuencia.
         ilustrados con dos ejemplos (Figura~\ref{fig:mecanismo}); con varias regiones el conteo
         coincide con el observador en \cVRegVariasCoinc{} de \cVRegVariasN{} escenas, y con una
         sola, en \cVRegUnaCoinc{} de \cVRegUnaN
-      & El mismo procedimiento acierta o subcuenta según cómo se trazó \\
+      & El mismo procedimiento acierta o tiende a subcontar según cómo se trazó \\
     Escenas casi sin etiquetar y artefactos
       & Anomalías o problemas de calidad
       & \cFlagNull{} escenas con más del \SI{95}{\percent} sin etiqueta; \cNNullBig{} con roca

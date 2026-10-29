@@ -88,6 +88,7 @@ figuras:
 # 10. Todas las cifras del documento, desde outputs/ (tesis/cifras.tex y tablas generadas).
 cifras:
 	$(PY) scripts/generar_cifras.py
+	$(PY) scripts/tabla_tipo_escena.py
 
 # Bibliografía desde Crossref/DataCite (requiere conexión; no forma parte de "todo").
 bibliografia:

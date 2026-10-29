@@ -158,9 +158,8 @@ patrón de anotación en contorno hueco, una fuente de conteo excesivo.
 \section{Extensión aplicada: reglas heurísticas de priorización y aplicación}
 \label{app:extension}
 
-Esta sección documenta la extensión aplicada que resume la subsección~\ref{sec:extension}.
-No forma parte de la respuesta a la pregunta de investigación y se incluye como demostración
-de uso de los indicadores.
+Esta sección documenta en detalle la extensión aplicada que resume la
+subsección~\ref{sec:extension}: las reglas, su implementación y las herramientas de consulta.
 
 \subsection*{Reglas heurísticas de priorización}
 
@@ -267,6 +266,16 @@ Las figuras se generan en el momento a partir de los mismos archivos de resultad
 respaldan este documento, de modo que la aplicación no mantiene una copia propia de los datos
 y cualquier reejecución del procedimiento se refleja en ella sin pasos adicionales.
 
+\subsection*{Panel web autocontenido}
+
+Como complemento de la aplicación, un guion genera un panel de consulta en un único archivo
+HTML (Figura~\ref{fig:panel}). Los datos se incrustan en el propio archivo y las gráficas se
+dibujan en SVG, de modo que se abre con doble clic en cualquier navegador, sin servidor,
+conexión ni dependencias externas. Reúne el resumen del subconjunto, la distribución por nivel
+de prioridad y por regla, el catálogo de reglas con su criterio y su justificación, y la lista
+filtrable de las escenas de mayor prioridad. Se regenera con el resto de los resultados y se
+versiona en el repositorio, por lo que es la forma más directa de consultar el trabajo.
+
 \section{Exploración complementaria: detección de vetas}
 \label{app:vetas}
 
@@ -370,8 +379,8 @@ Los recursos que respaldan el trabajo están disponibles en el repositorio públ
   \item[Manifiestos] Escenas de calibración, reparto del segmentador por bloques temporales
     —con el bloque y la partición de cada escena— y respuestas de la validación humana.
 
-  \item[Conjunto de resultados] Archivo tabular con las veinticuatro columnas de identificación e
-    indicadores y las cuatro de elegibilidad para las \cNEscenas{} escenas, según el esquema de la
+  \item[Conjunto de resultados] Archivo tabular con veintinueve columnas —identificación, indicadores, variables
+    descriptivas y elegibilidad— para las \cNEscenas{} escenas, según el esquema de la
     Tabla~\ref{tab:esquema}, y los resultados equivalentes para las máscaras de especialista.
 
   \item[Especificación del entorno] Archivo de definición del entorno con las versiones de la

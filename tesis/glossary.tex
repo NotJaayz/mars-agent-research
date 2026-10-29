@@ -26,7 +26,7 @@
     depósitos de arena suelta.
 
   \item[Bandera de calidad] Etiqueta que resume la aptitud de cada escena para los
-    indicadores: \texttt{ok}, \texttt{no\_bigrock}, \texttt{no\_rock},
+    dos indicadores: \texttt{ok}, \texttt{no\_bigrock}, \texttt{no\_rock},
     \texttt{mostly\_null} y \texttt{empty} (Tabla~\ref{tab:banderas}).
 
   \item[\textit{Bootstrap} por sol] Remuestreo que toma soles completos, con todas
@@ -76,7 +76,11 @@
 
   \item[Fracción etiquetada] Proporción de los píxeles de una escena que tienen
     clase asignada en la máscara. Es el denominador de la cobertura sobre píxeles
-    etiquetados y un indicador de calidad de cada escena.
+    etiquetados y una variable de calidad de cada escena.
+
+  \item[Indicador] Cada una de las dos magnitudes que responden a la pregunta de
+    investigación: la cobertura de roca visible (E1) y el número aproximado de rocas
+    individuales (E2). Las demás magnitudes por escena son variables descriptivas.
 
   \item[Información mutua] Cantidad de información, en bits, que una variable aporta
     sobre otra. Vale cero si son independientes y no presupone ninguna forma de
@@ -172,7 +176,8 @@
 
   \item[Transformada de distancia] Imagen en la que cada píxel activo guarda la
     distancia al píxel de fondo más cercano. Sus máximos locales se sitúan en los
-    centros de las regiones y sirven como semillas naturales.
+    centros de las regiones; los que superan el umbral de prominencia sirven como
+    semillas de la división de aguas.
 
 \end{description}
 }

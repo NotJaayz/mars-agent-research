@@ -29,6 +29,18 @@ segmentación. Cada unidad produce una fila del conjunto de resultados con los i
 calculados. No hay agregación previa: las estadísticas del
 Capítulo~\ref{cap:resultados} se derivan de esas filas.
 
+\paragraph{Indicadores, variables y columnas.} En este documento, \textbf{indicador} designa
+las dos magnitudes que responden a la pregunta de investigación: la \textbf{cobertura de roca
+visible} (E1) y el \textbf{número aproximado de rocas individuales} (E2). Las demás magnitudes
+que se calculan por escena —composición del terreno, fracción etiquetada, componentes
+conectadas, tamaño y forma de las rocas— son \textbf{variables descriptivas}: acompañan a los
+indicadores y permiten interpretarlos. Indicadores y variables descriptivas forman parte de las
+variables de estudio (Tabla~\ref{tab:variables}) y se almacenan, junto con la identificación de
+la escena y las banderas de calidad y de elegibilidad, como \textbf{columnas} del conjunto de
+resultados, que tiene veintinueve (Tabla~\ref{tab:esquema}). En la matriz de
+operacionalización (Sección~\ref{sec:operacionalizacion}), por último, la columna
+«indicador / métrica» designa la medida con que se verifica el logro de cada objetivo.
+
 Una decisión de diseño conviene explicitarla desde el principio, porque condiciona la
 interpretación de todo lo que sigue: \textbf{el procedimiento no lee las imágenes}. Toda
 la información que consume proviene de la máscara. Los indicadores E1 y E2 no usan las
@@ -36,6 +48,17 @@ imágenes; estas intervienen solo en la inspección visual, en la calibración, 
 humana y en los modelos de aprendizaje automático con que se contrastan los indicadores.
 Esta elección responde a la pregunta de investigación —qué puede medirse sobre las
 máscaras— pero impone un límite que el Capítulo~\ref{cap:resultados} cuantifica.
+
+\paragraph{Extensiones del alcance.} El núcleo del trabajo —los indicadores E1 y E2 y su
+evaluación— se limita a las máscaras de la cámara de navegación de \textit{Curiosity}. Sobre
+ese núcleo se desarrollaron tres extensiones que amplían el alcance de forma deliberada y se
+presentan como tales. La primera usa la imagen para separar bloques dentro de la región anotada,
+como exploración de cómo superar el límite del conteo sobre la máscara
+(Sección~\ref{sec:hibrido}). La segunda procesa las máscaras de la taxonomía geológica de
+\textit{Perseverance}, que distinguen rasgos que la escala de navegación no recoge, y la
+tercera mide el color en imágenes de la cámara de mástil de \textit{Curiosity}; ambas sirven
+a la exploración de la detección de vetas (Anexo~\ref{app:vetas}). Ninguna modifica los
+indicadores ni las cifras del núcleo.
 
 \section{Datos y fuentes de información}
 \label{sec:datos}
@@ -113,7 +136,7 @@ El valor \num{255} agrupa dos situaciones distintas: píxeles sin acuerdo sufici
 anotadores y píxeles que el propio conjunto excluye por diseño, correspondientes al
 cuerpo del rover, al cielo y a distancias superiores a treinta metros. En ambos casos el
 píxel se excluye del denominador de la cobertura sobre píxeles etiquetados, y la fracción que
-representa se reporta como indicador de calidad de cada escena.
+representa se reporta como variable de calidad de cada escena.
 
 \subsection{Criterios de inclusión}
 
@@ -240,7 +263,7 @@ producto de imprecisiones en el trazado de los polígonos de anotación; el cier
 huecos pequeños dentro de una misma región.
 
 \paragraph{Componentes conectadas.} Se etiquetan las regiones conectadas con criterio de
-ocho vecinos. Su número se registra como indicador independiente, porque comparado con el
+ocho vecinos. Su número se registra como variable descriptiva propia, porque comparado con el
 conteo final permite estimar el efecto neto de la subdivisión y de los filtros.
 
 \paragraph{Transformada de distancia.} Sobre la binaria limpia se calcula la transformada
@@ -301,7 +324,7 @@ está fijado dentro de la lógica de cálculo. La Tabla~\ref{tab:parametros} los
       área de la imagen. \\
     Relación de aspecto & $5{,}0$  & Descarta bandas alargadas. \\
     Suavizado $\sigma$  & $3{,}0$  & Evita máximos espurios del contorno. \\
-    Prominencia $h$     & $1{,}0$  & Suprime la subdivisión de regiones continuas. \\
+    Prominencia $h$     & $1{,}0$  & Reduce la subdivisión de regiones continuas. \\
     Conectividad        & $8$      & Admite contacto diagonal entre píxeles al etiquetar las
       componentes. \\
     \bottomrule
@@ -365,6 +388,7 @@ conteo —$h \in \{0{,}5;\,1;\,2;\,3\}$, $\sigma \in \{1;\,3;\,5\}$ y un área m
 total. La Sección~\ref{sec:validacion-manual} presenta el resultado.
 
 \subsection{Herramientas y reproducibilidad}
+\label{sec:herramientas}
 
 El procedimiento se implementó en Python sobre \texttt{NumPy}
 \citep{harris2020numpy}, \texttt{SciPy} \citep{virtanen2020scipy} y
@@ -455,12 +479,12 @@ Capítulo~\ref{cap:resultados} carece de un objetivo, una técnica y una métric
   \label{tab:operacionalizacion}\\
   \toprule
   \textbf{Objetivo} & \textbf{Pregunta} & \textbf{Técnica} & \textbf{Fuente} &
-  \textbf{Resultado esperado} & \textbf{Indicador / métrica} \\
+  \textbf{Resultado esperado} & \textbf{Indicador / métrica de verificación} \\
   \midrule
   \endfirsthead
   \toprule
   \textbf{Objetivo} & \textbf{Pregunta} & \textbf{Técnica} & \textbf{Fuente} &
-  \textbf{Resultado esperado} & \textbf{Indicador / métrica} \\
+  \textbf{Resultado esperado} & \textbf{Indicador / métrica de verificación} \\
   \midrule
   \endhead
   \bottomrule
@@ -501,12 +525,12 @@ Capítulo~\ref{cap:resultados} carece de un objetivo, una técnica y una métric
   & Modularización con parámetros explícitos, control de versiones, registro de versiones
     de biblioteca
   & Código propio
-  & Archivo tabular con un indicador por imagen, más código y guiones de ejecución
+  & Archivo tabular con una fila por imagen con los indicadores y sus variables descriptivas, más código y guiones de ejecución
   & \cNEscenas{} filas × 29 columnas en \texttt{results.csv}; reejecución íntegra idéntica \\
   \addlinespace
 
   \textbf{E5.} Establecer los límites de validez
-  & ¿Dependen los indicadores de la fuente de anotación? ¿Reproducen el juicio humano? (H2, H3)
+  & ¿Difiere la cobertura según la fuente de anotación? ¿Reproduce el conteo el juicio humano? (H2, H3)
   & Contraste con máscaras de experto, validación con conteo humano, diagnóstico de modos de
     error y comparación con aprendizaje automático
   & Máscaras de experto del propio conjunto (\cNGold); máscaras de rover y distancia;
@@ -531,7 +555,7 @@ que sus métricas sean comparaciones entre fuentes y no medidas de terreno.
 
 Un procedimiento descriptivo como este no admite una métrica de acierto única, porque no existe
 verdad de campo sobre la cantidad de roca ni sobre el número de rocas de una escena. La
-evaluación se organiza en seis frentes, cuatro de ellos vinculados a las hipótesis H1--H4 de
+evaluación se organiza en seis frentes, cinco de ellos vinculados a las hipótesis H1--H4 de
 la Sección~\ref{sec:hipotesis}. Salvo indicación, los contrastes estadísticos emplean intervalos
 de confianza por remuestreo \textit{bootstrap} \citep{efron1979bootstrap} y, cuando se trata de
 detectar dependencia, valores $p$ por permutación: se barajan los valores de una variable para
@@ -811,13 +835,14 @@ evidente que la cuestión decisiva era hasta dónde informan sobre el terreno, y
 amplió para incluir sus límites de validez. La hipótesis H3 se incorporó en ese momento.
 
 \paragraph{La validación con observadores se realizó con un solo observador.} La semana 14 la
-contemplaba como actividad opcional. Se llevó a cabo, y la primera ronda reveló defectos en el
-propio instrumento que obligaron a rediseñarlo y repetirla. Se realizó con un único observador,
+contemplaba como actividad opcional. Se llevó a cabo: la ronda piloto reveló defectos en el
+propio instrumento que obligaron a rediseñarlo, y la muestra definitiva se contó dos veces. Se realizó con un único observador,
 lo que la limita a una evaluación exploratoria.
 
-\paragraph{Se añadieron tres frentes no previstos.} El contraste con aprendizaje automático se
+\paragraph{Se añadieron cuatro frentes no previstos.} El contraste con aprendizaje automático se
 incorporó al constatar que el procedimiento necesitaba una referencia de contraste, y resultó
 decisivo para descomponer la diferencia entre fuentes de anotación. El diagnóstico de los
-modos de error del conteo surgió al examinar las escenas en que el conteo era nulo. Las reglas heurísticas de
+modos de error del conteo surgió al examinar las escenas en que el conteo era nulo. El conteo con
+información de la imagen se ensayó para comprobar si el límite del conteo podía superarse. Las reglas heurísticas de
 priorización y la aplicación de consulta descritas en el Anexo~\ref{app:extension} surgieron
 de la ejecución y no figuraban en el cronograma.

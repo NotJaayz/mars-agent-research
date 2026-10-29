@@ -431,8 +431,8 @@ instancias de roca y si emplean una máscara de segmentación como dato de entra
   \textbf{Este trabajo} & \textbf{\cNEscenas{} máscaras MSL NavCam} &
     \textbf{Indicadores derivados de la máscara y sus límites} & \textbf{Imagen} &
     \textbf{Morfología matemática y división de aguas} & \textbf{Cobertura reproducible; el conteo
-    subestima frente a un observador; efecto cuantificado de las propiedades del conjunto} &
-    \textbf{Sí, aproximado; subestima} & \textbf{Como dato} \\
+    tiende a subestimar frente a un observador; efecto cuantificado de las propiedades del conjunto} &
+    \textbf{Sí, aproximado; tiende a subestimar} & \textbf{Como dato} \\
 \end{longtable}
 \end{spacing}
 \end{landscape}
@@ -497,11 +497,12 @@ de lo que surgió al validar.
   dirección del error. Se contrasta con el acuerdo por bandas frente al conteo humano, medido
   con kappa simple y ponderado, y con la proporción de escenas por encima y por debajo.
 
-\item[H3.] \textbf{Los indicadores derivados no dependen de la fuente de la anotación.}
+\item[H3.] \textbf{La cobertura derivada puede presentar diferencias según la fuente de la anotación.}
   Incorporada durante la ejecución, al constatar que el conjunto incluye máscaras de experto.
-  El anteproyecto daba las etiquetas colaborativas por fiables. Se contrasta comparando ambas
-  fuentes y descomponiendo la diferencia, mediante un instrumento común, en una parte asignada
-  a las imágenes y otra asignada a la anotación.
+  El anteproyecto daba las etiquetas colaborativas por fiables. Se formula sobre la cobertura porque el instrumento común con que se descompone la diferencia
+  —el segmentador entrenado— estima cobertura y no separa rocas. Se contrasta comparando ambas
+  fuentes y descomponiendo la diferencia en una parte asignada a las imágenes y otra asignada
+  a la anotación.
 
 \item[H4.] \textbf{Cobertura y conteo son propiedades no redundantes de las máscaras de
   AI4Mars.} Implícita en el diseño de dos indicadores: si uno fuera función del otro, bastaría

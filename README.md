@@ -46,7 +46,7 @@ validación, y la tesis lo documenta.
 |---|---|---|
 | **H1** | La cobertura se deriva de forma reproducible y no está determinada por la fracción de escena etiquetada | Los resultados son compatibles con H1; no se observa que la fracción etiquetada explique principalmente la variación global, aunque persiste dependencia no lineal débil |
 | **H2** | El conteo aproxima el número de rocas que un observador distingue en la región anotada, sin sesgo en una dirección | La evaluación exploratoria (un observador) no brinda apoyo a H2 y muestra una tendencia marcada al subconteo frente al observador |
-| **H3** | Los indicadores no dependen de la fuente de la anotación | No concluyente para la cobertura: componente asignada a la fuente pequeña y positiva en todas las variantes y niveles de consenso; distinguible de cero por sol en cuatro de las seis combinaciones de muestra y nivel, pero no en la muestra principal con los niveles 1 y 2 |
+| **H3** | La cobertura derivada puede presentar diferencias según la fuente de la anotación | Apoyo parcial: componente asignada a la fuente pequeña y positiva en todas las variantes y niveles de consenso; distinguible de cero por sol en cuatro de las seis combinaciones de muestra y nivel; no concluyente en la muestra principal con los niveles 1 y 2 |
 | **H4** | Cobertura y conteo son propiedades no redundantes de las máscaras de AI4Mars | Los análisis respaldan tratar cobertura y conteo como propiedades no redundantes de las máscaras de AI4Mars; **no** son independientes |
 
 El anteproyecto no formuló hipótesis estadísticas; estas se explicitaron después, de modo que
