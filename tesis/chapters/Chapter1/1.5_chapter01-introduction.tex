@@ -42,13 +42,17 @@ diseño del conjunto experto, y solo en menor medida a la anotación.
 La pregunta que orienta el trabajo es la siguiente:
 
 \begin{quote}
-¿Qué indicadores cuantitativos de cobertura y organización de la roca pueden derivarse de forma
-reproducible de las máscaras de AI4Mars, y cuáles son sus límites de validez frente a
-diferencias en la anotación y al juicio humano?
+¿Qué indicadores cuantitativos de cobertura, composición y organización de la roca pueden
+derivarse de forma reproducible de las máscaras de AI4Mars, y cuáles son sus límites de validez
+frente a diferencias en la anotación y al juicio humano?
 \end{quote}
 
-Por organización de la roca se entiende aquí el número, el tamaño y la forma de los bloques
-discretos que la máscara permite delimitar.
+Dicho de forma sencilla: ¿qué cifras sobre la roca se pueden sacar de las máscaras anotadas, de
+forma repetible, y hasta dónde se puede confiar en ellas?
+
+Por composición se entiende la proporción de cada clase de terreno en la escena, y por
+organización de la roca, el número, el tamaño y la forma de los bloques discretos que la
+máscara permite delimitar.
 
 La pregunta reúne dos propósitos. El primero es constructivo: derivar indicadores con
 parámetros explícitos. El segundo es crítico: delimitar hasta dónde esos indicadores informan
@@ -95,9 +99,9 @@ impone el material de partida.
 \subsection{Objetivo general}
 
 Derivar de las máscaras de AI4Mars, mediante un procedimiento reproducible de procesamiento de imágenes con
-parámetros explícitos, indicadores por imagen de la cobertura de roca visible y
-del número aproximado de rocas individuales, y establecer sus límites de validez frente a la
-fuente de la anotación y al juicio de un observador.
+parámetros explícitos, indicadores por imagen de la cobertura de roca visible, de la composición
+del terreno y del número aproximado de rocas individuales, y establecer sus límites de validez
+frente a la fuente de la anotación y al conteo manual del propio autor.
 
 \subsection{Objetivos específicos}
 
@@ -108,12 +112,13 @@ fuente de la anotación y al juicio de un observador.
     entendida como el porcentaje de píxeles etiquetados que corresponden a lecho rocoso o roca
     grande.
 
-  \item[E2.] Estimar, para cada imagen apta —con roca grande y no casi vacía—, el número
+  \item[E2.] Estimar, para cada imagen apta (con roca grande y no casi vacía), el número
     aproximado de rocas
     individuales en las zonas
     etiquetadas como roca grande, separando las que aparecen unidas mediante componentes
     conectadas, transformada de distancia y división de aguas, y filtrando las regiones
-    resultantes por tamaño y forma.
+    resultantes por tamaño y forma. El conteo se limita a esa clase: los bloques que la
+    anotación registra como lecho rocoso no se cuentan, aunque sean visibles en la imagen.
 
   \item[E3.] Caracterizar la composición del terreno y describir la variación de los
     indicadores entre tipos de escena y a lo largo de la secuencia de adquisición.
@@ -123,7 +128,7 @@ fuente de la anotación y al juicio de un observador.
     los indicadores de cada imagen.
 
   \item[E5.] Establecer los límites de validez de los indicadores mediante su contraste con
-    las máscaras de especialista, con el conteo de un observador y con un segmentador entrenado,
+    las máscaras de especialista, con el conteo manual del propio autor y con un segmentador entrenado,
     y atribuir los errores del conteo a sus causas.
 
 \end{description}

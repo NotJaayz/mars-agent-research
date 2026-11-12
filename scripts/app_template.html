@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terreno · Panel de revisión AI4Mars</title>
+<!-- Plantilla de scripts/make_app.py. No editar outputs/app_ai4mars.html a mano. -->
+<style>
+:root {
+  --fondo: #e8ecf3; --tarjeta: #f8fafd; --tarjeta2: #eef2f8; --linea: #d8dfea; --linea2: #c3cddd;
+  --tinta: #0b1f44; --titulo: #0b2a66; --tenue: #56647e; --suave: #8a96ac;
+  --nasa: #0b3d91; --nasa2: #0a2c6c; --rojo: #fc3d21; --azul: #2f6fe4;
+  --alta: #f0402a; --media: #ef8a2c; --baja: #f2c640; --sin: #a3adbf;
+  --suelo: #caa472; --lecho: #8c5a2b; --arena: #f2d479; --grande: #d7301f;
+  --sombra: 0 1px 2px rgba(11,31,68,.06), 0 8px 24px -12px rgba(11,31,68,.18);
+  --sombra2: 0 2px 4px rgba(11,31,68,.08), 0 18px 40px -16px rgba(11,31,68,.32);
+  --cond: "DIN Condensed", "Bahnschrift SemiCondensed", "Avenir Next Condensed", "Roboto Condensed", "Arial Narrow", sans-serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Avenir Next", Roboto, Arial, sans-serif;
+  --mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  color-scheme: light;
+}
+[data-tema="mision"] {
+  --fondo: #060b16; --tarjeta: #0c1426; --tarjeta2: #111c33; --linea: #1b2945; --linea2: #2a3c60;
+  --tinta: #e7edf8; --titulo: #ffffff; --tenue: #9aa8c2; --suave: #65748f; --sin: #56627a;
+  --sombra: 0 1px 0 rgba(255,255,255,.02), 0 12px 30px -14px rgba(0,0,0,.7);
+  --sombra2: 0 0 0 1px rgba(61,123,255,.3), 0 18px 40px -16px rgba(0,0,0,.8);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--fondo); color: var(--tinta); font: 14px/1.5 var(--sans); overflow: hidden; -webkit-font-smoothing: antialiased; transition: background .4s; }
+button, input, select { font: inherit; color: inherit; }
+a { color: var(--azul); }
+.mono { font-family: var(--mono); }
+.kicker { font: 600 13px/1.2 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: #34446a; }
+[data-tema="mision"] .kicker { color: #8fa6d8; }
+.etiq { font: 600 10.5px/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--tenue); }
+h1.gran { font: 700 46px/1 var(--cond); text-transform: uppercase; letter-spacing: .005em; color: var(--titulo); margin: 10px 0 14px; }
+h1.gran.chica { font-size: 36px; }
+h2.sec { font: 700 24px/1.1 var(--cond); text-transform: uppercase; color: var(--titulo); margin: 0 0 4px; letter-spacing: .01em; }
+.lead { max-width: 626px; color: var(--tenue); font-size: 15px; line-height: 1.5; margin: 0 0 22px; }
+.lead b { color: var(--tinta); }
+.nota { color: var(--tenue); font-size: 13px; margin: 0 0 12px; }
+
+/* ---------- Estructura ---------- */
+.app { display: grid; grid-template-columns: 248px 1fr; height: 100vh; }   /* ancho de la barra lateral de la 2.0 */
+.lat { position: relative; display: flex; flex-direction: column; color: #e9efff; overflow: hidden;
+  background: linear-gradient(180deg, #0b3d91 0%, #0a347f 45%, #082a66 100%); }
+.lat::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .35;
+  background-image: radial-gradient(1px 1px at 20% 30%, #fff, transparent), radial-gradient(1px 1px at 70% 60%, #fff, transparent),
+    radial-gradient(1px 1px at 40% 80%, #fff, transparent), radial-gradient(1.5px 1.5px at 85% 15%, #fff, transparent), radial-gradient(1px 1px at 10% 70%, #fff, transparent);
+  background-size: 230px 230px; animation: deriva 60s linear infinite; }
+@keyframes deriva { to { background-position: -230px 0; } }
+.marca { position: relative; display: flex; gap: 12px; align-items: center; padding: 22px 18px 20px; }
+.marca img { width: 50px; height: 50px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); transition: transform .6s var(--ease); }
+.marca:hover img { transform: rotate(-8deg) scale(1.06); }
+.marca b { display: block; font: 700 32px/0.9 var(--cond); letter-spacing: .02em; }
+.marca span { font-size: 11px; opacity: .8; white-space: nowrap; }
+nav { position: relative; padding: 8px 12px; display: grid; gap: 4px; }
+nav button { position: relative; display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px; border: 0; border-radius: 9px;
+  background: transparent; color: #dfe7ff; text-align: left; cursor: pointer; font-size: 14px; transition: background .25s, color .25s, transform .25s var(--ease); }
+nav button:hover { background: rgba(255,255,255,.1); transform: translateX(2px); }
+nav button.activo { background: #fff; color: var(--nasa); font-weight: 600; box-shadow: 0 6px 18px -8px rgba(0,0,0,.45); }
+nav button.activo::before { content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 4px; border-radius: 4px; background: var(--rojo); animation: entraBorde .5s var(--ease); }
+@keyframes entraBorde { from { transform: scaleY(0); } }
+nav svg { width: 17px; height: 17px; flex: none; opacity: .85; }
+.lat-prior { position: relative; margin: 18px 18px 0; }
+.lat-prior .etiq { color: #b8c8ee; display: block; margin-bottom: 10px; }
+.fila-niv { display: flex; align-items: center; gap: 9px; padding: 4px 0; font-size: 13.5px; cursor: pointer; border-radius: 6px; transition: transform .2s; }
+.fila-niv:hover { transform: translateX(3px); }
+.fila-niv i { width: 13px; height: 13px; border-radius: 3px; }
+.fila-niv b { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 600; }
+.lat-nota { font-size: 11.5px; opacity: .72; margin-top: 10px; line-height: 1.45; }
+.lat-pie { position: relative; margin-top: auto; padding: 16px 18px 18px; font-size: 11px; line-height: 1.5; color: #c9d6f5; }
+.lat-pie p { margin: 0 0 8px; }
+.lat-pie img { width: 136px; background: #fff; border-radius: 8px; padding: 5px 8px; display: block; margin-bottom: 10px; }
+
+.principal { display: grid; grid-template-rows: auto 1fr; min-width: 0; height: 100vh; }
+.barra { display: flex; align-items: center; gap: 12px; padding: 14px 30px; }
+.buscador { position: relative; flex: 0 1 420px; min-width: 170px; }
+.buscador input { width: 100%; height: 40px; border-radius: 10px; border: 1px solid var(--linea2); background: var(--tarjeta); padding: 0 70px 0 38px;
+  font: 13px var(--mono); outline: none; transition: border-color .2s, box-shadow .2s; }
+.buscador input:focus { border-color: var(--azul); box-shadow: 0 0 0 4px rgba(47,111,228,.15); }
+.buscador svg { position: absolute; left: 12px; top: 12px; width: 16px; height: 16px; color: var(--suave); }
+.buscador kbd { position: absolute; right: 10px; top: 10px; }
+kbd { font: 600 10px/1 var(--mono); padding: 4px 6px; border-radius: 5px; color: var(--tenue); border: 1px solid var(--linea2); background: var(--tarjeta2); }
+.chips-top { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.chip-top { font: 12px var(--mono); padding: 8px 11px; border: 1px solid var(--linea2); border-radius: 8px; background: var(--tarjeta); color: var(--tinta); white-space: nowrap; }
+.chip-top.ok::before { content: "● "; color: #1fa971; }
+.chip-top.mal::before { content: "● "; color: var(--alta); }
+#chip-mod { border-color: var(--media); color: var(--media); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 9px; border: 1px solid var(--linea2);
+  background: var(--tarjeta); cursor: pointer; transition: transform .15s, border-color .2s, box-shadow .2s, background .2s; white-space: nowrap; font-size: 13.5px; }
+.btn:hover { border-color: var(--azul); box-shadow: 0 4px 14px -8px rgba(47,111,228,.6); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .5; cursor: default; box-shadow: none; }
+.btn.ic { width: 36px; padding: 0; }
+.btn svg { width: 16px; height: 16px; }
+.btn.prim { background: var(--nasa); border-color: var(--nasa); color: #fff; }
+.btn.prim:disabled { background: #9db0d6; border-color: #9db0d6; opacity: 1; }
+.contenido { min-height: 0; overflow: auto; padding: 8px 30px 60px; }
+
+/* ---------- Animaciones de entrada ---------- */
+.vista .rv { animation: entrar .7s var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
+@keyframes entrar { from { opacity: 0; transform: translateY(16px); } }
+.tarjeta { background: var(--tarjeta); border: 1px solid var(--linea); border-radius: 14px; padding: 20px 22px; box-shadow: var(--sombra); transition: box-shadow .3s, background .4s, border-color .4s; }
+.tarjeta:hover { box-shadow: var(--sombra2); }
+.rej { display: grid; gap: 16px; }
+.rej > *, .niveles > *, .defs > *, .pasos > * { min-width: 0; }   /* el contenido largo (comandos, huellas) no ensancha la rejilla */
+.c2 { grid-template-columns: 1fr 1fr; } .c4 { grid-template-columns: repeat(4, 1fr); }
+
+/* ---------- Gráficas ---------- */
+svg.g { width: 100%; height: auto; display: block; overflow: visible; }
+.g text { fill: var(--tenue); font: 11px var(--mono); }
+.g .eje { stroke: var(--linea2); }
+.g .guia { stroke: var(--linea); }
+.g .crece { transform-box: fill-box; transform-origin: bottom; animation: crece .8s var(--ease) both; }
+.g .creceAbajo { transform-box: fill-box; transform-origin: top; animation: crece .8s var(--ease) both; }
+@keyframes crece { from { transform: scaleY(0); } }
+@keyframes creceH { from { transform: scaleX(0); } }
+.g rect[data-tip]:hover { filter: brightness(1.12); }
+.leyenda { display: flex; flex-wrap: wrap; gap: 18px; font-size: 13px; color: var(--tenue); align-items: center; }
+.leyenda i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 7px; vertical-align: -1px; }
+#tip { position: fixed; z-index: 90; pointer-events: none; max-width: 300px; padding: 9px 11px; border-radius: 10px; background: #0b1f44; color: #eef3ff; font-size: 12px; line-height: 1.45;
+  box-shadow: 0 14px 40px rgba(0,0,0,.3); opacity: 0; transform: translateY(4px); transition: opacity .15s, transform .15s; }
+#tip.ver { opacity: 1; transform: none; }
+.pincel { fill: rgba(47,111,228,.14); stroke: var(--azul); stroke-width: 1; }
+
+/* ---------- Resumen ---------- */
+.kpi .v { font: 700 40px/1 var(--cond); color: var(--titulo); margin: 10px 0 4px; font-variant-numeric: tabular-nums; }
+.kpi .d { color: var(--tenue); font-size: 12.5px; }
+.barra-niv { display: flex; height: 16px; border-radius: 6px; overflow: hidden; background: var(--linea); margin: 14px 0 6px; }
+.barra-niv i { display: block; height: 100%; transition: width 1s var(--ease); }
+.cuentas { display: flex; flex-wrap: wrap; gap: 6px 22px; align-items: baseline; }
+.cuentas span { display: inline-flex; align-items: baseline; gap: 6px; color: var(--tenue); font-size: 13.5px; }
+.cuentas b { font: 700 26px/1 var(--cond); color: var(--tinta); font-variant-numeric: tabular-nums; }
+.cuentas i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; align-self: center; }
+.cuentas em { font-style: normal; font: 600 11.5px var(--mono); }
+.sube { color: var(--alta); } .baja { color: #1fa971; }
+
+/* ---------- Explorador ---------- */
+.herr { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+.seg { display: inline-flex; padding: 4px; border-radius: 11px; background: var(--tarjeta); border: 1px solid var(--linea); box-shadow: var(--sombra); position: relative; }
+.seg button { position: relative; z-index: 1; border: 0; background: none; padding: 7px 12px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; color: var(--tinta); transition: color .25s; }
+.seg button small { color: var(--suave); font-size: 12px; transition: color .25s; }
+.seg button i { width: 9px; height: 9px; border-radius: 50%; }
+.seg button.on { color: #fff; }
+.seg button.on small { color: #cfe0ff; }
+.seg .pill { position: absolute; z-index: 0; top: 4px; bottom: 4px; border-radius: 8px; background: var(--nasa); transition: left .45s var(--ease), width .45s var(--ease); }
+select.sel { height: 40px; border-radius: 10px; border: 1px solid var(--linea); background: var(--tarjeta) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0h10L5 6z' fill='%231c2a44'/%3E%3C/svg%3E") no-repeat right 14px center; -webkit-appearance: none; appearance: none; padding: 0 36px 0 12px; box-shadow: var(--sombra); font-size: 13.5px; min-width: 200px; cursor: pointer; }
+.chip-f { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; background: rgba(47,111,228,.12); color: var(--azul); border: 1px dashed var(--azul); cursor: pointer; font-size: 12.5px; animation: entrar .4s var(--ease); }
+.explorador { display: grid; grid-template-columns: minmax(280px, 330px) minmax(360px, 1fr) minmax(290px, 330px); gap: 16px; align-items: start; }
+.lista { padding: 0; overflow: hidden; }
+.lista-cab { display: flex; justify-content: space-between; padding: 14px 16px; color: var(--tenue); font-size: 13px; border-bottom: 1px solid var(--linea); }
+.lista-cuerpo { position: relative; overflow: auto; height: calc(100vh - 290px); min-height: 380px; }
+.item { position: absolute; left: 0; right: 0; height: 54px; padding: 8px 12px 8px 15px; border-bottom: 1px solid var(--linea); cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background .2s; }
+.item::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--c); }
+.item:hover { background: var(--tarjeta2); }
+.item.sel { background: rgba(47,111,228,.10); box-shadow: inset -3px 0 0 var(--nasa); }
+.item .t { min-width: 0; flex: 1; }
+.item .id { font: 11.8px var(--mono); letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--tinta); }
+.item .s { font-size: 12px; color: var(--suave); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.item .n { font: 700 26px/1 var(--cond); color: var(--tinta); min-width: 26px; text-align: right; }
+.visor .cab-v { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.visor .cab-v b { font: 600 14px var(--mono); }
+.opac { display: flex; align-items: center; gap: 12px; color: var(--tenue); font-size: 13px; margin-bottom: 12px; }
+input[type=range] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 6px; background: linear-gradient(90deg, var(--nasa) var(--p, 50%), var(--linea2) var(--p, 50%)); outline: none; cursor: pointer; width: 100%; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--nasa); border: 3px solid #fff; box-shadow: 0 2px 8px rgba(11,31,68,.35); transition: transform .15s; }
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--nasa); border: 3px solid #fff; }
+.escena { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: #111827; cursor: zoom-in; }
+.escena.zoom { cursor: zoom-out; }
+.escena .lienzo { position: absolute; inset: 0; transition: transform .45s var(--ease); transform-origin: var(--ox, 50%) var(--oy, 50%); }
+.escena.zoom .lienzo { transform: scale(2.2); }
+.escena img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .45s ease; }
+.escena img.capa { image-rendering: pixelated; }
+.escena svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity .3s; }
+.escena .num rect { fill: rgba(18,22,30,.9); }
+.escena .num text { fill: #fff; font-family: var(--cond); font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+.escena .num g { animation: pop .45s var(--ease) both; transform-box: fill-box; transform-origin: center; }
+@keyframes pop { from { opacity: 0; transform: scale(.2); } }
+.escena .cargando { position: absolute; inset: 0; background: linear-gradient(100deg, #1a2234 20%, #263149 40%, #1a2234 60%); background-size: 200% 100%; animation: brillo 1.2s linear infinite; }
+@keyframes brillo { to { background-position: -200% 0; } }
+.sin-img { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: #b9c4da; padding: 30px; font-size: 13.5px; background: radial-gradient(circle at 50% 40%, #1d2943, #0f1626); }
+.sin-img b { display: block; font: 700 24px var(--cond); color: #fff; text-transform: uppercase; margin-bottom: 6px; }
+.capas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+.capas button { position: relative; padding: 0; border: 2px solid var(--linea); border-radius: 10px; overflow: hidden; background: var(--tarjeta2); cursor: pointer; text-align: left; transition: border-color .25s, transform .25s var(--ease), box-shadow .25s; }
+.capas button:hover { transform: translateY(-2px); box-shadow: var(--sombra2); }
+.capas button.on { border-color: var(--nasa); box-shadow: 0 0 0 2px rgba(11,61,145,.2); }
+.capas .mini { aspect-ratio: 16/7; background: #1b2232; position: relative; overflow: hidden; }
+.capas .mini img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.capas span { display: flex; justify-content: space-between; align-items: center; gap: 4px; padding: 7px 8px; font-size: 12px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
+.capas span kbd { flex-shrink: 0; padding: 3px 5px; }
+.casillas { display: grid; gap: 8px; margin-top: 12px; font-size: 13px; color: var(--tenue); }
+.casillas label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.casillas input { accent-color: var(--nasa); width: 15px; height: 15px; }
+.ficha { padding: 0; overflow: hidden; }
+.ficha .cab-f { padding: 16px 20px 14px; color: #fff; transition: background .5s ease; }
+.ficha .cab-f .etiq { color: rgba(255,255,255,.85); }
+.ficha .cab-f b { display: block; font: 700 38px/1 var(--cond); text-transform: uppercase; margin-top: 4px; }
+.ficha .cab-f.baja-c, .ficha .cab-f.sin-c { color: #1b2540; }
+.ficha .cab-f.baja-c .etiq, .ficha .cab-f.sin-c .etiq { color: rgba(27,37,64,.75); }
+.ficha .bloque { padding: 16px 20px; border-bottom: 1px solid var(--linea); }
+.senal { padding: 10px 0; border-bottom: 1px dashed var(--linea); animation: entrar .45s var(--ease) both; }
+.senal:last-child { border-bottom: 0; }
+.senal b { font-size: 14px; }
+.senal .val { font: 12.5px var(--mono); color: var(--tenue); margin-top: 3px; }
+.senal .val b { color: var(--tinta); font-weight: 700; }
+.puntos { display: inline-flex; gap: 3px; margin-right: 8px; vertical-align: 1px; }
+.puntos i { width: 7px; height: 7px; border-radius: 50%; box-sizing: border-box; border: 1.4px solid var(--nasa); }
+.puntos i.on { background: var(--nasa); }
+[data-tema="mision"] select.sel { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0h10L5 6z' fill='%23c9d5ee'/%3E%3C/svg%3E"); }
+[data-tema="mision"] .puntos i { border-color: #6d9bff; } [data-tema="mision"] .puntos i.on { background: #6d9bff; }
+.indic { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+.indic span { display: block; font-size: 12px; color: var(--suave); }
+.indic b { font: 700 28px/1.1 var(--cond); font-variant-numeric: tabular-nums; }
+.indic b small { font: 600 13px var(--sans); color: var(--tenue); margin-left: 2px; }
+.indic em { display: block; font-style: normal; font-size: 12px; color: var(--tenue); }
+#ficha .indic { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }   /* la nota en una línea no ensancha la columna */
+#ficha .indic em { font: 12px var(--mono); margin-top: 2px; white-space: nowrap; }   /* «10 regiones, 4 filtradas», como en la 2.0 */
+.lectura { margin: 14px 20px 18px; padding: 14px 16px; border-radius: 10px; background: var(--tarjeta2); font-size: 13px; color: var(--tenue); }
+.lectura b { color: var(--tinta); }
+.acciones-f { display: flex; gap: 8px; padding: 0 20px 18px; }
+
+/* ---------- Reglas ---------- */
+.defs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.def { background: var(--tarjeta2); border-radius: 10px; padding: 14px 16px; }
+.def i { display: block; height: 26px; border-radius: 5px; margin-bottom: 10px; transform-origin: left; animation: creceH .8s var(--ease) both; }
+.def b { font: 700 22px/1 var(--cond); text-transform: uppercase; }
+.def p { margin: 8px 0 0; font-size: 13px; color: var(--tenue); }
+.regla { display: grid; grid-template-columns: 1.15fr 1.1fr 120px; gap: 24px; align-items: center; }
+.regla h3 { margin: 0 0 6px; font-size: 16.5px; display: flex; align-items: center; gap: 8px; }
+.pob { font: 600 11px var(--mono); padding: 3px 6px; border-radius: 5px; border: 1px solid var(--linea2); color: var(--tenue); }
+.regla p { margin: 0; color: var(--tenue); font-size: 13.5px; }
+.regla .crit { font: 12px var(--mono); color: var(--tinta); margin-top: 8px; }
+.ctl { display: grid; gap: 6px; margin: 4px 0; }
+.ctl .f { display: flex; justify-content: space-between; font-size: 13px; color: var(--tenue); }
+.ctl .f b { font: 700 13.5px var(--sans); color: var(--tinta); font-variant-numeric: tabular-nums; }
+.ctl .f b.mod { color: var(--media); }
+.ctl .pc { font: 12px var(--mono); color: var(--suave); }
+.cnt { text-align: right; }
+.cnt b { display: block; font: 700 40px/1 var(--cond); font-variant-numeric: tabular-nums; }
+.cnt span { display: block; font-size: 12.5px; color: var(--suave); }
+.cnt .t { font: 12px var(--mono); }
+.cnt a { font-size: 12.5px; cursor: pointer; text-decoration: none; font-weight: 600; }
+
+/* ---------- Método, geología y reproducibilidad ---------- */
+.pasos { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+.paso { position: relative; background: var(--tarjeta2); border-radius: 10px; padding: 14px; }
+.paso .n { font: 700 30px/1 var(--cond); color: var(--nasa); }
+[data-tema="mision"] .paso .n { color: #6d9bff; }
+.paso h4 { margin: 6px 0 4px; font-size: 14px; }
+.paso p { margin: 0; font-size: 12.5px; color: var(--tenue); }
+.paso .p { margin-top: 8px; font: 11.5px var(--mono); color: var(--media); }
+.figura { width: 100%; border-radius: 10px; background: #fff; padding: 10px; border: 1px solid var(--linea); }
+table.t { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.t th { text-align: left; font: 600 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--suave); padding: 8px 10px; border-bottom: 1px solid var(--linea2); }
+table.t td { padding: 9px 10px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+table.t td.m { font-family: var(--mono); color: var(--nasa); }
+[data-tema="mision"] table.t td.m { color: #8fb0ff; }
+.cmp td:nth-child(2), .cmp th:nth-child(2) { background: rgba(11,61,145,.07); font-weight: 600; }
+.niveles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.nivelr .esc { display: flex; gap: 4px; margin: 10px 0 12px; }
+.nivelr .esc i { flex: 1; height: 7px; border-radius: 4px; background: var(--linea); transform-origin: left; animation: creceH .7s var(--ease) both; }
+.nivelr .esc i.on { background: var(--nasa); }
+.datos { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; font-size: 13px; }
+.datos span:nth-child(odd) { color: var(--tenue); }
+.datos span:nth-child(even) { font-family: var(--mono); text-align: right; }
+.cmd { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 9px 12px; border-radius: 9px; background: #0b1f44; color: #bdf3d9; font: 12.5px var(--mono); }
+.cmd code { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmd button { border: 0; background: none; color: #9fb1d6; cursor: pointer; }
+.chk { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--linea); font-size: 13.5px; animation: entrar .4s var(--ease) both; }
+.chk:last-child { border-bottom: 0; }
+.chk .ok { color: #1fa971; font: 700 12px var(--mono); }
+.chk .mal { color: var(--alta); font: 700 12px var(--mono); }
+.chk span:last-child { margin-left: auto; font: 12.5px var(--mono); color: var(--tenue); }
+.hash { font: 12px/1.5 var(--mono); word-break: break-all; color: var(--nasa); }
+
+/* ---------- Paleta, ayuda, avisos, arranque ---------- */
+.modal-f { position: fixed; inset: 0; z-index: 60; display: grid; place-items: start center; padding-top: 12vh; background: rgba(6,14,32,.45); backdrop-filter: blur(6px); opacity: 0; pointer-events: none; transition: opacity .2s; }
+.modal-f.ver { opacity: 1; pointer-events: auto; }
+.modal { width: min(640px, 92vw); background: var(--tarjeta); border: 1px solid var(--linea); border-radius: 16px; box-shadow: 0 40px 100px rgba(0,0,0,.35); overflow: hidden; transform: translateY(-12px) scale(.97); transition: transform .3s var(--ease); }
+.modal-f.ver .modal { transform: none; }
+.modal .in { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--linea); }
+.modal .in input { flex: 1; border: 0; outline: none; background: none; font-size: 15px; }
+.lista-p { max-height: 400px; overflow: auto; padding: 8px; }
+.op { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; cursor: pointer; }
+.op.act { background: rgba(11,61,145,.1); }
+.op .tipo { margin-left: auto; font: 11px var(--mono); color: var(--suave); }
+.ayuda { padding: 18px 22px; display: grid; grid-template-columns: 1fr auto; gap: 10px 20px; font-size: 13.5px; }
+#avisos { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 80; display: grid; gap: 8px; }
+.aviso { padding: 11px 16px; border-radius: 11px; background: #0b1f44; color: #eef3ff; font-size: 13px; box-shadow: 0 14px 40px rgba(0,0,0,.3); animation: avisoIn .35s var(--ease) both; display: flex; gap: 9px; align-items: center; }
+.aviso i { width: 8px; height: 8px; border-radius: 50%; background: #35d39a; }
+.aviso.sale { animation: avisoOut .3s ease both; }
+@keyframes avisoIn { from { opacity: 0; transform: translateY(12px) scale(.96); } }
+@keyframes avisoOut { to { opacity: 0; transform: translateY(8px); } }
+#arranque { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: linear-gradient(180deg, #0b3d91, #061d4a); color: #dfe7ff; transition: opacity .6s ease, transform .8s var(--ease); }
+#arranque.fuera { opacity: 0; transform: scale(1.03); pointer-events: none; }
+.arr { width: min(460px, 86vw); text-align: center; }
+.arr img { width: 96px; animation: latido 1.8s ease-in-out infinite; }
+@keyframes latido { 50% { transform: scale(1.05); filter: drop-shadow(0 0 22px rgba(255,255,255,.35)); } }
+.arr b { display: block; font: 700 44px/1 var(--cond); margin-top: 14px; letter-spacing: .04em; }
+.arr .l { font: 12px/2 var(--mono); opacity: 0; animation: entrar .4s ease forwards; color: #b8c8ee; }
+.arr .prog { height: 3px; border-radius: 3px; background: rgba(255,255,255,.15); margin-top: 16px; overflow: hidden; }
+.arr .prog i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #fc3d21, #ffb020); animation: prog 1.5s var(--ease) forwards; }
+@keyframes prog { to { width: 100%; } }
+.sin-mov *, .sin-mov *::before, .sin-mov *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+@media (max-width: 1350px) { #chip-datos { display: none; } .niveles { grid-template-columns: repeat(2, 1fr); } .explorador { grid-template-columns: 300px 1fr; } .explorador .ficha { grid-column: span 2; } .pasos { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 1000px) { .app { grid-template-columns: 1fr; } .lat { display: none; } .c2, .c4, .defs, .niveles, .regla, .explorador { grid-template-columns: 1fr; } .explorador .ficha { grid-column: auto; } }
+</style>
+</head>
+<body>
+<div id="arranque"><div class="arr"><img id="arr-logo" alt=""><b>TERRENO</b><div id="arr-l"></div><div class="prog"><i></i></div></div></div>
+<div class="app">
+  <aside class="lat">
+    <div class="marca"><img id="logo-nasa" alt="Insignia de la NASA"><div><b>TERRENO</b><span>Panel de revisión · AI4Mars</span></div></div>
+    <nav id="nav"></nav>
+    <div class="lat-prior"><span class="etiq">Prioridad de revisión</span><div id="lat-niv"></div>
+      <div class="lat-nota">Gris, no verde: que una escena no active señales no la vuelve segura.</div></div>
+    <div class="lat-pie">
+      <p>Las señales ordenan escenas para revisión. No evalúan la seguridad de la navegación: sin escala métrica no se conoce la altura de un bloque.</p>
+      <img id="logo-ext" alt="Universidad Externado de Colombia">
+      <p>Juan Pablo Delgado Castro · Universidad Externado de Colombia<br>Datos: AI4Mars · imágenes NASA/JPL-Caltech</p>
+      <p>Material académico: no es un producto oficial de la NASA ni implica su respaldo.</p>
+    </div>
+  </aside>
+  <div class="principal">
+    <header class="barra">
+      <div class="buscador"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="buscar" placeholder="Buscar escena, p. ej. NLB_547614687" autocomplete="off" spellcheck="false"><kbd>⌘K</kbd></div>
+      <div class="chips-top"><span class="chip-top" id="chip-mod" hidden>Umbrales modificados</span><span class="chip-top" id="chip-datos">AI4Mars v0.6 · Curiosity · NavCam</span><span class="chip-top ok" id="chip-int"></span>
+        <button class="btn ic" id="btn-tema" data-tip="Tema claro o modo misión · T"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"/></svg></button>
+        <button class="btn ic" id="btn-ayuda" data-tip="Atajos de teclado · ?"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/></svg></button></div>
+    </header>
+    <main class="contenido" id="contenido"></main>
+  </div>
+</div>
+<div class="modal-f" id="paleta"><div class="modal"><div class="in"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--suave)"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="paleta-q" placeholder="Escena, vista o acción…" autocomplete="off"><kbd>ESC</kbd></div><div class="lista-p" id="paleta-l"></div></div></div>
+<div class="modal-f" id="ayuda"><div class="modal"><div class="in"><b>Atajos de teclado</b><kbd style="margin-left:auto">ESC</kbd></div><div class="ayuda" id="ayuda-l"></div></div></div>
+<div id="tip"></div><div id="avisos"></div>
+
+<script>
+"use strict";
+const D = /*__DATOS__*/null;
+const C = D.cols, N = D.meta.n, ESC = D.escenas || {}, RUTA = D.rutaEscenas || "app_escenas/";
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+// Punto de miles también con cuatro cifras (1.565, como en la versión 2.0) y coma decimal.
+const nf = (v, d = 0) => {
+  if (v == null || Number.isNaN(v)) return "—";
+  const [e, f] = Math.abs(v).toFixed(d).split("."), cero = !/[1-9]/.test(e + (f || ""));
+  return (v < 0 && !cero ? "-" : "") + e.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + (f ? "," + f : "");
+};
+const pct = (v, d = 0) => v == null ? "—" : nf(v, d) + " %";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const Q = new URLSearchParams(location.search);
+const estatico = Q.has("estatico");
+if (estatico) document.documentElement.classList.add("sin-mov");
+const mov = !estatico && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ===================== Modelo: réplica exacta de src/priorizacion ===================== */
+const TIPOS = D.cats.st, OJOS = D.cats.eye;
+const NIV = ["sin", "baja", "media", "alta"], NIV_TXT = { alta: "Alta", media: "Media", baja: "Baja", sin: "Sin señales" };
+const NIV_PY = { sin: "sin_prioridad", baja: "baja", media: "media", alta: "alta" };
+const TIPO_TXT = { rocoso: "rocoso", suelo: "suelo", arenoso: "arenoso", mixto: "mixto", sin_etiqueta: "sin etiqueta" };
+const U0 = { big: D.umbrales.UMBRAL_BIGROCK_PCT, sol: D.umbrales.UMBRAL_SOLIDEZ, mayor: D.umbrales.UMBRAL_ROCA_MAYOR_PCT, nr: D.umbrales.UMBRAL_N_ROCAS, arena: D.umbrales.UMBRAL_ARENA_PCT, cob: D.umbrales.UMBRAL_COBERTURA_ALTA };
+const REGLAS = D.reglas.map((r, k) => ({ ...r, bit: 1 << k }));
+const fmtU = (k, v) => k === "sol" ? nf(v, 2) : k === "nr" ? String(v) : nf(v, v % 1 ? 1 : 0) + " %";
+const CRIT = {
+  bloques_angulosos: U => `roca grande > ${fmtU("big", U.big)} del área etiquetada y solidez media < ${fmtU("sol", U.sol)}`,
+  bloque_dominante: U => `la roca mayor ocupa > ${fmtU("mayor", U.mayor)} del área etiquetada`,
+  campo_bloques: U => `${U.nr} o más rocas individuales contadas`,
+  arena_predominante: U => `arena > ${fmtU("arena", U.arena)} del área etiquetada`,
+  terreno_rocoso: U => `cobertura de roca > ${fmtU("cob", U.cob)} de los píxeles etiquetados`,
+  escena_no_evaluable: () => "más del 95 % de la escena sin etiquetar",
+};
+/* Valor de la escena frente al umbral, como en la ficha de la versión 2.0. */
+const VALOR = {
+  bloques_angulosos: (i, U) => `roca grande <b>${pct(C.big[i], 1)}</b> > ${fmtU("big", U.big)} · solidez <b>${nf(C.sol[i], 2)}</b> < ${fmtU("sol", U.sol)}`,
+  bloque_dominante: (i, U) => `roca mayor <b>${pct(C.lrg[i], 1)}</b> > ${fmtU("mayor", U.mayor)}`,
+  campo_bloques: (i, U) => `<b>${C.nr[i]} rocas</b> ≥ ${U.nr}`,
+  arena_predominante: (i, U) => `arena <b>${pct(C.sand[i])}</b> > ${fmtU("arena", U.arena)}`,
+  terreno_rocoso: (i, U) => `cobertura <b>${pct(C.cov[i])}</b> > ${fmtU("cob", U.cob)}`,
+  escena_no_evaluable: i => `<b>${pct(100 * (1 - (C.fv[i] ?? 0)))}</b> sin etiquetar > 95 %`,
+};
+const CTL = {
+  bloques_angulosos: [["big", "Roca grande sobre lo etiquetado", 0, 30, .5], ["sol", "Solidez media máxima", .5, 1, .01]],
+  bloque_dominante: [["mayor", "Roca mayor sobre lo etiquetado", 0, 60, 1]],
+  campo_bloques: [["nr", "Rocas contadas", 1, 15, 1]],
+  arena_predominante: [["arena", "Arena sobre lo etiquetado", 30, 100, 1]],
+  terreno_rocoso: [["cob", "Cobertura de roca", 30, 100, 1]],
+  escena_no_evaluable: [],
+};
+function evaluar(U) {
+  const mask = new Uint8Array(N), lvl = new Uint8Array(N), peso = REGLAS.map(r => r.peso);
+  for (let i = 0; i < N; i++) {
+    let m = 0;
+    if (C.e2[i]) {
+      if ((C.big[i] ?? 0) > U.big && (C.sol[i] ?? 1) < U.sol) m |= 1;
+      if ((C.lrg[i] ?? 0) > U.mayor) m |= 2;
+      if ((C.nr[i] ?? 0) >= U.nr) m |= 4;
+    }
+    if (C.e1[i]) { if ((C.sand[i] ?? 0) > U.arena) m |= 8; if ((C.cov[i] ?? 0) > U.cob) m |= 16; }
+    if (C.mn[i]) m |= 32;
+    let n = 0, mx = 0;
+    for (let k = 0; k < 6; k++) if (m & (1 << k) && peso[k] >= 2) { n++; mx = Math.max(mx, peso[k]); }
+    lvl[i] = !n ? 0 : (mx === 3 && n >= 2 ? 3 : (mx === 3 ? 2 : 1)); mask[i] = m;
+  }
+  return { mask, lvl };
+}
+function conteos(ev) { const nivel = [0, 0, 0, 0], regla = REGLAS.map(() => 0); for (let i = 0; i < N; i++) { nivel[ev.lvl[i]]++; for (let k = 0; k < 6; k++) if (ev.mask[i] & (1 << k)) regla[k]++; } return { nivel, regla }; }
+
+/* ===================== Estadísticos ===================== */
+const idx = Array.from({ length: N }, (_, i) => i);
+const E1 = idx.filter(i => C.e1[i]), E2 = idx.filter(i => C.e2[i]);
+const mediana = a => { if (!a.length) return null; const s = Float64Array.from(a).sort(), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const SOLES = Math.max(...C.dia.filter(v => v != null));
+const conRoca = idx.filter(i => (C.cov[i] ?? 0) > 0);
+const ST = { conRoca: conRoca.length, medCov: mediana(conRoca.map(i => C.cov[i])), rocas: E2.reduce((s, i) => s + (C.nr[i] || 0), 0) };
+
+/* ===================== Estado ===================== */
+const G = JSON.parse(localStorage.getItem("terreno-ai4mars") || "{}");
+const st = {
+  vista: "resumen", tema: Q.get("tema") || G.tema || "claro", U: { ...U0, ...(G.U || {}) },
+  f: { nivel: "senal", regla: -1, orden: "rocas", q: "", soles: null }, filas: [], sel: -1,
+  capa: G.capa || "rocas", opac: G.opac ?? 70, numeros: G.numeros ?? true, filtradas: G.filtradas ?? false,
+};
+(Q.get("u") || "").split(",").forEach(p => { const [k, v] = p.split(":"); if (k in U0 && v !== undefined && !Number.isNaN(+v)) st.U[k] = +v; });
+if (Q.get("capa")) st.capa = Q.get("capa");
+let EV = evaluar(st.U), CNT = conteos(EV);
+const EV0 = evaluar(U0), CNT0 = conteos(EV0);
+const guardar = () => { if (!estatico) localStorage.setItem("terreno-ai4mars", JSON.stringify({ tema: st.tema, U: st.U, capa: st.capa, opac: st.opac, numeros: st.numeros, filtradas: st.filtradas })); };
+const modificado = () => Object.keys(U0).some(k => st.U[k] !== U0[k]);
+function recalcular() { EV = evaluar(st.U); CNT = conteos(EV); pintarLateral(); $("#chip-mod").hidden = !modificado(); guardar(); }
+
+/* ===================== Utilidades ===================== */
+const ICO = {
+  resumen: '<path d="M3 20h18"/><path d="M6 16V9M10 16V5M14 16v-6M18 16V8"/>',
+  explorador: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-8 8"/>',
+  reglas: '<path d="M4 6h10M4 12h16M4 18h7"/><circle cx="17" cy="6" r="2"/><circle cx="14" cy="18" r="2"/>',
+  metodo: '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.5 6h7M7 8.2l3.8 7.6M17 8.2l-3.8 7.6"/>',
+  geologia: '<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/>',
+  repro: '<path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/>',
+};
+const ico = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
+const VISTAS = [["resumen", "Resumen"], ["explorador", "Explorador de escenas"], ["reglas", "Reglas de prioridad"], ["metodo", "Método y validación"], ["geologia", "Geología · Perseverance"], ["repro", "Reproducibilidad"]];
+function aviso(t) { const a = document.createElement("div"); a.className = "aviso"; a.innerHTML = `<i></i>${esc(t)}`; $("#avisos").append(a); setTimeout(() => { a.classList.add("sale"); setTimeout(() => a.remove(), 320); }, 2300); }
+async function copiar(t, e = "Copiado") { try { await navigator.clipboard.writeText(t); } catch { const x = document.createElement("textarea"); x.value = t; document.body.append(x); x.select(); document.execCommand("copy"); x.remove(); } aviso(`${e}: ${t.length > 44 ? t.slice(0, 44) + "…" : t}`); }
+function contar(el, fin, dec = 0) {
+  if (!mov) { el.textContent = nf(fin, dec); return; }
+  const t0 = performance.now();
+  const paso = t => { const p = Math.min(1, Math.max(0, (t - t0) / 1200)), e = 1 - Math.pow(1 - p, 4); el.textContent = nf(fin * e, dec); if (p < 1) requestAnimationFrame(paso); };
+  requestAnimationFrame(paso);
+}
+const tip = $("#tip");
+document.addEventListener("mouseover", e => { const t = e.target.closest("[data-tip]"); if (t && t.dataset.tip) { tip.innerHTML = t.dataset.tip; tip.classList.add("ver"); } });
+document.addEventListener("mouseout", e => { if (e.target.closest("[data-tip]")) tip.classList.remove("ver"); });
+document.addEventListener("mousemove", e => { if (!tip.classList.contains("ver")) return; const w = tip.offsetWidth, h = tip.offsetHeight; tip.style.left = Math.min(innerWidth - w - 12, e.clientX + 14) + "px"; tip.style.top = (e.clientY + h + 24 > innerHeight ? e.clientY - h - 12 : e.clientY + 16) + "px"; });
+const rango = el => el.style.setProperty("--p", `${100 * (el.value - el.min) / (el.max - el.min)}%`);
+const cab = (k, t, l) => `<div class="rv" style="--i:0"><div class="kicker">${k}</div><h1 class="gran">${t}</h1>${l ? `<p class="lead">${l}</p>` : ""}</div>`;
+
+/* ===================== Gráficas ===================== */
+function barrasV(datos, { ancho = 520, alto = 200, valores = true, etiquetas = true, hueco = .3 } = {}) {
+  const m = { t: 20, b: etiquetas ? 28 : 6 }, h = alto - m.t - m.b, mx = Math.max(...datos.map(d => d.v)) || 1, bw = ancho / datos.length;
+  let s = `<svg class="g" viewBox="0 0 ${ancho} ${alto}"><line class="eje" x1="0" x2="${ancho}" y1="${m.t + h}" y2="${m.t + h}"/>`;
+  datos.forEach((d, k) => {
+    const bh = Math.max(1, d.v / mx * h), x = k * bw + bw * hueco / 2, w = bw * (1 - hueco), y = m.t + h - bh;
+    s += `<rect class="crece" style="animation-delay:${k * 35}ms" x="${x}" y="${y}" width="${w}" height="${bh}" rx="3" fill="${d.c}" data-tip="${esc(d.tip || `<b>${d.l}</b><br>${nf(d.v)}`)}"/>`;
+    if (valores) s += `<text x="${x + w / 2}" y="${y - 6}" text-anchor="middle" style="fill:var(--tinta);font-weight:600">${nf(d.v)}</text>`;
+    if (etiquetas && d.l) s += `<text x="${x + w / 2}" y="${alto - 8}" text-anchor="middle">${d.l}</text>`;
+  });
+  return s + "</svg>";
+}
+
+/* ===================== Barra lateral ===================== */
+function pintarLateral() {
+  $("#lat-niv").innerHTML = [3, 2, 1, 0].map(n => `<div class="fila-niv" data-niv="${NIV[n]}"><i style="background:var(--${NIV[n]})"></i>${NIV_TXT[NIV[n]]}<b>${nf(CNT.nivel[n])}</b></div>`).join("");
+  $$("#lat-niv .fila-niv").forEach(f => f.onclick = () => { st.f.nivel = f.dataset.niv; st.f.regla = -1; ir("explorador"); });
+}
+
+/* ===================== Vista: Resumen ===================== */
+const V = {};
+V.resumen = () => {
+  const senal = N - CNT.nivel[0];
+  const hist = Array.from({ length: 10 }, (_, k) => ({ l: k === 9 ? "10+" : String(k + 1), v: 0, c: "var(--nasa)" }));
+  E2.forEach(i => { const n = C.nr[i] || 0; if (n > 0) hist[Math.min(9, n - 1)].v++; });
+  hist.forEach(h => h.tip = `<b>${h.l} ${h.l === "1" ? "roca" : "rocas"}</b><br>${nf(h.v)} escenas`);
+  const cob = Array.from({ length: 20 }, (_, k) => ({ l: k % 5 === 0 ? `${k * 5}` : "", v: 0, c: k === 19 ? "var(--grande)" : "var(--lecho)" }));
+  E1.forEach(i => cob[Math.min(19, Math.floor((C.cov[i] ?? 0) / 5))].v++);
+  cob.forEach((h, k) => h.tip = `<b>Cobertura ${k * 5}–${k * 5 + 5} %</b><br>${nf(h.v)} escenas`);
+  const tipos = ["rocoso", "suelo", "arenoso", "mixto"].map(t => ({ l: t, v: idx.filter(i => TIPOS[C.st[i]] === t).length, c: { rocoso: "var(--lecho)", suelo: "var(--suelo)", arenoso: "var(--arena)", mixto: "var(--azul)" }[t] }));
+  return `${cab(`Curiosity · NavCam · etiquetas de voluntarios · ${nf(SOLES)} soles`, `Señales de terreno en<br>${nf(N)} escenas`,
+    `<b>${nf(senal)} escenas</b> activan al menos una señal que pide revisión y en <b>${nf(CNT.nivel[3])}</b> coinciden dos o más. Las señales salen de lo que dicen las máscaras de AI4Mars: cuántas rocas hay, qué tan grande es la mayor, si la roca grande es angulosa o si domina la arena.`)}
+  <div class="tarjeta rv" style="--i:1;margin-bottom:16px"><h2 class="sec">La travesía, escena por escena</h2><p class="nota">Cada columna reúne los soles de un tramo. Arriba, las escenas con señal; abajo, todas las escenas tomadas. Arrastra para elegir un tramo.</p>
+    <div id="travesia"></div>
+    <div class="leyenda" style="margin-top:12px"><span><i style="background:var(--alta)"></i>Alta</span><span><i style="background:var(--media)"></i>Media</span><span><i style="background:var(--baja)"></i>Baja</span><span><i style="background:var(--linea2)"></i>Escenas tomadas</span>
+      <span id="tramo-txt" style="margin-left:auto;font-family:var(--mono);font-size:12.5px"></span><button class="btn prim" id="ver-tramo" disabled>Ver el tramo en el explorador</button></div></div>
+  <div class="rej c2" style="margin-bottom:16px">
+    <div class="tarjeta rv" style="--i:2"><h2 class="sec">Prioridad de revisión</h2><p class="nota">Con los umbrales ${modificado() ? "que elegiste" : "de la tesis"}. Haz clic en un nivel para ver sus escenas.</p>
+      <div class="barra-niv" id="bn">${[3, 2, 1, 0].map(n => `<i data-w="${100 * CNT.nivel[n] / N}" style="width:${mov ? 0 : 100 * CNT.nivel[n] / N}%;background:var(--${NIV[n]})" data-tip="<b>${NIV_TXT[NIV[n]]}</b><br>${nf(CNT.nivel[n])} escenas"></i>`).join("")}</div>
+      <div class="cuentas">${[3, 2, 1, 0].map(n => `<span style="cursor:pointer" data-ir-niv="${NIV[n]}"><i style="background:var(--${NIV[n]})"></i><b data-contar="${CNT.nivel[n]}">0</b>${NIV_TXT[NIV[n]].toLowerCase()}</span>`).join("")}</div></div>
+    <div class="tarjeta rv" style="--i:3"><h2 class="sec">Rocas contadas por escena</h2><p class="nota">${nf(ST.rocas)} rocas en las ${nf(E2.length)} escenas con roca grande suficiente para contar.</p>${barrasV(hist, { ancho: 560, alto: 170 })}</div>
+  </div>
+  <div class="rej c4" style="margin-bottom:16px">
+    ${[["Cobertura calculable", E1.length, `${pct(100 * E1.length / N, 1)} de las escenas`], ["Con roca visible", ST.conRoca, `mediana de ${pct(ST.medCov, 1)} sobre lo etiquetado`], ["Rocas contadas", ST.rocas, `en ${nf(E2.length)} escenas`], ["Con alguna señal", senal, `${nf(CNT.nivel[3])} en prioridad alta`]].map(([t, v, d], k) => `<div class="tarjeta kpi rv" style="--i:${4 + k}"><span class="etiq">${t}</span><div class="v" data-contar="${v}">0</div><div class="d">${d}</div></div>`).join("")}
+  </div>
+  <div class="rej c2">
+    <div class="tarjeta rv" style="--i:8"><h2 class="sec">Cobertura de roca visible</h2><p class="nota">Porcentaje de lo etiquetado que es roca. La barra roja agrupa las escenas totalmente rocosas.</p>${barrasV(cob, { ancho: 560, alto: 180, valores: false, hueco: .12 })}</div>
+    <div class="tarjeta rv" style="--i:9"><h2 class="sec">Tipos de escena</h2><p class="nota">Según la clase dominante de la anotación.</p>${barrasV(tipos, { ancho: 560, alto: 180 })}</div>
+  </div>`;
+};
+let TRAMO = null;
+function pintarTravesia() {
+  // Cada columna ocupa 3 px de pantalla (como en la versión 2.0), así que el tramo de soles que
+  // reúne depende del ancho disponible: unos 7 soles en una pantalla de portátil.
+  const W = 1300, H = 232, ml = 34, top = 122, gris = 47, base = 14 + top;   // proporciones de la 2.0
+  const ancho = $("#travesia").clientWidth || W, nb = Math.max(60, Math.floor(ancho * (W - ml) / W / 3)), ts = (SOLES + 1) / nb;
+  const arr = Array.from({ length: nb }, () => ({ a: 0, m: 0, b: 0, t: 0 }));
+  for (let i = 0; i < N; i++) { const s = C.dia[i]; if (s == null) continue; const c = arr[Math.min(nb - 1, Math.floor(s / ts))]; c.t++; const l = EV.lvl[i]; if (l === 3) c.a++; else if (l === 2) c.m++; else if (l === 1) c.b++; }
+  const mxS = Math.max(...arr.map(c => c.a + c.m + c.b)) || 1, mxT = Math.max(...arr.map(c => c.t)) || 1, bw = (W - ml) / nb;
+  const X = s => ml + s / ts * bw, desde = k => Math.ceil(k * ts), hasta = k => Math.ceil((k + 1) * ts) - 1;
+  let s = `<svg class="g" viewBox="0 0 ${W} ${H}" id="svg-trav" style="cursor:crosshair;touch-action:none">`;
+  [[mxS, top], [Math.round(mxS / 2), top / 2], [0, 0]].forEach(([v, y]) => s += `<line class="guia" x1="${ml}" x2="${W}" y1="${base - y}" y2="${base - y}"/><text x="${ml - 6}" y="${base - y + 4}" text-anchor="end">${nf(v)}</text>`);
+  arr.forEach((c, k) => {
+    const x = ml + k * bw, w = Math.max(1, bw * 2 / 3), d = (k % 60) * 8;
+    let y = base;
+    [["a", "alta"], ["m", "media"], ["b", "baja"]].forEach(([q, n]) => { if (!c[q]) return; const h = c[q] / mxS * top; y -= h; s += `<rect class="crece" style="animation-delay:${d}ms" x="${x}" y="${y}" width="${w}" height="${h}" fill="var(--${n})"/>`; });
+    const ht = c.t / mxT * gris;
+    if (c.t) s += `<rect class="creceAbajo" style="animation-delay:${d}ms" x="${x}" y="${base + 4}" width="${w}" height="${ht}" fill="var(--linea2)"/>`;
+    s += `<rect x="${x}" y="0" width="${bw}" height="${base + gris + 8}" fill="transparent" data-tip="<b>Soles ${nf(desde(k))}–${nf(hasta(k))}</b><br>${nf(c.t)} escenas · ${nf(c.a + c.m + c.b)} con señal<br>${c.a} alta · ${c.m} media · ${c.b} baja"/>`;
+  });
+  s += `<line x1="${ml}" x2="${W}" y1="${base + 2}" y2="${base + 2}" stroke="var(--nasa)" stroke-width="2"/>`;
+  for (let v = 0; v <= SOLES; v += 250) s += `<line class="guia" x1="${X(v)}" x2="${X(v)}" y1="${base + 54}" y2="${base + 60}"/><text x="${X(v)}" y="${base + 74}" text-anchor="middle">${nf(v)}</text>`;
+  s += `<text x="${ml}" y="${base + 92}">soles desde la primera escena del conjunto</text><rect id="pincel" class="pincel" x="0" y="0" width="0" height="${base + gris + 8}" visibility="hidden"/></svg>`;
+  $("#travesia").innerHTML = s;
+  const svg = $("#svg-trav"), pin = $("#pincel");
+  const aSol = ev => { const r = svg.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width * W; return Math.max(0, Math.min(SOLES, (x - ml) / bw * ts)); };
+  const dibujar = () => {
+    if (!TRAMO) { pin.setAttribute("visibility", "hidden"); $("#ver-tramo").disabled = true; $("#tramo-txt").textContent = ""; return; }
+    const [a, b] = TRAMO; pin.setAttribute("x", X(a)); pin.setAttribute("width", Math.max(2, X(b) - X(a))); pin.setAttribute("visibility", "visible");
+    const n = idx.filter(i => C.dia[i] >= a && C.dia[i] <= b), ns = n.filter(i => EV.lvl[i] > 0).length;
+    $("#tramo-txt").textContent = `Soles ${nf(a)}–${nf(b)} · ${nf(n.length)} escenas · ${nf(ns)} con señal`; $("#ver-tramo").disabled = !n.length;
+  };
+  let ini = null;
+  svg.addEventListener("pointerdown", e => { ini = aSol(e); TRAMO = [Math.floor(ini), Math.ceil(ini)]; svg.setPointerCapture(e.pointerId); dibujar(); });
+  svg.addEventListener("pointermove", e => { if (ini == null) return; const b = aSol(e); TRAMO = [Math.floor(Math.min(ini, b)), Math.ceil(Math.max(ini, b))]; dibujar(); });
+  svg.addEventListener("pointerup", () => { ini = null; if (TRAMO && TRAMO[1] - TRAMO[0] < 2) TRAMO = null; dibujar(); });
+  $("#ver-tramo").onclick = () => { st.f.soles = TRAMO.slice(); st.f.nivel = "todas"; ir("explorador"); aviso(`Tramo: soles ${TRAMO[0]}–${TRAMO[1]}`); };
+  const t = Q.get("tramo"); if (t && !pintarTravesia.q) { pintarTravesia.q = 1; TRAMO = t.split("-").map(Number); }
+  dibujar();
+}
+function montarResumen() {
+  pintarTravesia();
+  if (mov) requestAnimationFrame(() => setTimeout(() => $$("#bn i").forEach(b => b.style.width = b.dataset.w + "%"), 60));
+  $$("[data-ir-niv]").forEach(s => s.onclick = () => { st.f.nivel = s.dataset.irNiv; st.f.regla = -1; ir("explorador"); });
+}
+
+/* ===================== Vista: Explorador ===================== */
+const ORDEN = { rocas: ["Más rocas contadas", i => -(C.e2[i] ? C.nr[i] : -1)], cob: ["Más cobertura", i => -(C.cov[i] ?? -1)], mayor: ["Roca mayor", i => -(C.e2[i] ? C.lrg[i] ?? 0 : -1)], prio: ["Prioridad", i => -(EV.lvl[i] * 100 + (C.nr[i] || 0))], sclk: ["Orden de adquisición", i => C.sclk[i]] };
+function filtrar() {
+  const f = st.f, q = f.q.trim().toUpperCase(), out = [];
+  for (let i = 0; i < N; i++) {
+    const l = EV.lvl[i];
+    if (f.nivel === "senal" && !l) continue;
+    if (["alta", "media", "baja", "sin"].includes(f.nivel) && NIV[l] !== f.nivel) continue;
+    if (f.regla >= 0 && !(EV.mask[i] & (1 << f.regla))) continue;
+    if (q && !C.id[i].includes(q)) continue;
+    if (f.soles && (C.dia[i] < f.soles[0] || C.dia[i] > f.soles[1])) continue;
+    out.push(i);
+  }
+  const k = ORDEN[f.orden][1]; out.sort((a, b) => (k(a) - k(b)) || (EV.lvl[b] - EV.lvl[a]) || (C.sclk[a] - C.sclk[b])); st.filas = out;
+}
+V.explorador = () => {
+  const n = [3, 2, 1].map(l => CNT.nivel[l]), senal = N - CNT.nivel[0];
+  const segs = [["alta", "Alta", n[0]], ["media", "Media", n[1]], ["baja", "Baja", n[2]], ["senal", "Con señal", senal], ["todas", "Todas", N]];
+  return `${cab("Explorador de escenas", "Qué ve el programa en cada escena", "").replace('class="gran"', 'class="gran chica"')}
+  <div class="herr rv" style="--i:1"><div class="seg" id="seg"><div class="pill"></div>${segs.map(([k, t, c]) => `<button data-n="${k}" class="${st.f.nivel === k ? "on" : ""}">${["alta", "media", "baja"].includes(k) ? `<i style="background:var(--${k})"></i>` : ""}${t} <small>${nf(c)}</small></button>`).join("")}</div>
+    <select class="sel" id="f-regla"><option value="-1">Todas las señales</option>${REGLAS.map((r, k) => `<option value="${k}" ${st.f.regla === k ? "selected" : ""}>${esc(r.titulo)}</option>`).join("")}</select>
+    <select class="sel" id="f-orden">${Object.entries(ORDEN).map(([k, [t]]) => `<option value="${k}" ${st.f.orden === k ? "selected" : ""}>${t}</option>`).join("")}</select>
+    ${st.f.soles ? `<span class="chip-f" id="q-soles">Soles ${st.f.soles[0]}–${st.f.soles[1]} ✕</span>` : ""}${st.f.q ? `<span class="chip-f" id="q-texto">«${esc(st.f.q)}» ✕</span>` : ""}
+    <button class="btn" id="exportar" style="margin-left:auto" data-tip="Descarga las escenas de la lista">Exportar CSV</button></div>
+  <div class="explorador">
+    <div class="tarjeta lista rv" style="--i:2"><div class="lista-cab"><span id="n-lista"></span><span>rocas</span></div><div class="lista-cuerpo" id="lista"><div id="esp"></div></div></div>
+    <div class="tarjeta visor rv" style="--i:3" id="visor"></div>
+    <div class="tarjeta ficha rv" style="--i:4" id="ficha"></div>
+  </div>`;
+};
+const ALTO = 54;
+function pintarLista() {
+  const L = $("#lista"); if (!L) return;
+  const esp = $("#esp"); esp.style.height = st.filas.length * ALTO + "px";
+  const ini = Math.max(0, Math.floor(L.scrollTop / ALTO) - 5), fin = Math.min(st.filas.length, ini + Math.ceil((L.clientHeight || 700) / ALTO) + 10);
+  let h = "";
+  for (let p = ini; p < fin; p++) {
+    const i = st.filas[p], l = NIV[EV.lvl[i]];
+    h += `<div class="item ${i === st.sel ? "sel" : ""}" data-i="${i}" style="top:${p * ALTO}px;--c:var(--${l})"><div class="t"><div class="id">${C.id[i]}</div><div class="s">${NIV_TXT[l]} · cobertura ${pct(C.cov[i])} · roca mayor ${C.e2[i] ? pct(C.lrg[i]) : "—"}</div></div><div class="n">${C.e2[i] ? C.nr[i] : "–"}</div></div>`;
+  }
+  esp.innerHTML = st.filas.length ? h : `<div style="padding:40px 20px;text-align:center;color:var(--tenue)">Ninguna escena cumple el filtro.</div>`;
+  $("#n-lista").textContent = `${nf(st.filas.length)} ${st.filas.length === 1 ? "escena" : "escenas"}`;
+}
+function colocarPill() { const seg = $("#seg"); if (!seg) return; const b = $("button.on", seg), p = $(".pill", seg); if (!b) { p.style.width = 0; return; } p.style.left = b.offsetLeft + "px"; p.style.width = b.offsetWidth + "px"; }
+function refrescar() { filtrar(); $("#lista").scrollTop = 0; if (!st.filas.includes(st.sel)) seleccionar(st.filas[0] ?? -1, false); else pintarLista(); }
+function seleccionar(i, desplazar = true) {
+  st.sel = i; pintarLista(); pintarVisor(); pintarFicha();
+  if (i >= 0) history.replaceState(null, "", location.search + "#explorador/" + C.id[i]);
+  const L = $("#lista"), p = st.filas.indexOf(i);
+  if (desplazar && L && p >= 0) { const y = p * ALTO; if (y < L.scrollTop || y > L.scrollTop + L.clientHeight - ALTO) { L.scrollTop = Math.max(0, y - L.clientHeight / 2); pintarLista(); } }
+}
+const capaSrc = (i, c) => `${RUTA}${C.id[i]}_${c === "imagen" ? "img.jpg" : c === "anot" ? "anot.png" : "rocas.png"}`;
+function pintarVisor() {
+  const v = $("#visor"); if (!v) return; const i = st.sel;
+  if (i < 0) { v.innerHTML = `<div class="escena"><div class="sin-img"><div><b>Sin escena</b>Ninguna escena cumple el filtro.</div></div></div>`; return; }
+  const info = ESC[C.id[i]], conImg = !!info;
+  v.innerHTML = `<div class="cab-v"><b>${C.id[i]}</b><button class="btn ic" id="copiar-id" data-tip="Copiar identificador" style="margin-left:auto;height:30px;width:30px">⧉</button></div>
+    <div class="opac">Transparencia de la capa <input type="range" id="opac" min="0" max="100" value="${st.opac}" style="width:130px"><span class="mono">${st.opac} %</span></div>
+    <div class="escena" id="escena">${conImg ? `<div class="cargando"></div><div class="lienzo"><img src="${capaSrc(i, "imagen")}" alt="Imagen NavCam" id="img-base"><img class="capa" id="img-anot" src="${capaSrc(i, "anot")}" alt=""><img class="capa" id="img-rocas" src="${capaSrc(i, "rocas")}" alt="">${info.f ? `<img class="capa" id="img-filt" src="${RUTA}${C.id[i]}_filt.png" alt="">` : ""}<svg viewBox="0 0 100 100" class="num" id="nums">${info.r.map((r, k) => `<g style="animation-delay:${200 + k * 60}ms"><rect x="${r[0] * 100 - 2.1}" y="${r[1] * 100 - 2.1}" width="4.2" height="4.2" rx=".8"/><text x="${r[0] * 100}" y="${r[1] * 100 + .1}" style="font-size:2.7px">${k + 1}</text></g>`).join("")}</svg></div>`
+      : `<div class="sin-img"><div><b>Imagen no incluida</b>Esta copia trae las imágenes de las ${nf(Object.keys(ESC).length)} escenas con señal. Para el resto, la ficha de la derecha muestra sus indicadores.</div></div>`}</div>
+    <div class="capas">${[["imagen", "Imagen", 1], ["anot", "Anotación", 2], ["rocas", "Rocas detectadas", 3]].map(([k, t, n]) => `<button data-capa="${k}" class="${st.capa === k ? "on" : ""}"><div class="mini">${conImg ? `<img src="${capaSrc(i, "imagen")}" alt="">${k !== "imagen" ? `<img src="${capaSrc(i, k)}" alt="" style="opacity:.8">` : ""}` : ""}</div><span>${t}<kbd>${n}</kbd></span></button>`).join("")}</div>
+    <div class="casillas"><label><input type="checkbox" id="c-num" ${st.numeros ? "checked" : ""}>Cada color es una roca contada, con su número</label><label><input type="checkbox" id="c-filt" ${st.filtradas ? "checked" : ""} ${conImg && info.f ? "" : "disabled"}>Regiones que quitaron los filtros${conImg && info.f ? ` (${info.f})` : ""}</label></div>`;
+  aplicarCapa();
+  const b = $("#img-base");
+  if (b) { const listo = () => $(".cargando")?.remove(); if (b.complete && b.naturalWidth) listo(); else { b.onload = listo; b.onerror = () => { $("#escena").innerHTML = `<div class="sin-img"><div><b>Falta la imagen</b>No se encontró ${RUTA}${C.id[i]}_img.jpg. Ejecuta scripts/make_app_escenas.py.</div></div>`; }; } }
+  $("#copiar-id").onclick = () => copiar(C.id[i], "ID copiado");
+  const o = $("#opac"); rango(o); o.oninput = () => { st.opac = +o.value; rango(o); o.nextElementSibling.textContent = st.opac + " %"; aplicarCapa(); guardar(); };
+  $$("[data-capa]", v).forEach(btn => btn.onclick = () => cambiarCapa(btn.dataset.capa));
+  $("#c-num").onchange = e => { st.numeros = e.target.checked; aplicarCapa(); guardar(); };
+  $("#c-filt").onchange = e => { st.filtradas = e.target.checked; aplicarCapa(); guardar(); };
+  const e = $("#escena");
+  if (conImg) e.onclick = ev => { const r = e.getBoundingClientRect(); e.style.setProperty("--ox", `${100 * (ev.clientX - r.left) / r.width}%`); e.style.setProperty("--oy", `${100 * (ev.clientY - r.top) / r.height}%`); e.classList.toggle("zoom"); };
+}
+function aplicarCapa() {
+  const op = st.opac / 100, set = (id, v) => { const el = $(id); if (el) el.style.opacity = v; };
+  set("#img-anot", st.capa === "anot" ? op : 0); set("#img-rocas", st.capa === "rocas" ? op : 0);
+  set("#img-filt", st.capa === "rocas" && st.filtradas ? Math.min(1, op + .1) : 0);
+  set("#nums", st.capa === "rocas" && st.numeros ? 1 : 0);
+  $$("[data-capa]").forEach(b => b.classList.toggle("on", b.dataset.capa === st.capa));
+}
+function cambiarCapa(c) { st.capa = c; aplicarCapa(); guardar(); }
+function pintarFicha() {
+  const fi = $("#ficha"); if (!fi) return; const i = st.sel;
+  if (i < 0) { fi.innerHTML = ""; return; }
+  const l = NIV[EV.lvl[i]], act = REGLAS.filter(r => EV.mask[i] & r.bit), info = ESC[C.id[i]];
+  const filt = info ? info.f : 0, reg = info ? info.r.length + info.f : 0;   // regiones tras la división de aguas
+  fi.innerHTML = `<div class="cab-f ${l}-c" style="background:var(--${l})"><span class="etiq">Prioridad de revisión</span><b>${NIV_TXT[l]}</b></div>
+    <div class="bloque"><span class="etiq">Señales activadas</span>${act.length ? act.map((r, k) => `<div class="senal" style="animation-delay:${k * 70}ms"><span class="puntos">${[1, 2, 3].map(p => `<i class="${p <= r.peso ? "on" : ""}"></i>`).join("")}</span><b>${esc(r.titulo)}</b><div class="val">${VALOR[r.clave](i, st.U)}</div></div>`).join("") : `<p class="nota" style="margin:10px 0 0">No activa ninguna señal con estos umbrales.</p>`}</div>
+    <div class="bloque"><span class="etiq">Indicadores</span><div class="indic" style="margin-top:12px">
+      <div data-tip="Regiones que deja la división de aguas; las filtradas no pasan los filtros de área y forma"><span>Rocas contadas</span><b>${C.e2[i] ? C.nr[i] : "—"}</b>${C.e2[i] && info ? `<em>${reg} ${reg === 1 ? "región" : "regiones"}, ${filt ? `${filt} ${filt === 1 ? "filtrada" : "filtradas"}` : "ninguna filtrada"}</em>` : ""}</div>
+      <div><span>Cobertura de roca</span><b>${nf(C.cov[i])}<small>%</small></b></div>
+      <div><span>Roca mayor</span><b>${C.e2[i] ? nf(C.lrg[i], 1) : "—"}<small>${C.e2[i] ? "%" : ""}</small></b></div>
+      <div><span>Arena</span><b>${nf(C.sand[i])}<small>%</small></b></div>
+      <div><span>Solidez media</span><b>${C.sol[i] == null ? "—" : nf(C.sol[i], 2)}</b></div>
+      <div><span>Etiquetado</span><b>${nf(100 * (C.fv[i] ?? 0))}<small>%</small></b></div>
+      <div><span>Tipo de escena</span><b style="font-size:20px">${TIPO_TXT[TIPOS[C.st[i]]]}</b></div>
+      <div data-tip="Soles de reloj de nave desde la primera escena del conjunto; no es el número de sol oficial de la misión"><span>Sol relativo · ojo</span><b style="font-size:20px">${nf(C.dia[i])} · ${OJOS[C.eye[i]]}</b></div></div></div>
+    <div class="lectura"><b>Cómo leer el conteo.</b> Se cuenta sobre la máscara, no sobre la foto. Si una región de roca grande encierra varias rocas, el programa cuenta una. Frente a mi conteo manual el acuerdo fue modesto (kappa ponderado ${D.cifras.cVKappaPond}).</div>
+    <div class="acciones-f"><button class="btn" id="f-enlace">Copiar enlace</button><button class="btn" id="f-ant" data-tip="Anterior · ↑">↑</button><button class="btn" id="f-sig" data-tip="Siguiente · ↓">↓</button></div>`;
+  $("#f-enlace").onclick = () => copiar(location.href.split("#")[0] + "#explorador/" + C.id[i], "Enlace copiado");
+  $("#f-ant").onclick = () => mover(-1); $("#f-sig").onclick = () => mover(1);
+}
+function mover(d) { if (!st.filas.length) return; const p = st.filas.indexOf(st.sel); seleccionar(st.filas[Math.max(0, Math.min(st.filas.length - 1, (p < 0 ? 0 : p + d)))]); }
+function exportar() {
+  const cab = ["image_id", "sol_relativo", "eye", "scene_type", "rock_coverage_pct", "n_rocks", "largest_rock_pct", "pct_sand", "nivel_prioridad", "reglas_activadas"];
+  const ls = [cab.join(",")].concat(st.filas.map(i => [C.id[i], C.dia[i], OJOS[C.eye[i]], TIPOS[C.st[i]], C.cov[i] ?? "", C.nr[i], C.lrg[i] ?? "", C.sand[i] ?? "", NIV_PY[NIV[EV.lvl[i]]], REGLAS.filter(r => EV.mask[i] & r.bit).map(r => r.clave).join("|")].join(",")));
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([ls.join("\n")], { type: "text/csv" })); a.download = `escenas_ai4mars_${st.filas.length}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  aviso(`Exportadas ${nf(st.filas.length)} escenas`);
+}
+function montarExplorador(idInicial) {
+  filtrar();
+  if (idInicial != null && !st.filas.includes(idInicial)) { st.f = { nivel: "todas", regla: -1, orden: st.f.orden, q: "", soles: null }; montar("explorador", idInicial); return; }
+  pintarLista();
+  const L = $("#lista"); let raf = 0;
+  L.addEventListener("scroll", () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(pintarLista); });
+  L.addEventListener("click", e => { const it = e.target.closest(".item"); if (it) seleccionar(+it.dataset.i, false); });
+  $$("#seg button").forEach(b => b.onclick = () => { st.f.nivel = b.dataset.n; $$("#seg button").forEach(x => x.classList.toggle("on", x === b)); colocarPill(); refrescar(); });
+  colocarPill(); setTimeout(colocarPill, 350);
+  $("#f-regla").onchange = e => { st.f.regla = +e.target.value; refrescar(); };
+  $("#f-orden").onchange = e => { st.f.orden = e.target.value; refrescar(); };
+  $("#q-soles")?.addEventListener("click", () => { st.f.soles = null; montar("explorador"); });
+  $("#q-texto")?.addEventListener("click", () => { st.f.q = ""; $("#buscar").value = ""; montar("explorador"); });
+  $("#exportar").onclick = exportar;
+  seleccionar(idInicial != null ? idInicial : (st.filas.includes(st.sel) ? st.sel : st.filas[0] ?? -1));
+}
+
+/* ===================== Vista: Reglas ===================== */
+V.reglas = () => {
+  const defs = [["alta", "Alta", "Dos o más señales que elevan la prioridad, y al menos una de peso 3."], ["media", "Media", "Una sola señal de peso 3."], ["baja", "Baja", "Solo la señal de peso 2: campo denso de bloques."], ["sin", "Sin señales", "Ninguna de peso 2 o 3. Las de peso 1 solo informan."]];
+  return `${cab("Seis reglas · umbrales explícitos", "Cómo se decide la<br>prioridad", `Cada regla compara un indicador de la escena con un umbral redondo. Mueve un umbral y la aplicación recalcula la prioridad de las ${nf(N)} escenas en el momento. Los valores de la tesis se restablecen con un clic.`)}
+  <div class="tarjeta rv" style="--i:1;margin-bottom:16px"><div class="defs">${defs.map(([k, t, d], j) => `<div class="def"><i style="background:var(--${k});animation-delay:${j * 90}ms"></i><b>${t}</b><p>${d}</p></div>`).join("")}</div></div>
+  <div class="tarjeta rv" style="--i:2;margin-bottom:16px" id="resumen-u"></div>
+  ${REGLAS.map((r, k) => `<div class="tarjeta regla rv" style="--i:${3 + k};margin-bottom:12px">
+    <div><h3><span class="puntos">${[1, 2, 3].map(p => `<i class="${p <= r.peso ? "on" : ""}"></i>`).join("")}</span>${esc(r.titulo)} <span class="pob">${r.poblacion}</span></h3><p>${esc(r.motivo)}</p><div class="crit" data-crit="${r.clave}">${esc(CRIT[r.clave](st.U))}</div></div>
+    <div>${CTL[r.clave].length ? CTL[r.clave].map(([u, t, a, b, p]) => `<div class="ctl"><div class="f"><span>${t}</span><b id="v-${u}"></b></div><input type="range" data-u="${u}" min="${a}" max="${b}" step="${p}" value="${st.U[u]}" aria-label="${t}"><div class="pc" id="p-${u}"></div></div>`).join("") : `<p class="nota" style="margin:0">Umbral fijo: identifica escenas cuya anotación no basta para valorarlas.</p>`}</div>
+    <div class="cnt"><b data-n="${k}">${nf(CNT.regla[k])}</b><span>escenas</span><span class="t">tesis: ${nf(CNT0.regla[k])}</span><a data-ver="${k}">Ver →</a></div></div>`).join("")}`;
+};
+const POB = (() => { const v = (p, c) => p.map(i => C[c][i]).filter(x => x != null); return { big: v(E2, "big"), sol: v(E2, "sol"), mayor: v(E2, "lrg"), nr: v(E2, "nr"), arena: v(E1, "sand"), cob: v(E1, "cov") }; })();
+function pintarReglas() {
+  const mod = modificado();
+  $("#resumen-u").innerHTML = `<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap"><span class="etiq">${mod ? "Con tus umbrales" : "Con los umbrales de la tesis"}</span><button class="btn" id="reset" style="margin-left:auto;font-weight:600">Restablecer los umbrales de la tesis</button></div>
+    <div class="cuentas" style="margin-top:8px">${[3, 2, 1, 0].map(n => { const d = CNT.nivel[n] - CNT0.nivel[n]; return `<span><i style="background:var(--${NIV[n]})"></i><b>${nf(CNT.nivel[n])}</b>${NIV_TXT[NIV[n]].toLowerCase()}${d ? ` <em class="${d > 0 ? "sube" : "baja"}">${d > 0 ? "+" : ""}${nf(d)}</em>` : ""}</span>`; }).join("")}</div>
+    <div class="barra-niv">${[3, 2, 1, 0].map(n => `<i style="width:${100 * CNT.nivel[n] / N}%;background:var(--${NIV[n]})"></i>`).join("")}</div>`;
+  $("#reset").onclick = () => { st.U = { ...U0 }; $$("input[data-u]").forEach(x => { x.value = st.U[x.dataset.u]; rango(x); }); recalcular(); pintarReglas(); aviso("Umbrales de la tesis restablecidos"); };
+  for (const k of Object.keys(U0)) {
+    const el = $("#v-" + k); if (!el) continue; el.textContent = ["sol", "nr"].includes(k) ? fmtU(k, st.U[k]) : nf(st.U[k], 1) + " %"; el.classList.toggle("mod", st.U[k] !== U0[k]);
+    const a = POB[k], bajo = a.filter(x => x <= st.U[k]).length; $("#p-" + k).textContent = `percentil ${nf(100 * bajo / a.length)} en ${k === "arena" || k === "cob" ? "E1" : "E2"} · tesis: ${fmtU(k, U0[k])}`;
+  }
+  $$("[data-n]").forEach(b => b.textContent = nf(CNT.regla[+b.dataset.n]));
+  $$("[data-crit]").forEach(c => c.textContent = CRIT[c.dataset.crit](st.U));
+}
+function montarReglas() {
+  pintarReglas(); let t = 0;
+  $$("input[data-u]").forEach(x => { rango(x); x.addEventListener("input", () => { st.U[x.dataset.u] = +x.value; rango(x); clearTimeout(t); t = setTimeout(() => { recalcular(); pintarReglas(); }, 16); }); });
+  $$("[data-ver]").forEach(a => a.onclick = () => { st.f.regla = +a.dataset.ver; st.f.nivel = "todas"; st.f.soles = null; ir("explorador"); });
+}
+
+/* ===================== Vista: Método ===================== */
+V.metodo = () => {
+  const P = Object.fromEntries(D.params.map(p => [p.clave, p.valor])), F = D.cifras;
+  const pasos = [["Máscara binaria", "Roca grande para el conteo; lecho rocoso y roca grande para la cobertura.", "clases NAV 1 y 3"], ["Limpieza", "Apertura para quitar motas y cierre para rellenar huecos.", `apertura ${P.open_size} px · cierre ${P.close_size} px`], ["Componentes", "Cada región separada de roca grande es un candidato.", `vecindad de ${P.connectivity === 2 ? 8 : 4}`], ["Distancia al borde", "El centro de cada roca es un máximo del relieve.", `suavizado σ = ${nf(P.distance_sigma)}`], ["División de aguas", "Separa rocas pegadas desde máximos con prominencia suficiente.", `h = ${nf(P.peak_h)} px`], ["Filtros", "Descarta regiones diminutas o demasiado alargadas.", `área ≥ ${nf(P.min_area_frac * 100, 2)} % · aspecto ≤ ${nf(P.max_aspect_ratio)}`]];
+  return `${cab("Procedimiento clásico · sin entrenamiento · determinista", "Del píxel anotado<br>a la roca contada", "Seis operaciones de morfología matemática con parámetros explícitos. Cada roca contada se explica por una regla y un número; cuando el conteo falla, se sabe en qué etapa.")}
+  <div class="tarjeta rv" style="--i:1;margin-bottom:16px"><div class="pasos">${pasos.map((p, k) => `<div class="paso"><div class="n">0${k + 1}</div><h4>${p[0]}</h4><p>${p[1]}</p><div class="p">${p[2]}</div></div>`).join("")}</div>${D.img.pipeline ? `<img class="figura" style="margin-top:16px" src="${D.img.pipeline}" alt="Procedimiento paso a paso">` : ""}</div>
+  <div class="rej c2" style="margin-bottom:16px">
+    <div class="tarjeta rv" style="--i:2"><h2 class="sec">Siete parámetros con significado geométrico</h2><p class="nota">Leídos de src/rock_count.py al generar la aplicación. La separación mínima entre máximos es auxiliar.</p><table class="t"><tr><th>Parámetro</th><th>Valor</th><th>Qué controla</th></tr>${D.params.map(p => `<tr style="${p.clave === "peak_min_distance" ? "opacity:.55" : ""}"><td class="mono">${p.clave}</td><td class="m">${p.valor}</td><td>${esc(p.desc)}</td></tr>`).join("")}</table></div>
+    <div class="tarjeta rv" style="--i:3"><h2 class="sec">Qué se comprobó</h2><p class="nota">Cifras de tesis/cifras.tex, la misma fuente del documento.</p><div class="indic" style="gap:18px">
+      <div><span>Kappa ponderado</span><b>${F.cVKappaPond}</b><em>acuerdo modesto con el conteo manual, ${F.cVN} escenas</em></div><div><span>Acuerdo por bandas</span><b>${F.cVAcuerdo}</b><em>${F.cVAbajo} por debajo y ${F.cVArriba} por encima</em></div>
+      <div><span>Colaborativa → experto</span><b style="font-size:24px">${F.cCobMedVal} → ${F.cGoldCobMedPos}</b><em>cobertura mediana con roca, ${F.cNGold} máscaras de especialista</em></div><div><span>Imágenes / anotación</span><b style="font-size:24px">${F.cDescImgPct} / ${F.cDescAnotPct}</b><em>reparto descriptivo de la diferencia</em></div></div>
+      <div class="lectura" style="margin:16px 0 0">En ${F.cVRegUnaAbajo} de los ${F.cVAbajo} casos en que el procedimiento queda por debajo, la anotación trazó varias rocas como un solo polígono: cuenta lo que la anotación separa.</div></div></div>
+  <div class="tarjeta rv" style="--i:4"><h2 class="sec">Frente a los métodos actuales, sobre los mismos datos</h2>
+    <table class="t cmp" style="margin-top:10px"><tr><th>Criterio</th><th>Procedimiento clásico</th><th>FastSAM</th><th>DeepLabV3</th></tr>
+    <tr><td>Entrenamiento</td><td>Ninguno</td><td>Preentrenado con imágenes terrestres</td><td>Miles de máscaras de AI4Mars</td></tr>
+    <tr><td>Equipo y costo</td><td>Un núcleo de CPU · unos 17 min para ${nf(N)} escenas</td><td>Unidad gráfica</td><td>Unidad gráfica · ${F.cSegMinTotal} min de entrenamiento</td></tr>
+    <tr><td>Qué entrega</td><td>Cobertura y número de rocas</td><td>Regiones sin clase</td><td>Cobertura por píxel; no separa rocas</td></tr>
+    <tr><td>Reproducibilidad</td><td>Determinista: reejecución idéntica</td><td>Depende de los pesos publicados</td><td>No determinista bit a bit</td></tr>
+    <tr><td>Resultado medido</td><td>κw ${F.cVKappaPond} con el observador</td><td>Acuerdo del ${F.cSamAcuerdo} con el conteo clásico</td><td>mIoU ${F.cSegMIoU} · ${F.cBAExpMedia} p.p. frente al experto</td></tr></table></div>`;
+};
+
+/* ===================== Vista: Geología ===================== */
+V.geologia = () => {
+  const g = D.geo, pres = [["Guijarros", g.con_guijarros, "var(--suelo)"], ["Bloques sueltos", g.con_float_rock, "var(--lecho)"], ["Con vetas", g.con_veta, "var(--rojo)"], ["Veta probable", g.veta_probable, "var(--alta)"], ["Anotación dudosa", g.veta_dudosa, "var(--media)"]];
+  return `${cab("Mars 2020 · Perseverance · taxonomía geológica", "Rasgos que la escala<br>de navegación no ve", "Extensión al conjunto de Perseverance, cuya taxonomía distingue rasgos como las vetas minerales: depósitos precipitados por agua y, por eso, de interés científico.")}
+  <div class="rej c4" style="margin-bottom:16px">${[["Máscaras analizadas", g.n_mascaras, "Perseverance"], ["Con vetas", g.con_veta, `${nf(g.pct_con_veta, 2)} % de las máscaras`], ["Veta probable", g.veta_probable, "fina y alargada"], ["Anotación dudosa", g.veta_dudosa, "demasiado extensa para ser veta"]].map(([t, v, d], k) => `<div class="tarjeta kpi rv" style="--i:${k + 1}"><span class="etiq">${t}</span><div class="v" data-contar="${v}">0</div><div class="d">${d}</div></div>`).join("")}</div>
+  <div class="rej c2"><div class="tarjeta rv" style="--i:5"><h2 class="sec">Escenas con cada rasgo</h2><p class="nota">Máscaras con al menos un píxel del rasgo.</p>${barrasV(pres.map(([l, v, c]) => ({ l, v, c })), { ancho: 560, alto: 200 })}</div>
+    <div class="tarjeta rv" style="--i:6"><h2 class="sec">Verosimilitud, no extensión</h2><p class="nota" style="font-size:14px">Una veta real es delgada y alargada. Por eso el aviso se gradúa por forma: una anotación que cubre gran parte de la escena indica un error de anotación, no una veta enorme. Este conjunto queda fuera del subconjunto de la tesis y se presenta como demostración de que la lógica se extiende a otras taxonomías.</p></div></div>`;
+};
+
+/* ===================== Vista: Reproducibilidad ===================== */
+function integridad() { const r = D.ref, f = []; NIV.forEach((n, k) => f.push([`Nivel «${NIV_TXT[n]}»`, CNT0.nivel[k], r.por_nivel[NIV_PY[n]]])); REGLAS.forEach((x, k) => f.push([x.titulo, CNT0.regla[k], r.por_regla[x.clave]])); return f; }
+V.repro = () => {
+  const F = D.cifras, chk = integridad(), ok = chk.every(f => f[1] === f[2]);
+  const niv = [["Consulta", "Un navegador", "Esta aplicación, con los indicadores de las escenas.", "Inmediato", "Abrir outputs/app_ai4mars.html"], ["Documento", "LaTeX y Biber", "La tesis completa, con todas sus cifras.", "Minutos", "make tesis"], ["Análisis", "Entorno declarado y AI4Mars", "Indicadores, evaluaciones, figuras y cifras.", "Unos 17 min", "make resultados"], ["Completo", "Lo anterior y unidad gráfica", "Todo, incluido el reentrenamiento.", `Unos ${F.cSegMinTotal} min más`, "make todo"]];
+  return `${cab("Cuatro niveles · de un doble clic a la reejecución completa", "Reproducible,<br>nivel por nivel", "El procedimiento es determinista: otra persona obtiene exactamente los mismos resultados. Y no hace falta repetirlo todo para comprobarlo.")}
+  <div class="niveles" style="margin-bottom:16px">${niv.map((n, k) => `<div class="tarjeta nivelr rv" style="--i:${k + 1}"><span class="etiq">Nivel ${k + 1}</span><div class="esc">${[0, 1, 2, 3].map(j => `<i class="${j <= k ? "on" : ""}" style="animation-delay:${j * 80}ms"></i>`).join("")}</div><h2 class="sec">${n[0]}</h2><p class="nota">${n[2]}</p><div class="datos"><span>Requisitos</span><span>${n[1]}</span><span>Tiempo</span><span>${n[3]}</span></div><div class="cmd"><code>${n[4]}</code><button data-copiar="${esc(n[4])}">⧉</button></div></div>`).join("")}</div>
+  <div class="rej c2"><div class="tarjeta rv" style="--i:5"><h2 class="sec">${ok ? "La aplicación reproduce el repositorio" : "Hay diferencias con el repositorio"}</h2><p class="nota">Al abrirse recalcula las reglas con los umbrales de la tesis y compara cada conteo con outputs/priorizacion_resumen.json.</p>${chk.map((f, k) => `<div class="chk" style="animation-delay:${k * 50}ms"><span class="${f[1] === f[2] ? "ok" : "mal"}">${f[1] === f[2] ? "✓ OK" : "✕"}</span><span>${esc(f[0])}</span><span>${nf(f[1])} = ${nf(f[2])}</span></div>`).join("")}</div>
+    <div class="tarjeta rv" style="--i:6"><h2 class="sec">De dónde sale cada dato</h2><div class="datos" style="margin-top:12px"><span>Generada</span><span>${D.meta.generado}</span><span>Commit</span><span>${esc(D.meta.commit)}</span><span>Escenas</span><span>${nf(N)}</span><span>Escenas con imagen en esta copia</span><span>${nf(Object.keys(ESC).length)}</span><span>Pruebas automáticas</span><span>${F.cPruebasN}</span><span>Repositorio</span><span><a href="${D.meta.repo}" target="_blank" rel="noopener">GitHub ↗</a></span></div>
+      <div class="etiq" style="margin:16px 0 6px">Huella SHA-256 del segmentador</div><div class="hash">${esc(D.meta.sha256)}</div>
+      <div class="cmd"><code>python scripts/make_app_escenas.py && python scripts/make_app.py</code><button data-copiar="python scripts/make_app_escenas.py && python scripts/make_app.py">⧉</button></div></div></div>`;
+};
+
+/* ===================== Navegación ===================== */
+function montar(v, arg) {
+  const c = $("#contenido"); c.innerHTML = `<section class="vista">${V[v]()}</section>`; c.scrollTop = 0;
+  const y = +Q.get("y"); if (y && !montar.y) { montar.y = 1; setTimeout(() => c.scrollTop = y, 50); }
+  $$("[data-contar]", c).forEach(el => contar(el, +el.dataset.contar));
+  $$("[data-copiar]", c).forEach(b => b.onclick = () => copiar(b.dataset.copiar, "Comando copiado"));
+  ({ resumen: montarResumen, explorador: () => montarExplorador(arg), reglas: montarReglas }[v] || (() => {}))();
+}
+function ir(v, arg, hist) {
+  if (!V[v]) v = "resumen"; const nueva = ir.listo && !hist && st.vista !== v; st.vista = v;
+  $$("#nav button").forEach(b => b.classList.toggle("activo", b.dataset.v === v));
+  if (nueva) history.pushState(null, "", location.search + "#" + v);   // atrás y adelante recorren las vistas
+  montar(v, arg); if (v !== "explorador") history.replaceState(null, "", location.search + "#" + v);
+  ir.listo = true;
+  document.title = `${VISTAS.find(x => x[0] === v)[1]} · Terreno AI4Mars`;
+}
+$("#nav").innerHTML = VISTAS.map(([k, t]) => `<button data-v="${k}">${ico(k)}<span>${t}</span></button>`).join("");
+$$("#nav button").forEach(b => b.onclick = () => ir(b.dataset.v));
+
+/* ---------- Búsqueda y paleta ---------- */
+let ops = [], selOp = 0;
+function abrirPaleta(q = "") { $("#paleta").classList.add("ver"); const x = $("#paleta-q"); x.value = q; filtrarPaleta(q); setTimeout(() => x.focus(), 30); }
+function cerrarModales() { $$(".modal-f").forEach(m => m.classList.remove("ver")); }
+function filtrarPaleta(q) {
+  const t = q.trim().toUpperCase();
+  const acc = [...VISTAS.map(([k, n]) => ({ ico: ico(k), txt: n, tipo: "Vista", f: () => ir(k) })),
+    { ico: ico("repro"), txt: "Cambiar tema: claro o modo misión", tipo: "T", f: alternarTema },
+    { ico: ico("explorador"), txt: "Ver las escenas de prioridad alta", tipo: nf(CNT.nivel[3]), f: () => { st.f.nivel = "alta"; st.f.regla = -1; ir("explorador"); } },
+    { ico: ico("reglas"), txt: "Restablecer los umbrales de la tesis", tipo: "Acción", f: () => { st.U = { ...U0 }; recalcular(); ir(st.vista); aviso("Umbrales restablecidos"); } },
+    { ico: ico("explorador"), txt: "Exportar la lista actual a CSV", tipo: "Acción", f: () => { if (st.vista !== "explorador") ir("explorador"); exportar(); } }].filter(a => !t || a.txt.toUpperCase().includes(t));
+  const escn = t.length >= 3 ? idx.filter(i => C.id[i].includes(t)).slice(0, 8).map(i => ({ ico: ico("explorador"), txt: `<span class="mono">${C.id[i]}</span>`, tipo: NIV_TXT[NIV[EV.lvl[i]]], f: () => ir("explorador", i) })) : [];
+  ops = [...escn, ...acc]; selOp = 0; pintarPaleta();
+}
+function pintarPaleta() {
+  $("#paleta-l").innerHTML = ops.length ? ops.map((o, k) => `<div class="op ${k === selOp ? "act" : ""}" data-k="${k}">${o.ico.replace("<svg", '<svg width="16" height="16"')}<span>${o.txt}</span><span class="tipo">${o.tipo}</span></div>`).join("") : `<div style="padding:30px;text-align:center;color:var(--tenue)">Sin resultados</div>`;
+  $$("#paleta-l .op").forEach(el => { el.onclick = () => ejecutar(+el.dataset.k); el.onmousemove = () => { if (selOp !== +el.dataset.k) { selOp = +el.dataset.k; pintarPaleta(); } }; });
+  $("#paleta-l .op.act")?.scrollIntoView({ block: "nearest" });
+}
+function ejecutar(k) { const o = ops[k]; if (!o) return; cerrarModales(); o.f(); }
+$("#paleta-q").oninput = e => filtrarPaleta(e.target.value);
+$("#paleta-q").onkeydown = e => { if (e.key === "ArrowDown") { selOp = Math.min(ops.length - 1, selOp + 1); pintarPaleta(); e.preventDefault(); } if (e.key === "ArrowUp") { selOp = Math.max(0, selOp - 1); pintarPaleta(); e.preventDefault(); } if (e.key === "Enter") ejecutar(selOp); };
+$$(".modal-f").forEach(m => m.onclick = e => { if (e.target === m) cerrarModales(); });
+const buscar = $("#buscar");
+buscar.onkeydown = e => { if (e.key === "Enter") { const q = buscar.value.trim().toUpperCase(); const exacta = C.id.indexOf(q); if (exacta >= 0) { ir("explorador", exacta); buscar.blur(); return; } st.f.q = q; st.f.nivel = "todas"; ir("explorador"); buscar.blur(); } };
+$("#btn-tema").onclick = () => alternarTema();
+$("#btn-ayuda").onclick = () => $("#ayuda").classList.add("ver");
+$("#ayuda-l").innerHTML = [["Buscar escena, vista o acción", "⌘K"], ["Capa: imagen, anotación, rocas", "1 2 3"], ["Escena anterior / siguiente", "↑ ↓"], ["Acercar o alejar la imagen", "clic"], ["Tema claro o modo misión", "T"], ["Cerrar", "Esc"], ["Esta ayuda", "?"]].map(([a, b]) => `<span>${a}</span><span>${b.split(" ").map(x => `<kbd>${x}</kbd>`).join(" ")}</span>`).join("");
+document.addEventListener("keydown", e => {
+  const ae = document.activeElement, escribe = ae && /INPUT|TEXTAREA|SELECT/.test(ae.tagName) && !["range", "checkbox"].includes(ae.type);
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); $("#paleta").classList.contains("ver") ? cerrarModales() : abrirPaleta(); return; }
+  if (e.key === "Escape") { if ($(".modal-f.ver")) cerrarModales(); else if ($("#escena.zoom")) $("#escena").classList.remove("zoom"); else ae?.blur(); return; }
+  if (escribe || $(".modal-f.ver") || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (st.vista === "explorador") {
+    if (["ArrowDown", "j"].includes(e.key)) { e.preventDefault(); mover(1); return; }
+    if (["ArrowUp", "k"].includes(e.key)) { e.preventDefault(); mover(-1); return; }
+    const capa = { 1: "imagen", 2: "anot", 3: "rocas" }[e.key]; if (capa) { cambiarCapa(capa); return; }
+  }
+  if (e.key === "/") { e.preventDefault(); buscar.focus(); return; }
+  if (e.key.toLowerCase() === "t") alternarTema();
+  if (e.key === "?") $("#ayuda").classList.add("ver");
+});
+function alternarTema() { st.tema = st.tema === "claro" ? "mision" : "claro"; document.documentElement.dataset.tema = st.tema; guardar(); aviso(st.tema === "mision" ? "Modo misión" : "Tema claro"); }
+
+/* ===================== Arranque ===================== */
+$("#logo-nasa").src = $("#arr-logo").src = D.img.nasa; if (D.img.externado) $("#logo-ext").src = D.img.externado; else $("#logo-ext").remove();
+document.documentElement.dataset.tema = st.tema;
+const okI = integridad().every(f => f[1] === f[2]);
+const ci = $("#chip-int"); ci.className = "chip-top " + (okI ? "ok" : "mal"); ci.textContent = `priorizacion.csv · ${D.meta.commit}`;
+ci.dataset.tip = okI ? "Las reglas recalculadas coinciden con el repositorio en los 10 conteos" : "Los conteos recalculados no coinciden con el repositorio"; ci.style.cursor = "pointer"; ci.onclick = () => ir("repro");
+$("#chip-mod").hidden = !modificado(); $("#chip-mod").onclick = () => ir("reglas"); $("#chip-mod").style.cursor = "pointer";
+pintarLateral();
+function inicio(hist) {
+  const h = decodeURIComponent(location.hash.slice(1)), [v, id] = h.split("/");
+  if (v === "explorador" && id) {
+    const i = C.id.indexOf(id);
+    if (hist && st.vista === "explorador" && i >= 0) { if (i !== st.sel) st.filas.includes(i) ? seleccionar(i) : ir("explorador", i, true); return; }
+    ir("explorador", i >= 0 ? i : undefined, hist); return;
+  }
+  const dest = VISTAS.some(x => x[0] === v) ? v : "resumen";
+  if (hist && dest === st.vista) return;
+  ir(dest, undefined, hist);
+}
+// Enlaces pegados en la barra de direcciones y los botones atrás/adelante del navegador.
+addEventListener("popstate", () => inicio(true)); addEventListener("hashchange", () => inicio(true));
+// La travesía reparte las columnas según el ancho disponible: se redibuja al cambiar el tamaño.
+let redim = 0; addEventListener("resize", () => { clearTimeout(redim); redim = setTimeout(() => { if (st.vista === "resumen" && $("#travesia")) pintarTravesia(); }, 200); });
+(function () {
+  const a = $("#arranque");
+  if (!mov || sessionStorage.getItem("terreno-arranque")) { a.remove(); inicio(); return; }
+  $("#arr-l").innerHTML = [`${nf(N)} escenas · MSL NavCam`, `${REGLAS.length} reglas de prioridad`, okI ? "Integridad verificada" : "Integridad: revisar"].map((t, k) => `<div class="l" style="animation-delay:${250 + k * 300}ms">${t}</div>`).join("");
+  let hecho = false; const fin = () => { if (hecho) return; hecho = true; sessionStorage.setItem("terreno-arranque", "1"); a.classList.add("fuera"); inicio(); setTimeout(() => a.remove(), 900); };
+  setTimeout(fin, 1700); addEventListener("keydown", fin, { once: true }); a.onclick = fin;
+})();
+</script>
+</body>
+</html>

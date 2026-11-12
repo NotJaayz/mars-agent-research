@@ -5,11 +5,11 @@
 
 \subsection{Sobre la pregunta de investigación}
 
-La pregunta era qué indicadores cuantitativos de cobertura y organización de la roca pueden
-derivarse de forma reproducible de las máscaras de AI4Mars, y cuáles son sus límites de validez
+La pregunta era qué indicadores cuantitativos de cobertura, composición y organización de la
+roca pueden derivarse de forma reproducible de las máscaras de AI4Mars, y cuáles son sus límites de validez
 frente a diferencias en la anotación y al juicio humano. La respuesta tiene tres partes: la
-cobertura sí puede derivarse de forma reproducible e interpretarse como medida de la roca
-anotada; el conteo de rocas individuales es reproducible, pero no es una estimación válida del
+cobertura y la composición del terreno sí pueden derivarse de forma reproducible e
+interpretarse como medidas del terreno anotado; el conteo de rocas individuales es reproducible, pero no es una estimación válida del
 número de rocas, y ese resultado negativo es en sí mismo un hallazgo; y el propio conjunto de datos tiene
 propiedades, heterogeneidades y limitaciones que delimitan lo que cualquiera de los dos
 indicadores puede afirmar.
@@ -28,7 +28,7 @@ individuales a partir de estas máscaras no es sencillo}, y el procedimiento no 
 que en un sentido acotado: produce un conteo reproducible de las instancias
 geométricamente separables dentro de la clase roca grande, pero ese conteo no puede
 interpretarse como estimación válida del número total de rocas visibles en la escena. La
-evaluación exploratoria con un observador muestra un acuerdo modesto y una tendencia al subconteo
+evaluación exploratoria con el conteo manual del autor muestra un acuerdo modesto y una tendencia al subconteo
 dentro de la propia región anotada, concentrada en las regiones que no contienen la información
 geométrica necesaria para separar instancias; y como la clase no cubre toda la roca de la escena, ni
 siquiera un conteo exacto de esa región equivaldría al número de rocas visibles.
@@ -44,14 +44,18 @@ los límites de los dos indicadores.
 
 \subsection{Sobre los objetivos específicos}
 
-\textbf{E1} produjo la cobertura en dos versiones complementarias —sobre píxeles etiquetados y
-sobre la imagen completa—, acompañadas de la fracción etiquetada que permite juzgar la
+\textbf{E1 se cumplió.} Produjo la cobertura en dos versiones complementarias, sobre píxeles
+etiquetados y sobre la imagen completa, acompañadas de la fracción etiquetada que permite juzgar la
 diferencia. Las conclusiones principales se mantienen con cualquiera de las dos versiones.
 
-\textbf{E2} produjo el conteo para las \cFlagOk{} escenas de bandera \texttt{ok}, con un total de
+\textbf{E2 no se cumplió en su propósito.} El procedimiento produce un conteo reproducible, pero
+ese conteo no es una estimación confiable del número de rocas: su acuerdo con el conteo manual
+del autor es modesto (kappa ponderado de \cVKappaPond), tiende a contar menos y da cero en
+\cBandaCero{} de las \cFlagOk{} escenas aptas, una de cada cinco. En lo operativo, produjo el
+conteo para las \cFlagOk{} escenas de bandera \texttt{ok}, con un total de
 \cNRocas{} rocas y una distribución tamaño--frecuencia decreciente, coherente en forma con la
-literatura de abundancia de rocas. En \cBandaCero{} de esas escenas (\cBandaCeroPct\,\%) los
-filtros de área y forma descartan toda la roca grande y el conteo es cero. El criterio de
+literatura de abundancia de rocas. Los ceros se deben a que, en esas escenas, los filtros de
+área y forma descartan toda la roca grande. El criterio de
 prominencia redujo la fragmentación de la primera versión, pero la reconstrucción de la
 calibración muestra que lo hizo rebajando el conteo de forma general y no solo en las escenas
 sobresegmentadas, y no la eliminó: la división de aguas subdivide alguna región en el
@@ -59,7 +63,7 @@ sobresegmentadas, y no la eliminó: la división de aguas subdivide alguna regi�
 escenas casi sin etiquetar que contienen roca grande, por ser las que concentran los artefactos
 de anotación.
 
-\textbf{E3} caracterizó la composición del terreno, definió una tipología de escenas y mostró la
+\textbf{E3 se cumplió.} Caracterizó la composición del terreno, definió una tipología de escenas y mostró la
 alternancia entre tramos rocosos y tramos dominados por el suelo a lo largo de la secuencia de
 adquisición. Esa variación es temporal y no espacial: el orden de adquisición no equivale a la
 distancia recorrida. Entre tipos de escena, mostró además que la roca grande es más frecuente en las escenas
@@ -68,14 +72,14 @@ mixtas y arenosas que en las rocosas, y que en ellas se cuentan más rocas por e
 comparar los dos ojos del par estéreo, porque el subconjunto es casi enteramente monocular, con
 \cNOjoIzq{} imágenes del ojo izquierdo frente a \cNOjoDer{} del derecho.
 
-\textbf{E4} entregó el conjunto de recursos reproducibles: código modular con parámetros
+\textbf{E4 se cumplió.} Entregó el conjunto de recursos reproducibles: código modular con parámetros
 explícitos, guiones de ejecución que regeneran todas las cifras, tablas y figuras de este
 documento, registro de versiones y un archivo tabular con una fila por imagen y veintinueve
 columnas de identificación, indicadores, variables descriptivas y elegibilidad.
 
-\textbf{E5} estableció los límites de validez mediante tres contrastes —fuente de la anotación,
-juicio de un observador y segmentador entrenado, a los que se suma el control del denominador
-de E1— e identificó las causas probables de los errores del conteo: en el \cPctSinBig{} de las escenas no hay
+\textbf{E5 se cumplió.} Estableció los límites de validez mediante tres contrastes (fuente de la
+anotación, conteo manual del autor y segmentador entrenado, a los que se suma el control del
+denominador de E1) e identificó las causas probables de los errores del conteo: en el \cPctSinBig{} de las escenas no hay
 roca grande que contar, en el \cPctFiltradas{} los filtros la descartan, y entre las escenas que
 cuentan rocas la subdivisión afecta al \cPctSubdiv. De ahí proceden los hallazgos que se resumen
 a continuación.
@@ -88,7 +92,7 @@ anteproyecto no formuló hipótesis estadísticas y estas se explicitaron despu�
 una y no constituyen contrastes confirmatorios. Los resultados son compatibles con \textbf{H1}:
 la cobertura es reproducible y no se observa que la fracción etiquetada explique principalmente
 la variación global, aunque persiste una dependencia no lineal débil. La evaluación exploratoria
-no brinda apoyo a \textbf{H2}: el acuerdo es bajo y, cuando hay desacuerdo, el procedimiento
+no brinda apoyo a \textbf{H2}: el acuerdo es modesto y, cuando hay desacuerdo, el procedimiento
 tiende a quedar por debajo del observador.
 Los resultados dan \textbf{apoyo parcial a H3}: la cobertura presenta una componente asignada a
 la fuente de la anotación pequeña y positiva en todas las variantes y niveles de consenso, que al
@@ -106,8 +110,8 @@ dependencia débil y no lineal: la correlación de distancia y la información m
 ($p \cDepCCDcorP$ y $p \cDepCCIMP$), con forma de U invertida, en parte inducida por la
 propia definición de los indicadores. La magnitud es pequeña: los tramos de cobertura explican
 el \cEtaConteo{} de la varianza del conteo. Los análisis respaldan tratar los dos indicadores
-como propiedades no redundantes de la anotación —cuánta superficie se etiquetó como roca y en
-cuántas regiones separables se etiquetó la roca grande—, de modo que reportarlos por separado
+como propiedades no redundantes de la anotación (cuánta superficie se etiquetó como roca y en
+cuántas regiones separables se etiquetó la roca grande), de modo que reportarlos por separado
 está justificado, aunque la relación entre ambos no sea nula.
 
 \subsection{Sobre la fuente de la anotación}
@@ -129,9 +133,9 @@ construyó con un número aproximadamente igual de imágenes por clase de terren
 depuración manual posterior \citep{swan2021ai4mars}, y no como una muestra aleatoria de la
 distribución de entrenamiento. Es, con todo, una propiedad que afecta a cualquier comparación
 entre ambos conjuntos. La segunda es que la componente asignada a la anotación es pequeña e
-incierta: su estimación es positiva en todas las variantes y niveles de consenso —entre
+incierta: su estimación es positiva en todas las variantes y niveles de consenso (entre
 \cNivDosAnot{} y \cNivTresAnotPrueba{} puntos, en el sentido de que la anotación colaborativa
-asigna algo más de roca que la de especialista—, pero cuando se tiene en cuenta que las imágenes
+asigna algo más de roca que la de especialista), pero cuando se tiene en cuenta que las imágenes
 de experto se concentran en \cTempNSolesExp{} soles, su intervalo en la muestra principal incluye
 el cero con los niveles 1 y 2 (\cTempAnotIC{} y \cNivDosAnotSolIC); lo excluye con el nivel 3, el más exigente, que
 deja fuera parte de las imágenes y de los píxeles \cNivTresAnotSolIC. Los
@@ -163,9 +167,10 @@ individuales, y estima cobertura, no conteo.
 
 \subsection{Sobre el conteo y el juicio humano}
 
-La evaluación exploratoria por bandas sobre \cVN{} escenas, con un observador que repitió el
-conteo, arrojó un acuerdo exacto del \cVAcuerdo, con kappa de Cohen de \cVKappa{} y kappa
-ponderado de \cVKappaPond: un acuerdo aceptable en la escala de Landis y Koch, que además se apoya sobre todo en la banda de una a
+La evaluación exploratoria por bandas sobre \cVN{} escenas, con el conteo manual del autor
+repetido en dos rondas, arrojó un acuerdo exacto del \cVAcuerdo, con kappa de Cohen de \cVKappa{} y kappa
+ponderado de \cVKappaPond: un acuerdo modesto, en el tramo de 0,21 a 0,40 de la escala de
+Landis y Koch, que además se apoya sobre todo en la banda de una a
 tres rocas, donde el azar ya acierta el \cVAzar. Cuando hay desacuerdo, el procedimiento queda
 más veces por debajo del observador (\cVAbajo{} escenas) que por encima (\cVArriba), aunque la
 diferencia no es significativa, y esa tendencia se mantiene en \cSenMasAbajo{} de las \cSenN{}
@@ -181,8 +186,8 @@ El procedimiento separa de forma reproducible lo que la geometría de la máscar
 separar, con una subdivisión residual en parte de las escenas
 (Sección~\ref{sec:diagnostico}); la máscara permite separar mucho menos de lo que un observador
 distingue. Aparte de ese desacuerdo, la anotación de roca grande no marca todas las rocas de una
-escena sino algunas —en \cVNoExhN{} de las \cVN{} escenas representa menos del
-\SI{20}{\percent} de la roca etiquetada—, de modo que el conteo tampoco representaría la escena
+escena sino algunas (en \cVNoExhN{} de las \cVN{} escenas representa menos del
+\SI{20}{\percent} de la roca etiquetada), de modo que el conteo tampoco representaría la escena
 completa aunque coincidiera con el observador dentro de la región.
 
 \subsection{Sobre el origen de los límites del conteo}
@@ -205,8 +210,8 @@ El enfoque híbrido queda como prueba de concepto.
 \subsection{Sobre las propiedades y limitaciones del conjunto de datos}
 
 El diagnóstico del conjunto de datos es el resultado más transferible del trabajo. Seis rasgos
-—cinco documentados con evidencia cuantitativa y uno ilustrado con ejemplos en la
-Sección~\ref{sec:inconsistencias}— condicionan su uso como medida del terreno y como referencia
+(cinco documentados con evidencia cuantitativa y uno ilustrado con ejemplos en la
+Sección~\ref{sec:inconsistencias}) condicionan su uso como medida del terreno y como referencia
 de evaluación, y no son de la misma naturaleza. La composición distinta de las escenas de
 entrenamiento y de especialista procede del diseño muestral; la cobertura parcial de las
 etiquetas, del protocolo de anotación; la posible diferencia de criterio entre voluntarios y
@@ -239,8 +244,8 @@ evaluación.
 bajo costo computacional que deriva, para \cNEscenas{} escenas, una fila por
 imagen con los dos indicadores y sus variables descriptivas, en veintinueve columnas, ejecutable en procesador convencional sin conjunto de entrenamiento. Todas las cifras,
 tablas y figuras se regeneran con guiones a partir de los resultados, el trabajo puede
-reproducirse en cuatro niveles —desde un panel que se abre en el navegador hasta la reejecución
-completa— y el conjunto es reutilizable con independencia del procedimiento que lo generó.
+reproducirse en cuatro niveles, desde un panel que se abre en el navegador hasta la reejecución
+completa, y el conjunto es reutilizable con independencia del procedimiento que lo generó.
 Frente a los segmentadores profundos aplicados a los mismos datos, es el único método que
 cuenta instancias, explica cada resultado por parámetros con significado geométrico y se
 reproduce de forma idéntica, lo que lo hace útil como línea de base auditable para evaluarlos
@@ -256,13 +261,6 @@ geométricamente razonable no reproduce el juicio humano sobre estas máscaras, 
 no se resuelve recalibrando umbrales, delimita qué cabe esperar de AI4Mars para tareas de conteo
 de instancias.
 
-\paragraph{Herramientas de consulta y priorización.} Las reglas heurísticas de priorización, la
-aplicación de escritorio y el panel web autocontenido (Sección~\ref{sec:extension}) convierten los
-indicadores en una herramienta que cualquier persona puede usar sin programar: ordenan las
-\cNEscenas{} escenas para su revisión con criterios explícitos y permiten inspeccionar cada una
-junto a su anotación y a las rocas detectadas. Su uso en la planificación de una misión
-requeriría una validación específica, que queda como línea futura.
-
 \section{Recomendaciones}
 
 \subsection{Para el uso de los resultados de este trabajo}
@@ -277,7 +275,7 @@ significar ausencia de rocas o ausencia de la etiqueta que permite contarlas, si
 conjunto de resultados distingue.
 
 Los indicadores de tamaño relativo no deben leerse literalmente en escenas de fracción
-etiquetada inferior a $0{,}05$ —bandera \texttt{mostly\_null}—, y conviene tratarlos con
+etiquetada inferior a $0{,}05$ (bandera \texttt{mostly\_null}), y conviene tratarlos con
 cautela por debajo de $0{,}20$, el umbral con que se excluyeron escenas del entrenamiento del
 segmentador. La variación a lo largo de la secuencia de adquisición no debe leerse
 como variación a lo largo del trayecto.
@@ -287,8 +285,8 @@ como variación a lo largo del trayecto.
 \paragraph{Ampliar la validación humana.} Es la prioridad. La validación se hizo con un único
 observador, el propio autor, sobre una muestra estratificada que no es representativa del
 subconjunto. Convendría repetirla con al menos dos observadores independientes del autor,
-idealmente tres, sobre una muestra representativa y con el mismo protocolo —imágenes
-anonimizadas, orden aleatorio, resultado automático oculto—, reportando primero el acuerdo
+idealmente tres, sobre una muestra representativa y con el mismo protocolo (imágenes
+anonimizadas, orden aleatorio, resultado automático oculto), reportando primero el acuerdo
 entre personas, con un estadístico como el alfa de Krippendorff, y después el acuerdo entre el
 procedimiento y cada una de ellas. Hacer dos preguntas por escena, una sobre la región anotada y
 otra sobre la escena completa, permitiría además cuantificar cuánto deja fuera la anotación no

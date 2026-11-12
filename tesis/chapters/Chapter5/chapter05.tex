@@ -61,7 +61,7 @@ Las banderas fijan las dos poblaciones de análisis, que se mantienen en todo el
     es decir, todas salvo las \cFlagEmpty{} de bandera \texttt{empty}.
   \item \textbf{Población de E2}: las \cFlagOk{} escenas de bandera \texttt{ok}. Quedan fuera
     las \cNNullBig{} escenas de bandera \texttt{mostly\_null} que contienen algún píxel de roca
-    grande —y que aportarían \cRocasNullBig{} rocas—, porque cuando más del
+    grande, y que aportarían \cRocasNullBig{} rocas, porque cuando más del
     \SI{95}{\percent} de la escena carece de etiqueta la región de roca grande suele ser un
     fragmento aislado cuya forma es difícil de interpretar. La subsección~\ref{sec:diagnostico}
     muestra que los casos de anotación anómala identificados pertenecen a ese grupo.
@@ -70,7 +70,7 @@ Las banderas fijan las dos poblaciones de análisis, que se mantienen en todo el
 La fracción de escena efectivamente etiquetada tiene una mediana de \cFracValidMed: en la
 escena mediana, algo más de la mitad de la imagen recibió etiqueta. El resto corresponde a
 píxeles sin acuerdo suficiente entre anotadores y a las zonas que el propio conjunto excluye
-por diseño —cuerpo del rover, cielo y distancias superiores a treinta metros—, que la máscara
+por diseño (cuerpo del rover, cielo y distancias superiores a treinta metros), que la máscara
 no distingue entre sí (Sección~\ref{sec:datos}).
 
 \subsection{Cobertura de roca visible (E1)}
@@ -82,8 +82,8 @@ ecuación~\eqref{eq:cobertura}, fue del \cCobMedVal{} y la media del \cCobMediaV
 sobre la imagen completa, la mediana es del \cCobMedTot{} y la media del \cCobMediaTot.
 
 Entre las escenas con roca, la cobertura sobre píxeles etiquetados se concentra en el extremo
-superior (Figura~\ref{fig:dist-cobertura}, panel izquierdo): en \cNCobCien{} escenas —el
-\cPctCobCien{} de las que contienen roca— la totalidad del área etiquetada es roca. A ellas se
+superior (Figura~\ref{fig:dist-cobertura}, panel izquierdo): en \cNCobCien{} escenas (el
+\cPctCobCien{} de las que contienen roca) la totalidad del área etiquetada es roca. A ellas se
 suman las \cNCobCero{} escenas de cobertura nula, que la figura no representa, de modo que
 sobre la población de E1 la distribución es \textbf{bimodal}, acumulada en los dos extremos.
 En total, \cNCobMitad{} escenas superan el \SI{50}{\percent} de cobertura. Medida sobre la
@@ -117,13 +117,13 @@ Sección~\ref{sec:evaluacion}.
 
 La asociación lineal entre la cobertura y la fracción etiquetada es prácticamente nula
 ($r = \cDepFCPearson$, IC~95\,\% \cDepFCPearsonIC). Con \cDepFCN{} escenas ese intervalo
-excluye el cero, y el signo negativo —menos superficie etiquetada, algo más de cobertura— es
+excluye el cero, y el signo negativo (menos superficie etiquetada, algo más de cobertura) es
 el que predeciría el artefacto; pero la asociación explica menos de una milésima parte de la
 varianza, y deja de distinguirse de cero cuando se tiene en cuenta que las imágenes se
 adquieren en secuencias: el \textit{bootstrap} por sol da \cTempFCIC{} y la prueba por
 desplazamiento circular, $p \cTempFCP$ (Sección~\ref{sec:evaluacion}). Las medidas no
-lineales registran una dependencia débil —correlación de distancia de \cDepFCDcor,
-$p \cDepFCDcorP$ por permutación— que la Tabla~\ref{tab:dependencia} recoge junto al
+lineales registran una dependencia débil (correlación de distancia de \cDepFCDcor,
+$p \cDepFCDcorP$ por permutación) que la Tabla~\ref{tab:dependencia} recoge junto al
 resto. El análisis no descarta que el artefacto opere en subconjuntos concretos, como las
 escenas casi vacías, ni los sesgos del proceso por el que se eligieron y anotaron las
 imágenes.
@@ -207,7 +207,7 @@ Tabla~\ref{tab:bandas-conteo} y la Figura~\ref{fig:bandas-conteo} recogen la dis
   \label{fig:bandas-conteo}
 \end{figure}
 
-En \cBandaCero{} escenas —el \cBandaCeroPct\,\% de la población— existen píxeles de roca
+En \cBandaCero{} escenas (el \cBandaCeroPct\,\% de la población) existen píxeles de roca
 grande pero ninguna región supera los filtros de área mínima y forma. La
 subsección~\ref{sec:diagnostico} examina esas escenas; el dato se reporta explícitamente
 porque delimita el alcance real del indicador.
@@ -306,9 +306,9 @@ analizadas ($r = \cDepCCPearson$), y tampoco muestran asociación monótona ($\r
 débil y no lineal}: la correlación de distancia ($\cDepCCDcor$, $p \cDepCCDcorP$) y la
 información mutua ($p \cDepCCIMP$) detectan una dependencia débil que los coeficientes de
 correlación no capturan. La prueba chi-cuadrado sobre la tabla de contingencia por tramos
-—cobertura hasta el \SI{50}{\percent}, del 50 al 80, del 80 al 95, del 95 al 99,99 y del
+(cobertura hasta el \SI{50}{\percent}, del 50 al 80, del 80 al 95, del 95 al 99,99 y del
 \SI{100}{\percent}; conteo de cero, una, dos o tres, y cuatro o más rocas, de modo que todas las
-celdas tienen una frecuencia esperada de al menos cinco— también la detecta
+celdas tienen una frecuencia esperada de al menos cinco) también la detecta
 ($\chi^2 = \cChiDos$ con \cChiGl{} grados de libertad, $p = \cChiP$), con una magnitud
 despreciable (V de Cramér \cCramer).
 
@@ -343,8 +343,8 @@ que contar; puede tratarse de afloramientos continuos o de bloques que la anotac
 \end{table}
 
 La magnitud de la dependencia se mide con la razón de correlación. Agrupando las escenas en
-\cEtaGrupos{} tramos de cobertura por cuantiles —se pedían diez, pero los empates en el
-\SI{100}{\percent} funden los superiores—, la cobertura explica el \cEtaConteo{} de la varianza
+\cEtaGrupos{} tramos de cobertura por cuantiles (se pedían diez, pero los empates en el
+\SI{100}{\percent} funden los superiores), la cobertura explica el \cEtaConteo{} de la varianza
 del conteo, frente a un \cEtaConteoNula{} que marca el percentil 95 de su distribución bajo
 independencia ($p \cEtaConteoP$ por permutación); las bandas de conteo explican el \cEtaCob{} de
 la varianza de la cobertura, valor que no se distingue del azar ($p \cEtaCobP$).
@@ -370,9 +370,20 @@ dominante es el lecho rocoso en \cDomBed{} imágenes, el suelo en \cDomSoil, la 
 
 A partir de esa composición se definió la tipología de la Tabla~\ref{tab:tipologia}, que la
 Figura~\ref{fig:tipologia} representa. Los porcentajes se calculan sobre los píxeles
-etiquetados y los criterios se aplican en el orden de la tabla. El umbral de la roca es más
-exigente que los demás porque agrupa dos clases; una escena mixta puede tener, por tanto, más
-de la mitad de roca sin alcanzar los dos tercios.
+etiquetados y los criterios se aplican en el orden de la tabla. Los umbrales siguen una regla
+de mayoría: una clase define el tipo de la escena cuando ocupa al menos la mitad de lo
+etiquetado. El umbral de la roca es más exigente, dos tercios, porque agrupa dos clases, lecho
+rocoso y roca grande, y con la mitad bastaría que ambas fueran minoritarias por separado; una
+escena mixta puede tener, por tanto, más de la mitad de roca sin alcanzar los dos tercios.
+
+Como cualquier umbral redondo, estos valores son una convención, y por eso se examinó su
+efecto. Al recalcular la tipología con el umbral de la roca en el 60, el 66 o el 70\,\% y los
+de arena y suelo en el 45, el 50 o el 55\,\%, en las \cTipoSensN{} combinaciones distintas de
+la elegida cambian de tipo entre el \cTipoSensCambioMin{} y el \cTipoSensCambioMax\,\% de las
+escenas, y los dos resultados por tipo que se comentan más abajo (la roca grande es más
+frecuente en las escenas mixtas y arenosas que en las rocosas, y en ellas se cuentan más rocas
+por escena) se mantienen en las \cTipoSensMantiene{} (guion
+\texttt{scripts/sensibilidad\_tipologia.py}).
 
 \begin{table}[htbp]
   \centering
@@ -436,9 +447,9 @@ aportan con todo algo más de la mitad de las rocas contadas.
 El orden temporal se obtiene del \textbf{reloj de nave}, el contador de a bordo que el
 identificador de cada imagen incluye tras el prefijo de cámara y que se registra en la columna
 \texttt{sclk} del conjunto de resultados. Ordenando por ese contador las \cSecN{} escenas con
-etiqueta útil —banderas \texttt{ok}, \texttt{no\_bigrock} y \texttt{no\_rock}— y agrupándolas
-en \cSecTramos{} tramos consecutivos de tamaño casi igual —\cSecTramosMin{} de \cSecPorTramo{}
-imágenes y \cSecTramosMax{} de \cSecPorTramoMax, porque la división no es exacta—, se observa
+etiqueta útil (banderas \texttt{ok}, \texttt{no\_bigrock} y \texttt{no\_rock}) y agrupándolas
+en \cSecTramos{} tramos consecutivos de tamaño casi igual (\cSecTramosMin{} de \cSecPorTramo{}
+imágenes y \cSecTramosMax{} de \cSecPorTramoMax, porque la división no es exacta), se observa
 (Figura~\ref{fig:secuencia})
 una \textbf{alternancia entre tramos predominantemente rocosos y tramos dominados por el
 suelo}: la cobertura media va del \cSecMediaMin{} al \cSecMediaMax{} según el tramo, y en
@@ -466,7 +477,7 @@ permite afirmar en qué lugares del trayecto se concentra la roca, solo en qué 
 secuencia de adquisición.
 
 Cabe señalar que el subconjunto es casi enteramente de la cámara izquierda del par estéreo
-—\cNOjoIzq{} imágenes frente a \cNOjoDer{} de la derecha—, por lo que tampoco fue posible
+(\cNOjoIzq{} imágenes frente a \cNOjoDer{} de la derecha), por lo que tampoco fue posible
 comparar los indicadores entre los dos ojos del par estéreo.
 
 \subsection{Recursos reproducibles (E4)}
@@ -499,8 +510,8 @@ versionados en el repositorio público.
     \toprule
     \textbf{Nivel} & \textbf{Requisitos} & \textbf{Qué se reproduce} & \textbf{Tiempo} \\
     \midrule
-    1. Consulta & Un navegador & Panel de consulta autocontenido: resumen, reglas de
-      priorización y escenas priorizadas (Figura~\ref{fig:panel}) & Inmediato \\
+    1. Consulta & Un navegador & Aplicación de consulta: indicadores de cada escena con su
+      imagen, su anotación y las rocas detectadas & Inmediato \\
     2. Documento & Compilador \LaTeX{} y Biber & Este documento, con todas sus cifras y tablas,
       desde las fuentes y los resultados versionados & Minutos \\
     3. Análisis & Entorno declarado y AI4Mars & \texttt{make resultados}: indicadores de las
@@ -512,35 +523,11 @@ versionados en el repositorio público.
   \end{tabular}
 \end{table}
 
-\subsection{Extensión aplicada: priorización y consulta de los resultados}
-\label{sec:extension}
-
-Como extensión aplicada, los indicadores se tradujeron en seis reglas heurísticas de
-priorización con umbrales explícitos y se pusieron al alcance de quien no programa mediante dos
-herramientas de consulta. Aplicadas al conjunto, las reglas sitúan \cPrioAlta{} escenas en
-prioridad alta, \cPrioMedia{} en media y \cPrioBaja{} en baja; las \cPrioSin{} restantes no
-activan ninguna de las reglas que elevan la prioridad, aunque pueden activar alguna de las
-informativas. Su función es ordenar escenas para revisión con un criterio visible y ajustable:
-cada regla declara su umbral y su motivación, y no están calibradas para decisiones de
-navegación.
-
-La primera herramienta es una \textbf{aplicación de escritorio} con cuatro vistas —resumen,
-priorización, explorador de escenas y geología—, que para cada escena muestra la imagen
-original, la anotación del terreno y las rocas detectadas. La segunda es un \textbf{panel web
-autocontenido} (Figura~\ref{fig:panel}): un único archivo que se abre con doble clic, sin
-servidor, conexión ni instalación, y que incrusta los indicadores, el catálogo de reglas y las
-escenas priorizadas. Ambas leen los mismos archivos de resultados que respaldan este documento,
-de modo que cualquier reejecución del procedimiento se refleja en ellas sin pasos adicionales.
-El Anexo~\ref{app:extension} documenta las reglas, su distribución y las herramientas.
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{Figura_panel_consulta.png}
-  \caption[Panel de consulta de los resultados]{Panel de consulta autocontenido generado desde
-    el conjunto de resultados: resumen del subconjunto, escenas por nivel de prioridad, reglas
-    activadas y catálogo de reglas con su criterio y su justificación.}
-  \label{fig:panel}
-\end{figure}
+El primer nivel se apoya en una \textbf{aplicación de consulta} que se abre en el navegador, sin
+servidor ni instalación, y lee los mismos archivos de resultados que respaldan este documento:
+para cada escena muestra la imagen, su anotación y las rocas detectadas, junto con sus
+indicadores. Incluye además un ordenamiento heurístico de escenas para revisión, que no forma
+parte de los objetivos del trabajo y no está validado.
 
 \section{Evaluación y validación}
 
@@ -655,8 +642,8 @@ Medidas por el mismo segmentador, las imágenes de la muestra de experto tienen 
 mediana del \cFARegMedExp{} frente al \cFARegMedColab{} de la muestra colaborativa: \textbf{el
 conjunto de máscaras de experto está compuesto por escenas mucho menos rocosas}. En la
 descomposición descriptiva basada en el segmentador común, aproximadamente el \cDescImgPct{} de
-la diferencia —\cDescImg{} de sus \cDescTotal{} puntos— queda asignado a diferencias entre las
-muestras de imágenes, y \cDescAnot{} puntos —el \cDescAnotPct— a la fuente de las etiquetas.
+la diferencia (\cDescImg{} de sus \cDescTotal{} puntos) queda asignado a diferencias entre las
+muestras de imágenes, y \cDescAnot{} puntos (el \cDescAnotPct) a la fuente de las etiquetas.
 Esta proporción es condicional al modelo empleado y no constituye una estimación causal. La
 componente de anotación es pequeña y su intervalo por escena roza el cero; deja
 de excluirlo cuando se tiene en cuenta la agrupación de las imágenes por sol, como se detalla a
@@ -724,23 +711,23 @@ píxel etiquetado.
   \end{tabular}
 \end{table}
 
-Al endurecer el consenso hay menos escenas de experto con roca —\cNivUnoNRoca, \cNivDosNRoca{} y
-\cNivTresNRoca— y, entre ellas, la cobertura mediana sube, porque las que conservan roca son las
+Al endurecer el consenso hay menos escenas de experto con roca (\cNivUnoNRoca, \cNivDosNRoca{} y
+\cNivTresNRoca) y, entre ellas, la cobertura mediana sube, porque las que conservan roca son las
 más rocosas; por eso la diferencia de medianas con las colaborativas se reduce de
 \cFuenteDifMed{} a \cNivTresDifMed{} puntos. La descomposición, que compara medias sobre toda la
 muestra, es más estable: la parte asignada a las imágenes se mantiene entre el
 \cNivTresImgPct{} y el \cNivDosImgPct{} de la diferencia. La componente de anotación es
 prácticamente la misma con los niveles 1 y 2, y con el nivel 3 sube a \cNivTresAnot{} puntos y su
 intervalo por sol excluye el cero. De ese aumento, algo más de la mitad procede de las
-\cNivTresSinEtiq{} imágenes que el nivel 3 deja sin etiqueta —con la etiqueta del nivel 1, las
-imágenes restantes ya dan \cNivTresAnotMismas{} puntos— y el resto, del consenso más estricto
+\cNivTresSinEtiq{} imágenes que el nivel 3 deja sin etiqueta (con la etiqueta del nivel 1, las
+imágenes restantes ya dan \cNivTresAnotMismas{} puntos) y el resto, del consenso más estricto
 sobre las mismas imágenes. Con la muestra de bloques de prueba, la componente de anotación es de
 \cFPDescAnot, \cNivDosAnotPrueba{} y \cNivTresAnotPrueba{} puntos según el nivel, y su
 intervalo por sol excluye el cero en los tres (\cTempAnotPruebaIC, \cNivDosAnotPruebaSolIC{} y
 \cNivTresAnotPruebaSolIC).
 
-El nivel elegido no cambia, por tanto, la conclusión principal —la mayor parte de la diferencia
-queda asignada a las imágenes—, pero sí la lectura de la componente de anotación: con el nivel
+El nivel elegido no cambia, por tanto, la conclusión principal (la mayor parte de la diferencia
+queda asignada a las imágenes), pero sí la lectura de la componente de anotación: con el nivel
 más exigente, la evidencia de un efecto pequeño y positivo de la fuente es más firme. Esa
 diferencia no puede atribuirse sin más al criterio de los especialistas, porque el nivel 3
 también cambia qué imágenes y qué píxeles entran en la comparación.
@@ -767,8 +754,8 @@ efecto sobre la comparación entre fuentes; no puede determinar, en cambio, cuá
 cada paso del diseño.
 
 La descomposición tiene un supuesto que conviene explicitar: que el error del instrumento sea
-el mismo en las dos muestras. Un sesgo común a ambas —por ejemplo, que el segmentador asigne
-siempre algo más de roca que cualquier anotación— se cancela al restar. Lo que sesgaría la
+el mismo en las dos muestras. Un sesgo común a ambas (por ejemplo, que el segmentador asigne
+siempre algo más de roca que cualquier anotación) se cancela al restar. Lo que sesgaría la
 descomposición es que ese error dependiera de la composición de la escena, y la
 Tabla~\ref{tab:error-tramos} muestra que depende del tramo de cobertura, mientras las dos
 muestras tienen composiciones muy distintas. Tampoco puede descartarse que el segmentador,
@@ -782,8 +769,8 @@ como una estimación aproximada cuyo sentido de sesgo no puede determinarse con 
 observada no puede atribuirse a la implementación de la fórmula; en la descomposición
 descriptiva basada en el instrumento común, se asocia principalmente con la composición de las
 muestras de imágenes y, en menor medida, con la fuente de las etiquetas. La componente de anotación, si existe, es compatible con la hipótesis de un
-\textbf{sesgo de saliencia} en la anotación colaborativa —que las regiones visualmente
-prominentes, como la roca, reciban una anotación más consistente o completa—, pero el diseño
+\textbf{sesgo de saliencia} en la anotación colaborativa (que las regiones visualmente
+prominentes, como la roca, reciban una anotación más consistente o completa), pero el diseño
 del estudio no permite identificar causalmente ese mecanismo: no se midieron la atención, la
 fatiga ni el tiempo de anotación. Un mecanismo alternativo que se había planteado, que la
 anotación colaborativa dejara sin etiquetar más suelo y arena y eso redujera el denominador,
@@ -807,8 +794,8 @@ la última abierta en «diez o más». Ese diseño resultó defectuoso: un proce
 ochenta rocas donde el observador distinguía una decena puntuaba como acierto exacto, de modo
 que la escala \textbf{favorecía sistemáticamente a los métodos que sobreestiman}. La ronda
 definitiva subdivide esa banda. Corrige además otros tres defectos: excluye las escenas cuya
-región anotada no alcanza los \num{2000} píxeles —en la ronda piloto siete de veinticuatro eran
-imperceptibles—, sustituye el relleno opaco por un tinte tenue que no oculta la textura, y
+región anotada no alcanza los \num{2000} píxeles (en la ronda piloto siete de veinticuatro eran
+imperceptibles), sustituye el relleno opaco por un tinte tenue que no oculta la textura, y
 estratifica la muestra por área de la región en lugar de por la banda del propio
 procedimiento.
 
@@ -831,8 +818,8 @@ por debajo que por encima.
 
 Sobre las \cVN{} escenas, el acuerdo exacto de banda es del \cVAcuerdo, con coeficiente kappa
 de Cohen de \cVKappa{} (IC~95\,\% \cVKappaIC) y kappa ponderado con pesos lineales de
-\cVKappaPond{} (IC~95\,\% \cVKappaPondIC). Ambos corresponden a un acuerdo \textbf{aceptable} en
-la escala de \citet{landis1977}, y el intervalo del kappa ponderado llega hasta el acuerdo
+\cVKappaPond{} (IC~95\,\% \cVKappaPondIC). Ambos corresponden a un acuerdo \textbf{modesto}: caen en el tramo de 0,21 a 0,40 de la escala
+de \citet{landis1977} (\textit{fair}), por debajo del acuerdo moderado, y el intervalo del kappa ponderado llega hasta el acuerdo
 nulo. El acuerdo aparente es engañoso: \cVCoincUnaTres{} de las \cVCoinc{}
 coincidencias se concentran en una sola celda, la de una a tres rocas, donde el observador
 sitúa \cVHumUnaTres{} escenas y el procedimiento \cVAutoUnaTres. Con esas frecuencias, el
@@ -902,8 +889,8 @@ sino algunas}. En \cVNoExhN{} de las \cVN{} escenas, la clase roca grande repres
 \SI{20}{\percent} de la roca etiquetada; el resto se anotó como lecho rocoso. La mediana es del
 \cVNoExhMed. En las \cVUnaTresN{} escenas que el observador situó entre una y tres rocas, la
 región resaltada ocupa una mediana del \cVUnaTresZona{} de la imagen y del \cVUnaTresFr{} de la
-roca etiquetada: son regiones diminutas que contienen, en efecto, una o dos rocas —y en
-\cVCoincUnaTres{} de ellas el procedimiento coincide con el observador—, mientras la inspección
+roca etiquetada: son regiones diminutas que contienen, en efecto, una o dos rocas (y en
+\cVCoincUnaTres{} de ellas el procedimiento coincide con el observador), mientras la inspección
 de las imágenes muestra muchas más rocas fuera de ellas. Este límite no afecta a la comparación
 con el observador, que contó solo dentro de la región, pero implica que ni un conteo exacto de
 la región equivaldría al número de rocas de la escena.
@@ -947,7 +934,7 @@ gradiente de intensidad a escala fina; el gradiente a escala gruesa, en el que l
 interna se atenúa y persiste el borde; un realce de líneas oscuras finas mediante
 \textit{top-hat} negro, que corresponde a las sombras entre rocas; y una combinación a partes
 iguales de la geometría de la máscara y el gradiente. El protocolo es idéntico para los cuatro
-—mismas semillas por prominencia y mismos filtros finales que E2—, y su único parámetro se
+(mismas semillas por prominencia y mismos filtros finales que E2), y su único parámetro se
 eligió por validación cruzada dejando una escena fuera, para que ninguna escena influyera en su
 propio resultado. La diferencia con E2 se contrastó por \textit{bootstrap}, primero al
 \SI{95}{\percent} y después con corrección de Bonferroni por el número de métodos probados
@@ -984,13 +971,13 @@ ninguna de ellas: sus kappas ponderados van de \cMISombraVarMin{} a \cMISombraVa
 que el acuerdo es además inestable frente a esos parámetros. Con la primera ronda del conteo era
 el de sombras el que más se acercaba al observador; que el orden cambie entre rondas muestra lo
 frágiles que son estas diferencias. Los cuatro relieves invierten la dirección del error: todos
-quedan por encima del observador en más escenas que por debajo —el gradiente fino, en
-\cMIGradArriba{} de las \cVN—, lo que indica que cortan también en la textura interna de las
+quedan por encima del observador en más escenas que por debajo (el gradiente fino, en
+\cMIGradArriba{} de las \cVN), lo que indica que cortan también en la textura interna de las
 rocas y no solo en sus bordes. Corregir el subconteo con la imagen exige, por tanto,
 controlar a la vez la sobresegmentación que la propia imagen introduce.
 
-La Figura~\ref{fig:hibrido} ilustra el principio del \textbf{enfoque híbrido} —usar la máscara
-para saber dónde hay roca y la imagen para trazar las fronteras entre bloques— sobre la escena
+La Figura~\ref{fig:hibrido} ilustra el principio del \textbf{enfoque híbrido} (usar la máscara
+para saber dónde hay roca y la imagen para trazar las fronteras entre bloques) sobre la escena
 de la Figura~\ref{fig:diag-bedrock}, cuya roca está etiquetada como lecho rocoso y cuyo conteo
 es nulo. A diferencia de los cuatro relieves anteriores, que operan solo dentro de la roca
 grande, la prueba usa toda la región de roca de la máscara (\cHibridoRegion{} de la escena): el
@@ -1063,8 +1050,8 @@ escenas de esos bloques que el umbral de fracción etiquetada había excluido.
 
 El desempeño sobre la distribución natural es muy próximo al de la muestra equilibrada, de modo
 que el equilibrio artificial de la prueba no altera apreciablemente las cifras. Las escenas con menos del
-\SI{20}{\percent} de superficie etiquetada, en cambio, se segmentan claramente peor —error
-absoluto medio de \cSegExcMAE{} puntos—: la exclusión no solo protege la función de pérdida,
+\SI{20}{\percent} de superficie etiquetada, en cambio, se segmentan claramente peor (error
+absoluto medio de \cSegExcMAE{} puntos): la exclusión no solo protege la función de pérdida,
 también delimita el dominio en que el modelo es fiable.
 
 \begin{figure}[htbp]
@@ -1172,24 +1159,24 @@ y~\ref{fig:bland-altman}).
 Frente a la anotación colaborativa, el error medio es de \cBAColMedia{} puntos con un intervalo
 que incluye el cero \cBAColMediaIC: en agregado, el modelo reproduce la referencia de la que
 aprendió. Estas cifras se calculan sobre los píxeles etiquetados; los residuos de la
-Tabla~\ref{tab:instrumento} usan la región anotable completa y el signo contrario —etiqueta
-menos instrumento—, por lo que no coinciden exactamente con ellas. Frente al experto, en cambio, \textbf{sobreestima}: el error medio es de
-\cBAExpMedia{} puntos, con un intervalo que excluye el cero \cBAExpMediaIC{} —también con el
-\textit{bootstrap} por sol, \cTempBAIC—, y el modelo queda por encima del experto en el
+Tabla~\ref{tab:instrumento} usan la región anotable completa y el signo contrario (etiqueta
+menos instrumento), por lo que no coinciden exactamente con ellas. Frente al experto, en cambio, \textbf{sobreestima}: el error medio es de
+\cBAExpMedia{} puntos, con un intervalo que excluye el cero \cBAExpMediaIC{} (también con el
+\textit{bootstrap} por sol, \cTempBAIC), y el modelo queda por encima del experto en el
 \cBAExpEncima{} de las escenas y por debajo en el \cBAExpDebajo. Que el intervalo frente a la anotación
 colaborativa incluya el cero no demuestra la ausencia de error sistemático, y la mediana nula
 tampoco: refleja que en el \cExpExactas{}
 de las escenas modelo y etiqueta coinciden exactamente, casi siempre porque ninguno de los dos
 encuentra roca. El error absoluto medio frente al experto es de \cBAExpMAE{} puntos, los límites
 de acuerdo abarcan unos sesenta y cinco puntos porcentuales y el \cBAExpDiez{} de las escenas
-supera los diez puntos de error. Como las diferencias no siguen una distribución normal —abundan
-los ceros exactos y las colas son largas—, los límites basados en la desviación estándar son
+supera los diez puntos de error. Como las diferencias no siguen una distribución normal (abundan
+los ceros exactos y las colas son largas), los límites basados en la desviación estándar son
 orientativos; los percentiles empíricos 2,5 y 97,5 del error frente al experto son
 \cBAExpPct.
 
 El error tampoco es homogéneo (Tabla~\ref{tab:error-tramos}). Frente al experto, la
-sobreestimación se concentra en las coberturas intermedias —entre el \SI{25}{\percent} y el
-\SI{75}{\percent} el error medio supera los diez puntos— y se invierte en las escenas de
+sobreestimación se concentra en las coberturas intermedias (entre el \SI{25}{\percent} y el
+\SI{75}{\percent} el error medio supera los diez puntos) y se invierte en las escenas de
 cobertura total; por tipo de escena, el error es pequeño en las de suelo y mayor en las mixtas.
 Un error medio moderado resulta, en parte, de errores de signo opuesto en distintos tramos que
 se compensan. Parte de ese patrón es, además, mecánico: al agrupar por la cobertura de la
@@ -1244,7 +1231,7 @@ Sección~\ref{sec:hipotesis} con la evidencia de este capítulo.
     H2 & Kappa ponderado \cVKappaPond{} \cVKappaPondIC; \cVAbajo{} escenas por debajo del
       observador y \cVArriba{} por encima ($p = \cVSignoP$); más casos por debajo en
       \cSenMasAbajo{} de las \cSenN{} combinaciones de parámetros.
-      & La evaluación exploratoria no brinda apoyo a H2: el acuerdo es bajo y, cuando hay
+      & La evaluación exploratoria no brinda apoyo a H2: el acuerdo es modesto y, cuando hay
       desacuerdo, el procedimiento tiende a quedar por debajo del observador \\
     H3 & Diferencia de medianas de \cFuenteDifMed{} puntos entre fuentes. En la descomposición
       descriptiva, el \cDescImgPct{} de la diferencia de medias queda asignado a las imágenes y
@@ -1271,8 +1258,8 @@ Sección~\ref{sec:hipotesis} con la evidencia de este capítulo.
 
 La investigación reciente sobre AI4Mars se ha concentrado en segmentadores profundos cada vez
 más precisos o más ligeros (Sección~\ref{sec:revision}). Este trabajo aplicó dos de esas
-familias a los mismos datos —un modelo fundacional sin entrenamiento específico y un segmentador
-entrenado con las propias máscaras—, lo que permite contrastarlas con el procedimiento clásico
+familias a los mismos datos (un modelo fundacional sin entrenamiento específico y un segmentador
+entrenado con las propias máscaras), lo que permite contrastarlas con el procedimiento clásico
 sobre una base común. La Tabla~\ref{tab:contraste-metodos} resume el contraste con lo medido en
 este trabajo.
 
@@ -1301,7 +1288,7 @@ este trabajo.
       contraste & Cobertura por píxel; no separa rocas \\
     Auditabilidad & Cada decisión se remonta a un parámetro y a una regla & Interna, no
       inspeccionable & Interna, no inspeccionable \\
-    Resultado observado & Conteo con acuerdo aceptable con el observador (kappa ponderado
+    Resultado observado & Conteo con acuerdo modesto con el autor (kappa ponderado
       \cVKappaPond) & Acuerdo del \cSamAcuerdo{} con el conteo clásico; subdivide rocas por su
       textura & mIoU de \cSegMIoU{} en prueba; sesgo medio de \cBAExpMedia{} puntos frente al
       experto \\
@@ -1311,7 +1298,7 @@ este trabajo.
 
 \paragraph{Ventajas del procedimiento clásico.} El contraste no indica que el procedimiento
 clásico sea más preciso que un segmentador profundo en toda tarea, sino que, para el propósito
-de este trabajo —derivar indicadores auditables a partir de un conjunto ya anotado—, reúne
+de este trabajo (derivar indicadores auditables a partir de un conjunto ya anotado), reúne
 cuatro propiedades que los métodos de aprendizaje automático no ofrecen a la vez:
 \begin{itemize}
   \item \textbf{Cuenta instancias.} Es el único de los tres que entrega directamente el número de
@@ -1353,8 +1340,8 @@ registra la anotación colaborativa, y son adecuadas para comparar escenas del m
 
 El conteo es el indicador limitado. Cuenta de forma reproducible las instancias que la
 geometría de la máscara permite separar, pero no el número de rocas que un observador
-distingue. Cobertura y conteo son propiedades no redundantes de las máscaras —conocer uno
-informa muy poco sobre el otro—, de modo que reportarlos por separado está justificado, aunque
+distingue. Cobertura y conteo son propiedades no redundantes de las máscaras (conocer uno
+informa muy poco sobre el otro), de modo que reportarlos por separado está justificado, aunque
 entre ellos persista una dependencia débil.
 
 \subsection{Diagnóstico de los modos de error del conteo}
@@ -1411,13 +1398,13 @@ devuelve cero.
   \centering
   \includegraphics[width=\textwidth]{diag_bedrock_no_contado.png}
   \caption[Roca visible etiquetada como lecho rocoso]{Escena con bloques individuales
-    evidentes, cuya parte etiquetada —el \cHibridoRegion{} de la imagen— es toda lecho rocoso.
+    evidentes, cuya parte etiquetada (el \cHibridoRegion{} de la imagen) es toda lecho rocoso.
     El conteo devuelve cero porque la clase roca grande no está presente en la máscara.}
   \label{fig:diag-bedrock}
 \end{figure}
 
-El grupo de escenas cuyos píxeles de roca grande descartan los filtros —\cNFiltradas, el
-\cPctFiltradas{} del conjunto— se revisó y los filtros \textbf{cumplen su función}: se trata de
+El grupo de escenas cuyos píxeles de roca grande descartan los filtros (\cNFiltradas, el
+\cPctFiltradas{} del conjunto) se revisó y los filtros \textbf{cumplen su función}: se trata de
 motas de pocos píxeles, con un ejemplo de una única región de doce píxeles frente al umbral de
 \num{524}, o de bandas muy alargadas trazadas sobre el horizonte, descartadas por relación de
 aspecto (Anexo~\ref{app:material-complementario}). No se encontraron motivos para relajar los
@@ -1441,8 +1428,8 @@ identificadas.
   \end{tabular}
 \end{table}
 
-La subdivisión afecta al \cPctSubdiv{} de las escenas que cuentan alguna roca —aquellas en que
-el número de rocas supera el de componentes conectadas— y esas escenas aportan \cRocasSubdiv{}
+La subdivisión afecta al \cPctSubdiv{} de las escenas que cuentan alguna roca, aquellas en que
+el número de rocas supera el de componentes conectadas, y esas escenas aportan \cRocasSubdiv{}
 de las \cNRocas{} rocas, de modo que es la limitación algorítmica cuantitativamente más
 importante. No toda subdivisión es un error, porque separar rocas unidas es precisamente la
 función de la división de aguas; la Figura~\ref{fig:subdivision} ilustra el caso en que sí lo
@@ -1459,8 +1446,8 @@ es, sobre un afloramiento continuo.
   \label{fig:subdivision}
 \end{figure}
 
-Los artefactos de anotación —escenas con menos del \SI{5}{\percent} de superficie etiquetada en
-las que la roca mayor ocupa casi toda el área válida— son el falso positivo más llamativo. La
+Los artefactos de anotación (escenas con menos del \SI{5}{\percent} de superficie etiquetada en
+las que la roca mayor ocupa casi toda el área válida) son el falso positivo más llamativo. La
 Figura~\ref{fig:diag-artefacto} muestra un ejemplo. Las \cNArtefacto{} escenas que cumplen ese
 criterio tienen bandera \texttt{mostly\_null} y quedan fuera de la población de E2; dentro de
 ella hay \cNArtefactoOk. Es la razón principal para excluir esa bandera del conteo.
@@ -1491,8 +1478,8 @@ medida que se exige mayor acuerdo (Tabla~\ref{tab:gold}).
   \centering
   \caption[Presencia de roca grande según la fuente de etiqueta]{Presencia de roca grande
     según la fuente de etiqueta y el nivel de acuerdo exigido. La cobertura mediana y el conteo
-    medio se calculan aquí sobre todas las escenas de cada conjunto —no solo sobre las que
-    contienen roca ni solo sobre la población de E2—, por lo que difiere de la reportada en la Tabla~\ref{tab:validacion}.}
+    medio se calculan aquí sobre todas las escenas de cada conjunto, no solo sobre las que
+    contienen roca ni solo sobre la población de E2, por lo que difiere de la reportada en la Tabla~\ref{tab:validacion}.}
   \label{tab:gold}
   \begin{tabular}{lrrrr}
     \toprule
@@ -1511,8 +1498,8 @@ Como las imágenes son las mismas en los tres niveles, la caída no puede debers
 terreno: los píxeles de roca grande no reúnen el consenso exigido. Todas las clases pierden
 píxeles al endurecer el acuerdo, pero la roca grande es la que más: del nivel 1 al 3 se
 conserva el \cConsBig{} de sus píxeles, frente al \cConsBed{} del lecho rocoso, el \cConsSoil{}
-del suelo y el \cConsSand{} de la arena. Ningún píxel cambia de clase entre niveles —solo puede
-conservarla o quedar sin etiqueta—, de modo que la comparación no muestra con qué clase se
+del suelo y el \cConsSand{} de la arena. Ningún píxel cambia de clase entre niveles (solo puede
+conservarla o quedar sin etiqueta), de modo que la comparación no muestra con qué clase se
 confunde la roca grande, sino que pocos especialistas la marcan en los mismos píxeles: es la
 clase más difícil de delimitar también para ellos. No es un hallazgo enteramente nuevo. Los
 autores del conjunto ya observaron que la roca grande y el lecho rocoso tienen una proporción
@@ -1553,7 +1540,7 @@ superponen y que ningún ajuste del procedimiento resuelve por sí solo:
     combinaciones de parámetros ensayadas el procedimiento sigue quedando más veces por debajo
     que por encima del observador.
   \item \textbf{Usar la imagen no lo resuelve de forma demostrable.} Los relieves derivados de la
-    imagen invierten la dirección del error —pasan a sobreestimar—, y ninguno mejora el
+    imagen invierten la dirección del error (pasan a sobreestimar), y ninguno mejora el
     acuerdo con el observador de forma demostrable.
 \end{enumerate}
 
@@ -1634,8 +1621,8 @@ autores, al analizar el acuerdo entre especialistas \citep{swan2021ai4mars}, y M
 lo excluyó de su banco de pruebas tras una revisión experta que encontró errores de anotación
 \citep{purohit2025marsbench}. Esta tesis aporta una cuantificación específica de cómo esas
 propiedades afectan la derivación de indicadores de cobertura y conteo. Ninguno de estos rasgos
-invalida el conjunto para el propósito con que se creó —entrenar segmentadores de terreno para la
-navegación—, pero todos limitan su uso como medida cuantitativa del terreno y como referencia de
+invalida el conjunto para el propósito con que se creó (entrenar segmentadores de terreno para la
+navegación), pero todos limitan su uso como medida cuantitativa del terreno y como referencia de
 evaluación.
 
 \subsection{Limitaciones}

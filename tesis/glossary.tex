@@ -65,8 +65,8 @@
     número. En superficies planetarias suele ser decreciente: predominan las rocas
     pequeñas y la frecuencia cae al aumentar el tamaño.
 
-  \item[División de aguas] Técnica de segmentación que interpreta una imagen —o una
-    transformación de ella— como un relieve topográfico que se inunda desde sus
+  \item[División de aguas] Técnica de segmentación que interpreta una imagen, o una
+    transformación de ella, como un relieve topográfico que se inunda desde sus
     mínimos; las regiones crecen hasta encontrarse y definen las fronteras. Aquí se
     inunda el negativo de la transformada de distancia, partiendo de semillas
     situadas en sus máximos, para separar rocas que aparecen pegadas.
@@ -129,10 +129,6 @@
   \item[Población de E1 y de E2] Escenas sobre las que se calcula cada indicador:
     la cobertura, sobre todas las que tienen algún píxel etiquetado; el conteo,
     sobre las de bandera \texttt{ok}, con roca grande y sin estar casi vacías.
-
-  \item[Reglas heurísticas de priorización] Reglas con umbrales explícitos que
-    ordenan las escenas para su revisión a partir de los indicadores. No están
-    calibradas para decisiones de navegación (Anexo~\ref{app:extension}).
 
   \item[Relación de aspecto] Cociente entre el lado mayor y el lado menor de la
     caja envolvente. Sirve para descartar formas excesivamente alargadas, poco

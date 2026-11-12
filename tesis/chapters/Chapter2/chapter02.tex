@@ -36,8 +36,8 @@ este trabajo provienen de ese mismo tipo de instrumento.
 La naturaleza del terreno condiciona directamente el éxito de una travesía. De los \num{738}
 intentos documentados por \citet{rankin2020mobility}, \num{116} fueron impedidos o detenidos
 por el software de protección, y las principales amenazas identificadas para la movilidad son
-el desgaste de las ruedas, su atrapamiento, el hundimiento progresivo —que puede llevar a que
-el vehículo quede inmovilizado— y las interacciones con el terreno.
+el desgaste de las ruedas, su atrapamiento, el hundimiento progresivo, que puede llevar a que
+el vehículo quede inmovilizado, y las interacciones con el terreno.
 
 El caso de las ruedas de \textit{Curiosity} es ilustrativo. \citet{arvidson2017wheels}
 documentan que las primeras travesías sobre afloramientos de arenisca de aristas agudas
@@ -81,7 +81,7 @@ autónomos en Marte se conducían todavía con sistemas clásicos de visión art
 segmentación semántica beneficiaría la seguridad y la productividad de las misiones. Este
 trabajo emplea la versión 0.6 \citep{swan2022ai4marsdata}.
 
-La escala de navegación distingue cuatro clases —suelo, lecho rocoso, arena y roca grande— y
+La escala de navegación distingue cuatro clases (suelo, lecho rocoso, arena y roca grande) y
 un valor para el píxel sin etiqueta; según la documentación del conjunto, las clases se
 pensaron para diferenciar zonas de buena y mala transitabilidad \citep{swan2022ai4marsdata}. La
 distinción entre \textit{lecho rocoso} y \textit{roca grande} es central para este trabajo: en
@@ -114,7 +114,7 @@ supervisan, sobre pocos sitios, y el producto es una distribución métrica.
 la década de 2000 el objetivo se desplazó hacia la autonomía del rover: detectar rocas en las
 imágenes a bordo para decidir qué observar sin esperar instrucciones desde la Tierra
 \citep{castano2007oasis}. Surgieron algoritmos de detección basados en propiedades de la
-imagen —bordes, sombreado, textura, forma— que \citet{thompson2007rockdet} compararon
+imagen (bordes, sombreado, textura, forma) que \citet{thompson2007rockdet} compararon
 sistemáticamente, y métodos de segmentación de rocas que combinaban rasgos a varias escalas
 \citep{dunlop2007multiscale}. En paralelo, la detección de obstáculos se aplicó al descenso
 \citep{huertas2006hazard}. El producto de esta etapa es la detección de instancias en
@@ -151,8 +151,8 @@ el enfoque teórico y metodológico de los estudios y las respuestas que obtuvie
 
 \paragraph{Enfoque teórico.} Esta línea parte de un supuesto: que la población de rocas de una
 superficie puede describirse con una función analítica de su tamaño. El objeto de estudio no
-es cada roca sino la distribución acumulada —número de rocas, o fracción de área, que supera
-cada diámetro—. \citet{lorenz2023analytic} revisa las funciones empleadas y encuentra un
+es cada roca sino la distribución acumulada (número de rocas, o fracción de área, que supera
+cada diámetro). \citet{lorenz2023analytic} revisa las funciones empleadas y encuentra un
 patrón: las leyes de potencia describen bien las superficies dominadas por impactos, como la
 Luna y los cuerpos pequeños, mientras que donde actúan procesos de selección eólica o fluvial,
 como en Marte o Titán, la población se empobrece en los tamaños extremos y la describen mejor
@@ -190,8 +190,8 @@ cámaras a lo largo de todo el trayecto del rover.
 \paragraph{Aporte y límite para este trabajo.} La línea proporciona el marco interpretativo de
 una distribución tamaño--frecuencia y una vara de medida externa: si una población de rocas
 contadas tiene forma decreciente, es coherente con lo que se observa en superficies
-planetarias. Pero sus medidas son \textbf{métricas} —exigen estereoscopía, ortoimágenes o
-escala orbital— y la identificación de cada roca la hace un especialista o un detector
+planetarias. Pero sus medidas son \textbf{métricas} (exigen estereoscopía, ortoimágenes o
+escala orbital) y la identificación de cada roca la hace un especialista o un detector
 validado contra especialistas. Ninguno de estos estudios emplea máscaras de segmentación
 semántica como dato de entrada.
 
@@ -210,8 +210,8 @@ propiedad uniforme que las distinga del suelo.
 detección de rocas de la literatura de autonomía científica y los evaluaron sobre imágenes de
 los \textit{Mars Exploration Rovers}, de entornos análogos terrestres y de un simulador de
 terreno marciano, y mostraron que el desempeño varía con las condiciones de adquisición.
-\citet{dunlop2007multiscale} propusieron combinar rasgos locales —textura—, rasgos de objeto
-—sombreado y forma bidimensional— y rasgos de escena —la dirección de iluminación—: una
+\citet{dunlop2007multiscale} propusieron combinar rasgos locales (textura), rasgos de objeto
+(sombreado y forma bidimensional) y rasgos de escena (la dirección de iluminación): una
 sobresegmentación en superpíxeles se fusiona en regiones, y un modelo aprendido de la
 apariencia de las rocas puntúa cada agrupación candidata. El sistema OASIS
 \citep{castano2007oasis} integró la detección de rocas en un ciclo autónomo cerrado: el rover
@@ -223,7 +223,7 @@ Marte \citep{furlan2019rockcnn}.
 
 \paragraph{Aporte y límite para este trabajo.} Esta línea aporta dos ideas que el trabajo
 retoma. La primera, que la separación de rocas en contacto requiere información que no está
-en la silueta —el sombreado y la dirección de iluminación de \citet{dunlop2007multiscale}—;
+en la silueta (el sombreado y la dirección de iluminación de \citet{dunlop2007multiscale});
 la Sección~\ref{sec:hibrido} vuelve sobre ella al explorar relieves derivados de la imagen,
 entre ellos el de sombras. La
 segunda, que el resultado depende de las condiciones de imagen, lo que obliga a validar contra
@@ -264,7 +264,7 @@ textura para separar arena y roca \citep{alkawi2025texture}. La revisión de
 comparación con aprendizaje automático del Capítulo~\ref{cap:resultados}, y una observación
 de fondo: estos trabajos segmentan \textit{píxeles de roca}, no rocas individuales. La
 segmentación semántica no distingue instancias, de modo que dos rocas en contacto forman una
-sola región. Y su criterio de éxito —el acuerdo con la máscara— presupone que la máscara es
+sola región. Y su criterio de éxito (el acuerdo con la máscara) presupone que la máscara es
 correcta, un supuesto que la línea siguiente pone en cuestión.
 
 % -----------------------------------------------------------------------------
@@ -324,8 +324,8 @@ especialista. Los estudios revisados comparan las fuentes sobre el mismo materia
 no es así, porque las máscaras de especialista recaen sobre otras imágenes, y esa diferencia
 obligó a diseñar un instrumento común (Sección~\ref{sec:evaluacion}). Su límite para el caso
 presente es que los estudios favorables se refieren sobre todo a la clasificación de unidades
-completas —textos, imágenes u objetos—; la anotación por píxel con una regla de consenso,
-como la de AI4Mars, añade un efecto —qué píxeles quedan sin etiqueta— que esos estudios no
+completas (textos, imágenes u objetos); la anotación por píxel con una regla de consenso,
+como la de AI4Mars, añade un efecto (qué píxeles quedan sin etiqueta) que esos estudios no
 abordan.
 
 % -----------------------------------------------------------------------------
@@ -462,8 +462,8 @@ Ese uso tiene interés por sí mismo y por una razón añadida. Por sí mismo, p
 cubren más de dieciséis mil escenas de la cámara de navegación de \textit{Curiosity}, una
 escala inalcanzable para la medición manual de la primera línea de la revisión. Y por la razón
 añadida que sugiere la cuarta línea: si las máscaras son la referencia contra la que se evalúa
-toda una familia de modelos, examinar qué contienen —qué puede medirse con ellas, qué no, y
-cuánto dependen de quién y cómo las produjo— es información pertinente para esa familia de
+toda una familia de modelos, examinar qué contienen (qué puede medirse con ellas, qué no, y
+cuánto dependen de quién y cómo las produjo) es información pertinente para esa familia de
 trabajos.
 
 El trabajo se sitúa en ese espacio. No propone una arquitectura nueva ni compite con los
@@ -500,14 +500,14 @@ de lo que surgió al validar.
 \item[H3.] \textbf{La cobertura derivada puede presentar diferencias según la fuente de la anotación.}
   Incorporada durante la ejecución, al constatar que el conjunto incluye máscaras de experto.
   El anteproyecto daba las etiquetas colaborativas por fiables. Se formula sobre la cobertura porque el instrumento común con que se descompone la diferencia
-  —el segmentador entrenado— estima cobertura y no separa rocas. Se contrasta comparando ambas
+(el segmentador entrenado) estima cobertura y no separa rocas. Se contrasta comparando ambas
   fuentes y descomponiendo la diferencia en una parte asignada a las imágenes y otra asignada
   a la anotación.
 
 \item[H4.] \textbf{Cobertura y conteo son propiedades no redundantes de las máscaras de
   AI4Mars.} Implícita en el diseño de dos indicadores: si uno fuera función del otro, bastaría
-  con uno. Se refiere a lo que registra la anotación —cuánta superficie se etiquetó como roca y
-  en cuántas regiones separables se etiquetó la roca grande— y no al terreno, porque que dos
+  con uno. Se refiere a lo que registra la anotación (cuánta superficie se etiquetó como roca y
+  en cuántas regiones separables se etiquetó la roca grande) y no al terreno, porque que dos
   indicadores no sean redundantes no implica que el conteo estime el número de rocas visibles,
   cuestión que contrasta H2. Se contrasta con medidas de dependencia y con la fracción de la
   varianza de cada indicador que explica el otro.

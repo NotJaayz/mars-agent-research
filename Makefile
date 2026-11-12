@@ -12,7 +12,7 @@ PY ?= python
 GOLD = $(shell $(PY) -c "import sys; sys.path.insert(0,'.'); from src import config; print(config.MSL_NCAM_LABELS_TRAIN.parent / 'test')")
 
 .PHONY: todo resultados pruebas pipeline calibracion analisis validacion modelo \
-        evaluacion-modelo comparaciones priorizacion figuras cifras bibliografia tesis
+        evaluacion-modelo comparaciones priorizacion app figuras cifras bibliografia tesis
 
 todo: pruebas pipeline calibracion analisis validacion modelo evaluacion-modelo \
       comparaciones priorizacion figuras cifras tesis
@@ -73,6 +73,12 @@ priorizacion:
 	$(PY) scripts/run_priorizacion.py
 	$(PY) scripts/make_dashboard.py
 
+# 8b. Aplicación de consulta (outputs/app_ai4mars.html). Las capas del explorador necesitan
+# las imágenes y máscaras de AI4Mars; sin ellas la aplicación muestra solo las fichas.
+app:
+	$(PY) scripts/make_app_escenas.py
+	$(PY) scripts/make_app.py
+
 # 9. Figuras del documento (se copian a tesis/images/).
 figuras:
 	$(PY) scripts/make_thesis_figures.py
@@ -89,6 +95,7 @@ figuras:
 cifras:
 	$(PY) scripts/generar_cifras.py
 	$(PY) scripts/tabla_tipo_escena.py
+	$(PY) scripts/sensibilidad_tipologia.py
 
 # Bibliografía desde Crossref/DataCite (requiere conexión; no forma parte de "todo").
 bibliografia:

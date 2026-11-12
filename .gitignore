@@ -146,3 +146,6 @@ divulgacion/*.aux
 divulgacion/*.log
 divulgacion/*.out
 divulgacion/que_hace_esta_tesis.pdf
+
+# Capas del explorador de la aplicación (scripts/make_app_escenas.py): derivadas de AI4Mars.
+outputs/app_escenas/
