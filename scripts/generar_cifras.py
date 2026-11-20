@@ -268,84 +268,99 @@ def main():
         m(f"cFTCero{L}", p(100 * (g == 0).mean())); m(f"cFTCien{L}", p(100 * (g == 100).mean()))
         m(f"cFTMedRoca{L}", p(g[g > 0].median()))
 
-    # --- Validación humana (segunda ronda del conteo, la que se reporta) ------------------
-    v = (pd.read_csv("outputs/validacion_manual_v3/plantilla.csv", dtype={"banda": str})
-           .merge(pd.read_csv("outputs/validacion_manual_v3/clave.csv"), on="id"))
+    # --- Validación humana: dos rondas del conteo manual sobre las mismas escenas ----------
+    # La primera ronda es el resultado principal (macros «cV…»); la repetición, hecha con un
+    # criterio más estricto y conociendo los resultados agregados de la primera, se informa en
+    # igualdad de condiciones (macros «cVSeg…»). La segunda se calcula antes que la primera para
+    # conservar la secuencia aleatoria con que se publicaron sus intervalos.
     def b6(x): return ("0" if x == 0 else "1-3" if x <= 3 else "4-9" if x <= 9 else "10-24" if x <= 24 else "25-49" if x <= 49 else "50+")
-    v["ba"] = v.auto.map(b6); idx = {b: i for i, b in enumerate(BANDAS6)}
-    dv = v.ba.map(idx) - v.banda.map(idx)
-    m("cVN", n(len(v))); m("cVAcuerdo", p(100 * (dv == 0).mean(), 0))
+    idx = {b: i for i, b in enumerate(BANDAS6)}
     from scipy.stats import binomtest
-    m("cVSignoP", pv(binomtest(int((dv < 0).sum()), int((dv != 0).sum()), 0.5).pvalue))
-    kk = cohen_kappa_score(v.banda, v.ba, labels=BANDAS6); kp = cohen_kappa_score(v.banda, v.ba, labels=BANDAS6, weights="linear")
-    m("cVKappa", f(kk)); m("cVKappaPond", f(kp))
-    bk, bp = [], []
-    for _ in range(4000):
-        i = rng.integers(0, len(v), len(v)); yy, xx = v.banda.to_numpy()[i], v.ba.to_numpy()[i]
-        if len(set(yy)) > 1:
-            bk.append(cohen_kappa_score(yy, xx, labels=BANDAS6)); bp.append(cohen_kappa_score(yy, xx, labels=BANDAS6, weights="linear"))
-    m("cVKappaIC", ic(*np.percentile(bk, [2.5, 97.5]), 2, True)); m("cVKappaPondIC", ic(*np.percentile(bp, [2.5, 97.5]), 2, True))
-    m("cVAbajo", n((dv < 0).sum())); m("cVArriba", n((dv > 0).sum()))
-    m("cVMaxAuto", n(v.auto.max()))
-    m("cVHumDiez", n((v.banda.map(idx) >= 3).sum())); m("cVHumVeinti", n((v.banda.map(idx) >= 4).sum()))
-    coinc = v[dv == 0]
-    m("cVCoincUnaTres", n((coinc.banda == "1-3").sum())); m("cVCoinc", n(len(coinc)))
-    MIN = {"0": 0, "1-3": 1, "4-9": 4, "10-24": 10, "25-49": 25, "50+": 50}
-    MAX = {"0": 0, "1-3": 3, "4-9": 9, "10-24": 24, "25-49": 49, "50+": 99}
-    hmin = v.banda.map(MIN); hmax = v.banda.map(MAX)
-    m("cVRocasAuto", n(v.auto.sum())); m("cVRocasHumMin", n(hmin.sum())); m("cVRocasHumMax", n(hmax.sum()))
-    m("cVRazon", f(hmin.sum() / v.auto.sum(), 1)); m("cVDeficit", n((hmin - v.auto).clip(lower=0).sum()))
-    # Anotación no exhaustiva: qué parte de la roca etiquetada es roca grande, en la muestra.
     import sys; sys.path.insert(0, ".")
     from src import config, mask_utils as mu
-    fr, zona = [], []
-    for r in v.itertuples():
-        mk = mu.read_mask(config.MSL_NCAM_LABELS_TRAIN / f"{r.image_id}.png")
-        big_, bed_ = (mk == 3), (mk == 1)
-        fr.append(100 * big_.sum() / max((big_ | bed_).sum(), 1)); zona.append(100 * big_.sum() / mk.size)
-    v["frbig"] = fr; v["zona"] = zona
-    m("cVNoExhN", n((v.frbig < 20).sum())); m("cVNoExhMed", p(v.frbig.median()))
-    u = v[v.banda == "1-3"]
-    m("cVUnaTresN", n(len(u))); m("cVUnaTresZona", p(u.zona.median(), 2)); m("cVUnaTresFr", p(u.frbig.median()))
-    m("cVHumUnaTres", n((v.banda == "1-3").sum())); m("cVAutoUnaTres", n((v.ba == "1-3").sum()))
-    m("cVAzar", p(100 * sum((v.banda == b).mean() * (v.ba == b).mean() for b in BANDAS6), 0))
-    m("cVSiempreUnaTres", p(100 * (v.banda == "1-3").mean(), 0))
-    # Acuerdo según cómo está anotada la roca grande: una sola región o varias (análisis posterior).
-    raw = v.image_id.map(pd.read_csv("outputs/results.csv").set_index("image_id").n_raw_components)
-    for nom, sel in (("Una", raw == 1), ("Varias", raw > 1)):
-        m(f"cVReg{nom}N", n(sel.sum())); m(f"cVReg{nom}Coinc", n(((dv == 0) & sel).sum()))
-        m(f"cVReg{nom}Abajo", n(((dv < 0) & sel).sum())); m(f"cVReg{nom}Arriba", n(((dv > 0) & sel).sum()))
-    # Primera ronda del mismo observador sobre las mismas escenas, y acuerdo entre las dos rondas.
-    v1 = (pd.read_csv("outputs/validacion_manual_v2/plantilla.csv", dtype={"banda": str})
-            .merge(pd.read_csv("outputs/validacion_manual_v2/clave.csv"), on="id"))
-    v1["ba"] = v1.auto.map(b6); dv1 = v1.ba.map(idx) - v1.banda.map(idx)
-    m("cVPrimAcuerdo", p(100 * (dv1 == 0).mean(), 0))
-    m("cVPrimKappaPond", f(cohen_kappa_score(v1.banda, v1.ba, labels=BANDAS6, weights="linear")))
-    m("cVPrimAbajo", n((dv1 < 0).sum())); m("cVPrimArriba", n((dv1 > 0).sum()))
-    dos = v1[["id", "banda"]].merge(v[["id", "banda"]], on="id", suffixes=("_1", "_2"))
-    assert len(dos) == len(v) == len(v1)
+    res = pd.read_csv("outputs/results.csv").set_index("image_id")
+    MIN = {"0": 0, "1-3": 1, "4-9": 4, "10-24": 10, "25-49": 25, "50+": 50}
+    MAX = {"0": 0, "1-3": 3, "4-9": 9, "10-24": 24, "25-49": 49, "50+": 99}
+
+    def validacion(carpeta, pre):
+        v = (pd.read_csv(f"{carpeta}/plantilla.csv", dtype={"banda": str})
+               .merge(pd.read_csv(f"{carpeta}/clave.csv"), on="id"))
+        v["ba"] = v.auto.map(b6)
+        dv = v.ba.map(idx) - v.banda.map(idx)
+        m(f"{pre}N", n(len(v))); m(f"{pre}Acuerdo", p(100 * (dv == 0).mean(), 0))
+        m(f"{pre}SignoP", pv(binomtest(int((dv < 0).sum()), int((dv != 0).sum()), 0.5).pvalue))
+        kk = cohen_kappa_score(v.banda, v.ba, labels=BANDAS6); kp = cohen_kappa_score(v.banda, v.ba, labels=BANDAS6, weights="linear")
+        m(f"{pre}Kappa", f(kk)); m(f"{pre}KappaPond", f(kp))
+        bk, bp = [], []
+        for _ in range(4000):
+            i = rng.integers(0, len(v), len(v)); yy, xx = v.banda.to_numpy()[i], v.ba.to_numpy()[i]
+            if len(set(yy)) > 1:
+                bk.append(cohen_kappa_score(yy, xx, labels=BANDAS6)); bp.append(cohen_kappa_score(yy, xx, labels=BANDAS6, weights="linear"))
+        m(f"{pre}KappaIC", ic(*np.percentile(bk, [2.5, 97.5]), 2, True)); m(f"{pre}KappaPondIC", ic(*np.percentile(bp, [2.5, 97.5]), 2, True))
+        m(f"{pre}Abajo", n((dv < 0).sum())); m(f"{pre}Arriba", n((dv > 0).sum()))
+        m(f"{pre}Desac", n((dv != 0).sum()))
+        m(f"{pre}MaxAuto", n(v.auto.max()))
+        m(f"{pre}HumDiez", n((v.banda.map(idx) >= 3).sum())); m(f"{pre}HumVeinti", n((v.banda.map(idx) >= 4).sum()))
+        coinc = v[dv == 0]
+        m(f"{pre}CoincUnaTres", n((coinc.banda == "1-3").sum())); m(f"{pre}Coinc", n(len(coinc)))
+        hmin = v.banda.map(MIN); hmax = v.banda.map(MAX)
+        m(f"{pre}RocasAuto", n(v.auto.sum())); m(f"{pre}RocasHumMin", n(hmin.sum())); m(f"{pre}RocasHumMax", n(hmax.sum()))
+        m(f"{pre}Razon", f(hmin.sum() / v.auto.sum(), 1)); m(f"{pre}Deficit", n((hmin - v.auto).clip(lower=0).sum()))
+        # Anotación no exhaustiva: qué parte de la roca etiquetada es roca grande, en la muestra.
+        fr, zona = [], []
+        for r in v.itertuples():
+            mk = mu.read_mask(config.MSL_NCAM_LABELS_TRAIN / f"{r.image_id}.png")
+            big_, bed_ = (mk == 3), (mk == 1)
+            fr.append(100 * big_.sum() / max((big_ | bed_).sum(), 1)); zona.append(100 * big_.sum() / mk.size)
+        v["frbig"] = fr; v["zona"] = zona
+        m(f"{pre}NoExhN", n((v.frbig < 20).sum())); m(f"{pre}NoExhMed", p(v.frbig.median()))
+        u = v[v.banda == "1-3"]
+        m(f"{pre}UnaTresN", n(len(u))); m(f"{pre}UnaTresZona", p(u.zona.median(), 2)); m(f"{pre}UnaTresFr", p(u.frbig.median()))
+        m(f"{pre}HumUnaTres", n((v.banda == "1-3").sum())); m(f"{pre}AutoUnaTres", n((v.ba == "1-3").sum()))
+        m(f"{pre}Azar", p(100 * sum((v.banda == b).mean() * (v.ba == b).mean() for b in BANDAS6), 0))
+        m(f"{pre}SiempreUnaTres", p(100 * (v.banda == "1-3").mean(), 0))
+        # Acuerdo según cómo está anotada la roca grande: una sola región o varias (análisis posterior).
+        raw = v.image_id.map(res.n_raw_components)
+        for nom, sel in (("Una", raw == 1), ("Varias", raw > 1)):
+            m(f"{pre}Reg{nom}N", n(sel.sum())); m(f"{pre}Reg{nom}Coinc", n(((dv == 0) & sel).sum()))
+            m(f"{pre}Reg{nom}Abajo", n(((dv < 0) & sel).sum())); m(f"{pre}Reg{nom}Arriba", n(((dv > 0) & sel).sum()))
+        return v
+
+    v2 = validacion("outputs/validacion_manual_v3", "cVSeg")
+    v1 = validacion("outputs/validacion_manual_v2", "cV")
+    # Acuerdo del observador consigo mismo entre las dos rondas.
+    dos = v1[["id", "banda"]].merge(v2[["id", "banda"]], on="id", suffixes=("_1", "_2"))
+    assert len(dos) == len(v1) == len(v2)
     m("cVIntraKappaPond", f(cohen_kappa_score(dos.banda_1, dos.banda_2, labels=BANDAS6, weights="linear")))
     m("cVIntraCoinc", n((dos.banda_1 == dos.banda_2).sum()))
     m("cVRecMenor", n((dos.banda_2.map(idx) < dos.banda_1.map(idx)).sum()))
     m("cVRecMayor", n((dos.banda_2.map(idx) > dos.banda_1.map(idx)).sum()))
 
-    sen = pd.read_csv("outputs/sensibilidad_parametros.csv")
-    m("cSenN", n(len(sen))); m("cSenMin", f(sen.kappa_pond.min())); m("cSenMax", f(sen.kappa_pond.max()))
-    m("cSenMed", f(sen.kappa_pond.median())); m("cSenAbajo", n((sen.abajo >= 20).sum()))
-    m("cSenAbajoMin", n(sen.abajo.min())); m("cSenAbajoMax", n(sen.abajo.max()))
-    m("cSenArribaMax", n(sen.arriba.max())); m("cSenDiez", n((sen.max_banda != "4-9").sum()))
-    m("cSenArribaMin", n(sen.arriba.min())); m("cSenMasAbajo", n((sen.abajo > sen.arriba).sum()))
+    # Sensibilidad a los parámetros frente a cada ronda (primera: «cSen…»; repetición: «cSenSeg…»).
+    sen_t = pd.read_csv("outputs/sensibilidad_parametros.csv")
+    for ronda, pre in ((1, "cSen"), (2, "cSenSeg")):
+        sen = sen_t[sen_t.ronda == ronda]
+        m(f"{pre}N", n(len(sen))); m(f"{pre}Min", f(sen.kappa_pond.min())); m(f"{pre}Max", f(sen.kappa_pond.max()))
+        m(f"{pre}Med", f(sen.kappa_pond.median())); m(f"{pre}Abajo", n((sen.abajo >= 20).sum()))
+        m(f"{pre}AbajoMin", n(sen.abajo.min())); m(f"{pre}AbajoMax", n(sen.abajo.max()))
+        m(f"{pre}ArribaMax", n(sen.arriba.max())); m(f"{pre}Diez", n((sen.max_banda != "4-9").sum()))
+        m(f"{pre}ArribaMin", n(sen.arriba.min())); m(f"{pre}MasAbajo", n((sen.abajo > sen.arriba).sum()))
 
     # --- Métodos con imagen dentro de la máscara ----------------------------------------
-    em = json.load(open("outputs/eval_metodos_imagen.json"))
-    for k, nom in (("grad", "Grad"), ("persist", "Persist"), ("sombra", "Sombra"), ("combo", "Combo")):
-        r = em["metodos"][k]
-        m(f"cMI{nom}Kw", f(r["kappa_pond"])); m(f"cMI{nom}Abajo", n(r["abajo"])); m(f"cMI{nom}Arriba", n(r["arriba"]))
-        m(f"cMI{nom}Dif", s(r["dif_vs_e2"], 2)); m(f"cMI{nom}IC", ic(*r["ic95"], 2, True))
-        m(f"cMI{nom}ICB", ic(*r["ic_bonferroni"], 2, True))
-    sv = [r["kappa_pond"] for k, r in em["metodos"].items() if k.startswith("sombra_s")]
-    m("cMISombraVarN", n(len(sv))); m("cMISombraVarMin", f(min(sv))); m("cMISombraVarMax", f(max(sv)))
-    m("cMISombraVarBonf", n(sum(r["demostrable_bonferroni"] for k, r in em["metodos"].items() if k.startswith("sombra_s"))))
+    # Frente a la primera ronda del conteo manual («cMI…») y frente a la repetición («cMISeg…»).
+    for ruta, pre in (("outputs/eval_metodos_imagen_ronda1.json", "cMI"), ("outputs/eval_metodos_imagen_ronda2.json", "cMISeg")):
+        em = json.load(open(ruta))
+        for k, nom in (("grad", "Grad"), ("persist", "Persist"), ("sombra", "Sombra"), ("combo", "Combo")):
+            r = em["metodos"][k]
+            m(f"{pre}{nom}Kw", f(r["kappa_pond"])); m(f"{pre}{nom}Abajo", n(r["abajo"])); m(f"{pre}{nom}Arriba", n(r["arriba"]))
+            m(f"{pre}{nom}Dif", s(r["dif_vs_e2"], 2)); m(f"{pre}{nom}IC", ic(*r["ic95"], 2, True))
+            m(f"{pre}{nom}ICB", ic(*r["ic_bonferroni"], 2, True))
+        m(f"{pre}EDosKw", f(em["e2"]["kappa_pond"]))
+        m(f"{pre}DemoN", n(sum(em["metodos"][k]["demostrable_95"] for k in ("grad", "persist", "sombra", "combo"))))
+        sv = [r["kappa_pond"] for k, r in em["metodos"].items() if k.startswith("sombra_s")]
+        m(f"{pre}SombraVarN", n(len(sv))); m(f"{pre}SombraVarMin", f(min(sv))); m(f"{pre}SombraVarMax", f(max(sv)))
+        m(f"{pre}SombraVarDemo", n(sum(r["demostrable_95"] for k, r in em["metodos"].items() if k.startswith("sombra_s"))))
+        m(f"{pre}SombraVarBonf", n(sum(r["demostrable_bonferroni"] for k, r in em["metodos"].items() if k.startswith("sombra_s"))))
 
     # --- Segmentador ---------------------------------------------------------------------
     sc = json.load(open("outputs/split_deeplab_clases.json"))

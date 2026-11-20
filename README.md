@@ -44,9 +44,9 @@ validación, y la tesis lo documenta.
 
 | | Hipótesis | Resultado |
 |---|---|---|
-| **H1** | La cobertura se deriva de forma reproducible y no está determinada por la fracción de escena etiquetada | Los resultados son compatibles con H1; no se observa que la fracción etiquetada explique principalmente la variación global, aunque persiste dependencia no lineal débil |
-| **H2** | El conteo aproxima el número de rocas que un observador distingue en la región anotada, sin sesgo en una dirección | La evaluación exploratoria (un observador) no brinda apoyo a H2 y muestra una tendencia marcada al subconteo frente al observador |
-| **H3** | La cobertura derivada puede presentar diferencias según la fuente de la anotación | Apoyo parcial: componente asignada a la fuente pequeña y positiva en todas las variantes y niveles de consenso; distinguible de cero por sol en cuatro de las seis combinaciones de muestra y nivel; no concluyente en la muestra principal con los niveles 1 y 2 |
+| **H1** | La cobertura se deriva de forma reproducible y no está determinada por la fracción de escena etiquetada | Compatible con H1 en sus términos: la fracción etiquetada no determina la cobertura, aunque persiste dependencia no lineal débil; la prueba mira cuánto se etiquetó, no qué, y no detecta un sesgo en qué se etiqueta |
+| **H2** | El conteo aproxima el número de rocas que un observador distingue en la región anotada, sin sesgo en una dirección | La evaluación exploratoria (un observador) no brinda apoyo a H2 en ninguna de las dos rondas: acuerdo leve en la primera (resultado principal) y modesto en la repetición; subconteo significativo solo en la primera |
+| **H3** | Una vez descontada la diferencia entre las muestras de imágenes, la cobertura derivada difiere según la fuente de la anotación | No concluyente: en el análisis principal (nivel 1, intervalo por sol) la componente de anotación incluye el cero y también diferencias de varios puntos; las variantes en que lo excluye comparten el mismo instrumento, cuyo sesgo tiene un sentido que no puede determinarse |
 | **H4** | Cobertura y conteo son propiedades no redundantes de las máscaras de AI4Mars | Los análisis respaldan tratar cobertura y conteo como propiedades no redundantes de las máscaras de AI4Mars; **no** son independientes |
 
 El anteproyecto no formuló hipótesis estadísticas; estas se explicitaron después, de modo que
@@ -404,24 +404,34 @@ del instrumento (su banda abierta «10 o más» favorecía a los métodos que so
 
 ![Matriz de acuerdo](outputs/figures/tesis/Figura_26_validacion_manual_v2.png)
 
+**Dos rondas.** El observador repitió el conteo de las mismas 60 escenas con un criterio más
+estricto, conociendo los resultados agregados de la primera ronda. Por eso la primera es el
+resultado principal y la repetición se informa a su lado: acuerdo exacto del 72 %, kappa
+ponderado 0,22 [0,00; 0,46] (acuerdo modesto) y 12 / 5 escenas por debajo / por encima
+(p = 0,143, no significativo). La calificación del acuerdo sigue siempre la escala de Landis y
+Koch: leve (0,00–0,20) en la primera ronda y modesto (0,21–0,40) en la repetición.
+
 Con los parámetros fijados, el procedimiento nunca pasa de 9 rocas; el observador vio 10 o más
 en 12 escenas. **No es un artefacto de la calibración**: en las 36 combinaciones de prominencia,
 suavizado y área mínima ensayadas, el procedimiento queda por debajo del observador en entre
-23 y 29 escenas.
+23 y 29 escenas (y frente a la repetición, el subconteo predomina en 35 de las 36).
 
-**Por qué.** El observador contó dentro de la misma región que el procedimiento, así que el
-desacuerdo se explica sobre todo porque **hay regiones sin información geométrica para separar
-instancias**: la división de aguas solo corta donde la región se estrangula, y un polígono que
-envuelve un campo de bloques contiguos no tiene dónde cortar. Aparte de ese desacuerdo, **la
+**Por qué.** Hay al menos dos contribuciones, y los datos no permiten señalar una como causa
+principal. Una es que **hay regiones sin información geométrica para separar instancias**: la
+división de aguas solo corta donde la región se estrangula, y un polígono que envuelve un campo
+de bloques contiguos no tiene dónde cortar (en la primera ronda, sin embargo, el subconteo aparece
+también en escenas con varias regiones). La otra es el **ajuste del procedimiento**: el criterio
+de prominencia rebajó el conteo de forma general. Aparte de ese desacuerdo, **la
 anotación no es exhaustiva** (en 36 de 60 escenas la roca grande es menos del 20 % de la roca
 etiquetada; mediana 9,1 %): ni un conteo exacto de la región equivaldría a las rocas de la escena.
 
 ![Mecanismo del subconteo](outputs/figures/tesis/Figura_28_mecanismo_subconteo.png)
 
-> **Alcance del indicador.** El procedimiento produce un conteo reproducible de las instancias
+> **Alcance del indicador.** El procedimiento produce un conteo reproducible de las regiones
 > geométricamente separables dentro de la clase *big rock*, pero ese conteo no puede
 > interpretarse como estimación válida del número total de rocas visibles en la escena. La
-> evaluación exploratoria con un observador sugiere un subconteo sistemático. Con un solo
+> evaluación exploratoria con un observador muestra un subconteo significativo en la primera
+> ronda y no significativo en la repetición. Con un solo
 > observador no se puede separar el desacuerdo algoritmo–persona de la variabilidad entre
 > personas; su confirmación exige al menos dos observadores independientes.
 

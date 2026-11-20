@@ -46,7 +46,8 @@ validacion:
 	$(PY) scripts/eval_validation.py --dir outputs/validacion_manual
 	$(PY) scripts/eval_validation.py --dir outputs/validacion_manual_v2
 	$(PY) scripts/eval_validation.py --dir outputs/validacion_manual_v3
-	$(PY) scripts/eval_metodos_imagen.py
+	$(PY) scripts/eval_metodos_imagen.py --dir outputs/validacion_manual_v2 --salida outputs/eval_metodos_imagen_ronda1.json
+	$(PY) scripts/eval_metodos_imagen.py --dir outputs/validacion_manual_v3 --salida outputs/eval_metodos_imagen_ronda2.json
 
 # 5. Segmentador DeepLabV3 (reparto por bloques temporales; ~2 h en Apple M4 Pro).
 modelo:

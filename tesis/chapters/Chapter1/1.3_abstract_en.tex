@@ -13,17 +13,22 @@ directly, without training any model, and it examines how far those indicators a
 
 For the \cNEscenas{} images from the \textit{Curiosity} navigation camera, three indicators were
 computed: rock coverage, that is, the share of the labelled area that is rock; the composition
-of the terrain; and the number of individual rocks in the areas marked as big rock. They were
+of the terrain; and, as an approximation to the number of rocks, the number of separable regions
+in the areas marked as big rock. They were
 then compared with the expert masks included in the dataset, with a manual count by the author
 and with a trained model.
 
 Coverage was computed reproducibly for \cPctCobCalc{} of the images, and no evidence was found
-that it depends on how much of the scene was labelled. The rock count, by contrast, did not
-reach its objective: its agreement with the manual count is modest, it tends to undercount, and
-it returns zero in one in five eligible scenes, because the annotation often draws several rocks
-as a single region and marks only some of them. The difference from the expert masks is mostly
-due to the experts having annotated far less rocky images, and only to a small extent to the way
-of annotating.
+that it depends on how much of the scene was labelled, although it cannot be checked against an
+independent measurement of the terrain. The rock count, by contrast, did not reach its
+objective: its agreement with the author's manual count is slight, it returns zero in one in five
+eligible scenes, and it tends to undercount. In the first round of the manual count it found
+fewer rocks than the author in \cVAbajo{} of the \cVDesac{} scenes where they disagreed; in a repetition of that
+count the tendency remained, although it was not statistically significant. Both the annotation,
+which often draws several rocks as a single region and marks only some of them, and the tuning
+of the procedure itself contribute to this. The difference from the expert masks is mostly due to
+the experts having annotated far less rocky images; whether the way of annotating also plays a
+part could not be determined.
 
 The work delivers a characterisation of the terrain with its limits measured, a procedure that
 anyone can repeat, and a diagnosis of what can be expected from AI4Mars for measuring terrain.

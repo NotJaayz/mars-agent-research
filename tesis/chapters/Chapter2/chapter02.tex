@@ -188,9 +188,11 @@ depresión una abundancia de roca menor (\SI{4.15}{\percent}) que fuera de la zo
 cámaras a lo largo de todo el trayecto del rover.
 
 \paragraph{Aporte y límite para este trabajo.} La línea proporciona el marco interpretativo de
-una distribución tamaño--frecuencia y una vara de medida externa: si una población de rocas
-contadas tiene forma decreciente, es coherente con lo que se observa en superficies
-planetarias. Pero sus medidas son \textbf{métricas} (exigen estereoscopía, ortoimágenes o
+una distribución tamaño--frecuencia y una vara de medida externa, pero solo para poblaciones
+medidas en unidades métricas y sin truncamientos arbitrarios: una forma decreciente, por sí
+sola, no basta para afirmar coherencia con lo que se observa en superficies planetarias, porque
+también la producen el truncamiento por tamaño y las clases de ancho desigual. Sus medidas son
+\textbf{métricas} (exigen estereoscopía, ortoimágenes o
 escala orbital) y la identificación de cada roca la hace un especialista o un detector
 validado contra especialistas. Ninguno de estos estudios emplea máscaras de segmentación
 semántica como dato de entrada.
@@ -497,12 +499,19 @@ de lo que surgió al validar.
   dirección del error. Se contrasta con el acuerdo por bandas frente al conteo humano, medido
   con kappa simple y ponderado, y con la proporción de escenas por encima y por debajo.
 
-\item[H3.] \textbf{La cobertura derivada puede presentar diferencias según la fuente de la anotación.}
+\item[H3.] \textbf{Una vez descontada la diferencia entre las muestras de imágenes, la
+  cobertura derivada difiere según la fuente de la anotación.}
   Incorporada durante la ejecución, al constatar que el conjunto incluye máscaras de experto.
   El anteproyecto daba las etiquetas colaborativas por fiables. Se formula sobre la cobertura porque el instrumento común con que se descompone la diferencia
-(el segmentador entrenado) estima cobertura y no separa rocas. Se contrasta comparando ambas
-  fuentes y descomponiendo la diferencia en una parte asignada a las imágenes y otra asignada
-  a la anotación.
+(el segmentador entrenado) estima cobertura y no separa rocas. Se contrasta descomponiendo la
+  diferencia entre fuentes en una parte asignada a las imágenes y otra asignada a la
+  anotación, con un criterio que permite que la hipótesis falle: se sostiene si el intervalo
+  por sol de la componente de anotación excluye el cero en el análisis principal (nivel 1 de
+  consenso); no se sostiene si ese intervalo deja fuera cualquier diferencia mayor de un punto
+  porcentual; y en otro caso el resultado es no concluyente. Una primera versión decía solo que
+  la cobertura «puede presentar diferencias», lo que se cumplía con cualquier resultado; el
+  criterio se explicitó después de conocer los resultados, a raíz de la revisión del jurado, y
+  por eso el dictamen no es confirmatorio.
 
 \item[H4.] \textbf{Cobertura y conteo son propiedades no redundantes de las máscaras de
   AI4Mars.} Implícita en el diseño de dos indicadores: si uno fuera función del otro, bastaría

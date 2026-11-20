@@ -8,18 +8,22 @@ medir indicadores directamente, sin entrenar ningún modelo, y examina hasta dó
 indicadores son válidos.
 
 Sobre las \cNEscenas{} imágenes de la cámara de navegación de \textit{Curiosity} se calcularon la
-cobertura de roca, es decir, qué parte de lo etiquetado es roca, la composición del terreno y el
-número de rocas individuales en las zonas marcadas como roca grande. Luego se contrastaron con
+cobertura de roca, es decir, qué parte de lo etiquetado es roca, la composición del terreno y,
+como aproximación al número de rocas, el número de regiones separables en las zonas marcadas
+como roca grande. Luego se contrastaron con
 las máscaras de especialistas del propio conjunto, con un conteo manual del autor y con un
 modelo entrenado.
 
 La cobertura se calculó de forma reproducible en el \cPctCobCalc{} de las imágenes, y no se
-encontró evidencia de que dependa de cuánto de la escena se etiquetó. El conteo de rocas, en
-cambio, no alcanzó su objetivo: su acuerdo con el conteo manual es modesto, tiende a contar
-menos y da cero en una de cada cinco escenas aptas, porque la anotación a menudo dibuja varias
-rocas como una sola región y marca solo una parte de ellas. La diferencia con las máscaras de
-especialistas se debe sobre todo a que estos anotaron imágenes mucho menos rocosas, y solo en
-pequeña parte a la forma de anotar.
+encontró evidencia de que dependa de cuánto de la escena se etiquetó, aunque no puede
+contrastarse con una medición independiente. El conteo de rocas, en cambio, no alcanzó su
+objetivo: su acuerdo con el conteo manual del autor es leve y da cero en una de cada cinco
+escenas aptas. En la primera ronda del conteo manual contó menos rocas que el autor en \cVAbajo{}
+de las \cVDesac{} escenas en que discreparon; en una repetición, esa tendencia no fue
+significativa. Contribuyen a ello la anotación, que a menudo dibuja varias rocas como una sola
+región y marca solo algunas, y el ajuste del procedimiento. La diferencia con las máscaras de especialistas se debe
+sobre todo a que estos anotaron imágenes mucho menos rocosas; si la forma de anotar también
+influye no pudo determinarse.
 
 El trabajo entrega una caracterización del terreno con sus límites medidos, un procedimiento
 que cualquiera puede repetir y un diagnóstico de qué cabe esperar de AI4Mars para medir el

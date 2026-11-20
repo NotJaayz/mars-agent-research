@@ -1,0 +1,369 @@
+{
+  "n": 60,
+  "e2": {
+    "kappa_pond": 0.10773298083278249
+  },
+  "metodos": {
+    "grad": {
+      "acuerdo": 0.45,
+      "kappa": 0.23017107309486795,
+      "kappa_pond": 0.1769157994323557,
+      "abajo": 9,
+      "arriba": 24,
+      "dif_vs_e2": 0.06363648936313263,
+      "ic95": [
+        -0.14458314398110061,
+        0.27593127847671073
+      ],
+      "ic_bonferroni": [
+        -0.19482170153676034,
+        0.3292212578152049
+      ],
+      "gana_pct": 72.95,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "persist": {
+      "acuerdo": 0.18333333333333332,
+      "kappa": -0.04070796460176984,
+      "kappa_pond": 0.07566302652106083,
+      "abajo": 9,
+      "arriba": 40,
+      "dif_vs_e2": -0.034926523322432484,
+      "ic95": [
+        -0.1975745156181371,
+        0.12647825723199907
+      ],
+      "ic_bonferroni": [
+        -0.24491433619246963,
+        0.16646666976326602
+      ],
+      "gana_pct": 33.525,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "sombra": {
+      "acuerdo": 0.5166666666666667,
+      "kappa": 0.3279258400927,
+      "kappa_pond": 0.37092264678471576,
+      "abajo": 10,
+      "arriba": 19,
+      "dif_vs_e2": 0.25834393896184077,
+      "ic95": [
+        0.03433654813210106,
+        0.4732190222330842
+      ],
+      "ic_bonferroni": [
+        -0.03319573962935117,
+        0.5258703437633689
+      ],
+      "gana_pct": 98.85000000000001,
+      "demostrable_95": true,
+      "demostrable_bonferroni": false
+    },
+    "combo": {
+      "acuerdo": 0.45,
+      "kappa": 0.2485768500948765,
+      "kappa_pond": 0.2665726375176305,
+      "abajo": 7,
+      "arriba": 26,
+      "dif_vs_e2": 0.15381057514523855,
+      "ic95": [
+        -0.05405143129150066,
+        0.3581948258851014
+      ],
+      "ic_bonferroni": [
+        -0.10822604481983066,
+        0.40884366035782704
+      ],
+      "gana_pct": 93.05,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s0.5_r3": {
+      "acuerdo": 0.5166666666666667,
+      "kappa": 0.32295719844357973,
+      "kappa_pond": 0.3327023189777568,
+      "abajo": 12,
+      "arriba": 17,
+      "dif_vs_e2": 0.22083258850669998,
+      "ic95": [
+        0.0001800410282841546,
+        0.431404843119879
+      ],
+      "ic_bonferroni": [
+        -0.06858400305047467,
+        0.48493231057058966
+      ],
+      "gana_pct": 97.5,
+      "demostrable_95": true,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s0.5_r5": {
+      "acuerdo": 0.35,
+      "kappa": 0.13684987089634826,
+      "kappa_pond": 0.21193232413178975,
+      "abajo": 16,
+      "arriba": 23,
+      "dif_vs_e2": 0.09851287591200145,
+      "ic95": [
+        -0.09428680448519104,
+        0.29213226641672496
+      ],
+      "ic_bonferroni": [
+        -0.14860093087746917,
+        0.3294434777552323
+      ],
+      "gana_pct": 84.52499999999999,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s0.5_r7": {
+      "acuerdo": 0.45,
+      "kappa": 0.248006076718572,
+      "kappa_pond": 0.30069930069930084,
+      "abajo": 14,
+      "arriba": 19,
+      "dif_vs_e2": 0.18518273053350393,
+      "ic95": [
+        -0.026242603972749346,
+        0.389075633758505
+      ],
+      "ic_bonferroni": [
+        -0.09050127402280149,
+        0.4401986263522134
+      ],
+      "gana_pct": 95.72500000000001,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s0.5_r9": {
+      "acuerdo": 0.4166666666666667,
+      "kappa": 0.17420369642154931,
+      "kappa_pond": 0.22177009155645977,
+      "abajo": 12,
+      "arriba": 23,
+      "dif_vs_e2": 0.11283715189054158,
+      "ic95": [
+        -0.07523655242111478,
+        0.29563776788880436
+      ],
+      "ic_bonferroni": [
+        -0.14052199145444424,
+        0.3375216643536693
+      ],
+      "gana_pct": 88.47500000000001,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s0.5_r12": {
+      "acuerdo": 0.55,
+      "kappa": 0.3661971830985916,
+      "kappa_pond": 0.3716512420847541,
+      "abajo": 9,
+      "arriba": 18,
+      "dif_vs_e2": 0.25952997737769384,
+      "ic95": [
+        0.033086020417288246,
+        0.47235382271681
+      ],
+      "ic_bonferroni": [
+        -0.044138561074876195,
+        0.5238065518469479
+      ],
+      "gana_pct": 98.575,
+      "demostrable_95": true,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s1.0_r3": {
+      "acuerdo": 0.5333333333333333,
+      "kappa": 0.2673353685128653,
+      "kappa_pond": 0.3181818181818181,
+      "abajo": 22,
+      "arriba": 6,
+      "dif_vs_e2": 0.19892102589812186,
+      "ic95": [
+        -0.012607610827449777,
+        0.40935663097149405
+      ],
+      "ic_bonferroni": [
+        -0.08063895013372939,
+        0.4519737112059456
+      ],
+      "gana_pct": 96.575,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s1.0_r5": {
+      "acuerdo": 0.5333333333333333,
+      "kappa": 0.3383221740842851,
+      "kappa_pond": 0.3388834476003919,
+      "abajo": 10,
+      "arriba": 18,
+      "dif_vs_e2": 0.2250497766128039,
+      "ic95": [
+        0.0018771008602428327,
+        0.44636435722882056
+      ],
+      "ic_bonferroni": [
+        -0.065278640790152,
+        0.500118239896995
+      ],
+      "gana_pct": 97.575,
+      "demostrable_95": true,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s1.0_r7": {
+      "acuerdo": 0.5166666666666667,
+      "kappa": 0.3279258400927,
+      "kappa_pond": 0.37092264678471576,
+      "abajo": 10,
+      "arriba": 19,
+      "dif_vs_e2": 0.25834393896184077,
+      "ic95": [
+        0.03433654813210106,
+        0.4732190222330842
+      ],
+      "ic_bonferroni": [
+        -0.03319573962935117,
+        0.5258703437633689
+      ],
+      "gana_pct": 98.85000000000001,
+      "demostrable_95": true,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s1.0_r9": {
+      "acuerdo": 0.45,
+      "kappa": 0.24857685009487662,
+      "kappa_pond": 0.2954438703616722,
+      "abajo": 9,
+      "arriba": 24,
+      "dif_vs_e2": 0.18406698979635047,
+      "ic95": [
+        -0.017597600009099695,
+        0.38806749042617467
+      ],
+      "ic_bonferroni": [
+        -0.07929556673452082,
+        0.43363629396389514
+      ],
+      "gana_pct": 96.5,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s1.0_r12": {
+      "acuerdo": 0.4,
+      "kappa": 0.20177383592017728,
+      "kappa_pond": 0.2877967513536027,
+      "abajo": 8,
+      "arriba": 28,
+      "dif_vs_e2": 0.1751113031591535,
+      "ic95": [
+        -0.03432710383163014,
+        0.37186009903910916
+      ],
+      "ic_bonferroni": [
+        -0.10014334526504061,
+        0.42200439466059614
+      ],
+      "gana_pct": 95.275,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s2.0_r3": {
+      "acuerdo": 0.16666666666666666,
+      "kappa": -0.034482758620689724,
+      "kappa_pond": 0.10292072322670365,
+      "abajo": 7,
+      "arriba": 43,
+      "dif_vs_e2": -0.008146589244244566,
+      "ic95": [
+        -0.15944874263565034,
+        0.14237860087758253
+      ],
+      "ic_bonferroni": [
+        -0.2155558373966602,
+        0.1750792534810848
+      ],
+      "gana_pct": 45.45,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s2.0_r5": {
+      "acuerdo": 0.16666666666666666,
+      "kappa": -0.07449856733524385,
+      "kappa_pond": 0.08267270668176663,
+      "abajo": 11,
+      "arriba": 39,
+      "dif_vs_e2": -0.02991904952093353,
+      "ic95": [
+        -0.19409455379490698,
+        0.13548135770929906
+      ],
+      "ic_bonferroni": [
+        -0.2523814594825964,
+        0.17854593572206998
+      ],
+      "gana_pct": 35.55,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s2.0_r7": {
+      "acuerdo": 0.26666666666666666,
+      "kappa": 0.021497405485544685,
+      "kappa_pond": 0.13590263691683557,
+      "abajo": 11,
+      "arriba": 33,
+      "dif_vs_e2": 0.022307689677407937,
+      "ic95": [
+        -0.16785296273652853,
+        0.20477709001499556
+      ],
+      "ic_bonferroni": [
+        -0.22970368664785604,
+        0.2459502008000571
+      ],
+      "gana_pct": 59.8,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s2.0_r9": {
+      "acuerdo": 0.43333333333333335,
+      "kappa": 0.195900670082775,
+      "kappa_pond": 0.23804780876494025,
+      "abajo": 13,
+      "arriba": 21,
+      "dif_vs_e2": 0.1204149720393787,
+      "ic95": [
+        -0.10552678618344247,
+        0.34330889219733035
+      ],
+      "ic_bonferroni": [
+        -0.18377195104453672,
+        0.4053536813873543
+      ],
+      "gana_pct": 85.75,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    },
+    "sombra_s2.0_r12": {
+      "acuerdo": 0.38333333333333336,
+      "kappa": 0.16509966152688982,
+      "kappa_pond": 0.2686112320417937,
+      "abajo": 8,
+      "arriba": 29,
+      "dif_vs_e2": 0.1553023572745488,
+      "ic95": [
+        -0.05320785336304846,
+        0.35564268934840243
+      ],
+      "ic_bonferroni": [
+        -0.1259286562020689,
+        0.39441135330240307
+      ],
+      "gana_pct": 92.975,
+      "demostrable_95": false,
+      "demostrable_bonferroni": false
+    }
+  }
+}

@@ -17,10 +17,14 @@ La diferencia con E2 se contrasta por bootstrap, primero al 95 % y después con 
 Bonferroni por el número de variantes probadas: con varios intentos, que uno resulte
 significativo por azar es esperable, y eso debe descontarse.
 
-Uso:  python scripts/eval_metodos_imagen.py
+Se evalúa frente a cada ronda del conteo manual sobre las mismas escenas:
+
+    python scripts/eval_metodos_imagen.py --dir outputs/validacion_manual_v2 --salida outputs/eval_metodos_imagen_ronda1.json
+    python scripts/eval_metodos_imagen.py --dir outputs/validacion_manual_v3 --salida outputs/eval_metodos_imagen_ronda2.json
 """
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -106,8 +110,12 @@ def boot_dif(y, xm, xe, alfa, n=4000, seed=0):
 
 
 def main():
-    d = (pd.read_csv("outputs/validacion_manual_v3/plantilla.csv", dtype={"banda": str})
-           .merge(pd.read_csv("outputs/validacion_manual_v3/clave.csv"), on="id"))
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--dir", default="outputs/validacion_manual_v2", help="ronda del conteo manual")
+    ap.add_argument("--salida", default="outputs/eval_metodos_imagen_ronda1.json")
+    args = ap.parse_args()
+    d = (pd.read_csv(f"{args.dir}/plantilla.csv", dtype={"banda": str})
+           .merge(pd.read_csv(f"{args.dir}/clave.csv"), on="id"))
     res = {}
     for r in d.itertuples():
         reg_f = mu.big_rock_mask(mu.read_mask(config.MSL_NCAM_LABELS_TRAIN / f"{r.image_id}.png"))
@@ -133,7 +141,7 @@ def main():
                              "arriba": int((dif > 0).sum()), "dif_vs_e2": media, "ic95": ic95,
                              "ic_bonferroni": icb, "gana_pct": 100 * gana,
                              "demostrable_95": ic95[0] > 0, "demostrable_bonferroni": icb[0] > 0}
-    Path("outputs/eval_metodos_imagen.json").write_text(json.dumps(out, indent=2, ensure_ascii=False))
+    Path(args.salida).write_text(json.dumps(out, indent=2, ensure_ascii=False))
     print(f"E2: kappa ponderado {out['e2']['kappa_pond']:.2f}")
     for m in METODOS:
         r = out["metodos"][m]

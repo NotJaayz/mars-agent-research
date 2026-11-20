@@ -382,7 +382,7 @@ prominencia no era selectivo, se mantuvo $h = 1$: reajustarlo después de la
 validación habría supuesto calibrar con la muestra de evaluación.
 
 \paragraph{Sensibilidad.} Para comprobar que las conclusiones no dependen de ese ajuste, se
-recalculó el acuerdo con el observador variando tres de los parámetros más influyentes en el
+recalculó el acuerdo con cada una de las dos rondas del conteo manual variando tres de los parámetros más influyentes en el
 conteo ($h \in \{0{,}5;\,1;\,2;\,3\}$, $\sigma \in \{1;\,3;\,5\}$ y un área mínima de
 \SI{0.025}{\percent}, \SI{0.05}{\percent} o \SI{0.1}{\percent}), \cSenN{} combinaciones en
 total. La Sección~\ref{sec:validacion-manual} presenta el resultado.
@@ -613,7 +613,9 @@ muestras se descompone entonces, de forma descriptiva, en una parte asignada a l
 que el instrumento reproduce sin usar la anotación de las escenas evaluadas) y un residuo
 asignado a la anotación. La descomposición es condicional al instrumento y no constituye una
 estimación causal: como el segmentador se entrenó con etiquetas colaborativas, supone que su
-error es el mismo en ambas muestras, y el Capítulo~\ref{cap:resultados} discute ese supuesto. La comparación directa de las distribuciones se contrasta con la prueba de
+error es el mismo en ambas muestras, y el Capítulo~\ref{cap:resultados} discute ese supuesto.
+El dictamen sobre H3 aplica el criterio de la Sección~\ref{sec:hipotesis} al análisis principal:
+nivel 1 de consenso e intervalo por sol de la componente de anotación. La comparación directa de las distribuciones se contrasta con la prueba de
 Mann--Whitney y con intervalos para la diferencia de medianas. La muestra colaborativa se toma
 al azar entre las imágenes que el segmentador no vio al entrenar, excluidas las de validación;
 como puede incluir escenas próximas en el tiempo a imágenes de entrenamiento, se repite como
@@ -638,10 +640,12 @@ piloto previa, de \num{24} escenas y cuatro bandas, sirvió para detectar y corr
 instrumento antes de recoger los datos definitivos. El conteo de la muestra definitiva se hizo dos
 veces: tras una primera ronda, el observador repitió el conteo de las mismas escenas con
 identificadores nuevos, en otro orden aleatorio y sin el resultado automático, con un criterio más
-estricto de qué cuenta como una roca individual. Se reporta la segunda ronda; como se hizo
-conociendo los resultados agregados de la primera, se informan también la primera y el acuerdo
-entre ambas (Sección~\ref{sec:validacion-manual}). La validación la realizó \textbf{un único
-observador}, el propio autor, de modo que no permite separar el desacuerdo atribuible al procedimiento de la
+estricto de qué cuenta como una roca individual. Se toma como resultado principal la primera
+ronda, la única hecha sin conocer resultados previos sobre esas escenas; la segunda, hecha
+conociendo los resultados agregados de la primera y, por tanto, no independiente de ella, se
+presenta a su lado con las mismas medidas, junto con el acuerdo entre ambas
+(Sección~\ref{sec:validacion-manual}). La validación la realizó \textbf{un único
+observador}, el propio autor, que es también quien calibró el procedimiento, de modo que no permite separar el desacuerdo atribuible al procedimiento de la
 variabilidad propia de la tarea; se presenta como una \textbf{evaluación exploratoria} y no como
 una medición de exactitud.
 

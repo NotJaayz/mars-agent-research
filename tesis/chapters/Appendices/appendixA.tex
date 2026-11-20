@@ -40,13 +40,13 @@ organizadas en seis grupos. La Tabla~\ref{tab:esquema} las describe.
                    & \texttt{scene\_type}     & Tipología de escena. \\
     \midrule
     Conteo (E2)    & \texttt{n\_bigrock}          & Píxeles de roca grande. \\
-                   & \texttt{n\_rocks}            & Rocas tras división de aguas y filtros. \\
+                   & \texttt{n\_rocks}            & Regiones separables tras división de aguas y filtros (conteo E2; no equivale al número de rocas visibles). \\
                    & \texttt{n\_raw\_components}  & Componentes conectadas previas. \\
-                   & \texttt{largest\_rock\_pct}  & Área de la roca mayor, en \% de los píxeles etiquetados. \\
+                   & \texttt{largest\_rock\_pct}  & Área de la región mayor, en \% de los píxeles etiquetados (el denominador de la cobertura). \\
                    & \texttt{mean\_rock\_area\_px}& Área media de las rocas, en píxeles. \\
                    & \texttt{n\_small}            & Rocas de menos del \SI{0.5}{\percent} del área de la imagen. \\
                    & \texttt{n\_medium}           & Rocas de \SI{0.5}{\percent} a \SI{2}{\percent} del área de la imagen. \\
-                   & \texttt{n\_large}            & Rocas de al menos \SI{2}{\percent} del área de la imagen. \\
+                   & \texttt{n\_large}            & Rocas de al menos \SI{2}{\percent} del área de la imagen. Las tres clases de tamaño usan como denominador el área de la imagen, y \texttt{largest\_rock\_pct}, los píxeles etiquetados: no son comparables entre sí. \\
     \midrule
     Calidad        & \texttt{mean\_solidity} & Solidez media de las regiones aceptadas. \\
                    & \texttt{quality\_flag}  & Bandera de aptitud de la escena. \\
